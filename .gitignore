@@ -1,0 +1,12 @@
+bin/
+obj/
+node_modules/
+dist/
+__pycache__/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.env
+*.user
+.vs/
+*.egg-info/

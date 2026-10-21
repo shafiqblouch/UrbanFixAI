@@ -1,0 +1,9 @@
+{
+  "name": "@urbanfix/ui",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "echo \"ui: placeholder until FD-08\"",
+    "lint": "echo \"ui: placeholder until FD-08\""
+  }
+}
