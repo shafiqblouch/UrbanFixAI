@@ -1,0 +1,4736 @@
+{
+  "UrbanFix.Api.dll": {
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Api\\Program.cs": {
+      "Program/<<Main>$>d__0": {
+        "System.Void Program/<<Main>$>d__0::MoveNext()": {
+          "Lines": {
+            "15": 1,
+            "18": 2,
+            "19": 2,
+            "20": 2,
+            "21": 2,
+            "22": 2,
+            "23": 2,
+            "24": 2,
+            "26": 1,
+            "27": 0,
+            "29": 1,
+            "30": 1,
+            "31": 1,
+            "32": 1,
+            "33": 1,
+            "34": 1,
+            "35": 2,
+            "37": 1,
+            "38": 1,
+            "39": 1,
+            "40": 1,
+            "41": 2,
+            "43": 1,
+            "44": 0,
+            "46": 1,
+            "48": 1,
+            "49": 0,
+            "50": 0,
+            "51": 0,
+            "52": 0,
+            "53": 0,
+            "54": 0,
+            "55": 0,
+            "56": 0,
+            "57": 0,
+            "59": 1,
+            "60": 1,
+            "61": 361,
+            "62": 361,
+            "63": 361,
+            "64": 362,
+            "65": 1,
+            "66": 1,
+            "68": 2,
+            "70": 2,
+            "71": 1,
+            "72": 2,
+            "74": 1,
+            "75": 1,
+            "76": 1,
+            "77": 1,
+            "79": 1
+          },
+          "Branches": [
+            {
+              "Line": 26,
+              "Offset": 152,
+              "EndOffset": 154,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 26,
+              "Offset": 152,
+              "EndOffset": 193,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            },
+            {
+              "Line": 43,
+              "Offset": 481,
+              "EndOffset": 483,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 1
+            },
+            {
+              "Line": 43,
+              "Offset": 481,
+              "EndOffset": 521,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 43,
+              "Offset": 524,
+              "EndOffset": 526,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 43,
+              "Offset": 524,
+              "EndOffset": 537,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 1
+            },
+            {
+              "Line": 48,
+              "Offset": 588,
+              "EndOffset": 593,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 757,
+              "EndOffset": 759,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 771,
+              "EndOffset": 773,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 811,
+              "EndOffset": 813,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 811,
+              "EndOffset": 829,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 757,
+              "EndOffset": 832,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 771,
+              "EndOffset": 832,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 837,
+              "EndOffset": 842,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 837,
+              "EndOffset": 1007,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 0
+            },
+            {
+              "Line": 48,
+              "Offset": 588,
+              "EndOffset": 1022,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 1
+            },
+            {
+              "Line": 68,
+              "Offset": 1118,
+              "EndOffset": 1120,
+              "Path": 0,
+              "Ordinal": 16,
+              "Hits": 1
+            },
+            {
+              "Line": 68,
+              "Offset": 1118,
+              "EndOffset": 1143,
+              "Path": 1,
+              "Ordinal": 17,
+              "Hits": 0
+            },
+            {
+              "Line": 68,
+              "Offset": 1148,
+              "EndOffset": 1150,
+              "Path": 0,
+              "Ordinal": 18,
+              "Hits": 1
+            },
+            {
+              "Line": 68,
+              "Offset": 1148,
+              "EndOffset": 1172,
+              "Path": 1,
+              "Ordinal": 19,
+              "Hits": 1
+            },
+            {
+              "Line": 18,
+              "Offset": 65,
+              "EndOffset": 67,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 18,
+              "Offset": 65,
+              "EndOffset": 77,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 34,
+              "Offset": 68,
+              "EndOffset": 70,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 34,
+              "Offset": 68,
+              "EndOffset": 77,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            }
+          ]
+        }
+      },
+      "Program/<>c/<<<Main>$>b__0_5>d": {
+        "System.Void Program/<>c/<<<Main>$>b__0_5>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 62,
+              "Offset": 27,
+              "EndOffset": 29,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 62,
+              "Offset": 27,
+              "EndOffset": 33,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 361
+            }
+          ]
+        }
+      },
+      "Program/<>c/<<<Main>$>b__0_7>d": {
+        "System.Void Program/<>c/<<<Main>$>b__0_7>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 72,
+              "Offset": 137,
+              "EndOffset": 139,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 72,
+              "Offset": 137,
+              "EndOffset": 168,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Api\\obj\\Debug\\net9.0\\Sentry.Compiler.Extensions\\Sentry.Compiler.Extensions.BuildPropertySourceGenerator\\Sentry.Generated.BuildPropertyInitializer.g.cs": {
+      "Sentry.Generated.BuildPropertyInitializer": {
+        "System.Void Sentry.Generated.BuildPropertyInitializer::Initialize()": {
+          "Lines": {
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 1,
+            "21": 1,
+            "22": 1,
+            "23": 1,
+            "24": 1,
+            "25": 1,
+            "26": 1,
+            "27": 1,
+            "28": 1,
+            "29": 1,
+            "30": 1,
+            "31": 1,
+            "32": 1,
+            "33": 1,
+            "34": 1,
+            "35": 1,
+            "36": 1,
+            "37": 1,
+            "38": 1,
+            "39": 1,
+            "40": 1,
+            "41": 1,
+            "42": 1,
+            "43": 1,
+            "44": 1,
+            "45": 1,
+            "46": 1,
+            "47": 1
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Api\\Security\\SessionAuthentication.cs": {
+      "UrbanFix.Api.Security.AuthPolicies": {
+        "System.String UrbanFix.Api.Security.AuthPolicies::For(System.String)": {
+          "Lines": {
+            "20": 25
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Security.SessionAuthHandler": {
+        "System.Void UrbanFix.Api.Security.SessionAuthHandler::.ctor(Microsoft.Extensions.Options.IOptionsMonitor`1<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions>,Microsoft.Extensions.Logging.ILoggerFactory,System.Text.Encodings.Web.UrlEncoder,UrbanFix.Infrastructure.Auth.AuthService,UrbanFix.Infrastructure.Persistence.RequestInfo)": {
+          "Lines": {
+            "26": 361
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Security.SessionAuthHandler/<HandleAuthenticateAsync>d__4": {
+        "System.Void UrbanFix.Api.Security.SessionAuthHandler/<HandleAuthenticateAsync>d__4::MoveNext()": {
+          "Lines": {
+            "31": 361,
+            "32": 361,
+            "33": 361,
+            "35": 361,
+            "36": 470,
+            "38": 252,
+            "39": 255,
+            "41": 249,
+            "42": 249,
+            "43": 249,
+            "44": 249,
+            "45": 249,
+            "46": 249,
+            "47": 498,
+            "49": 249,
+            "50": 249,
+            "51": 361
+          },
+          "Branches": [
+            {
+              "Line": 32,
+              "Offset": 51,
+              "EndOffset": 53,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 361
+            },
+            {
+              "Line": 32,
+              "Offset": 51,
+              "EndOffset": 57,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 33,
+              "Offset": 126,
+              "EndOffset": 128,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 361
+            },
+            {
+              "Line": 33,
+              "Offset": 126,
+              "EndOffset": 142,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 18
+            },
+            {
+              "Line": 33,
+              "Offset": 140,
+              "EndOffset": 142,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 18
+            },
+            {
+              "Line": 33,
+              "Offset": 140,
+              "EndOffset": 145,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 343
+            },
+            {
+              "Line": 36,
+              "Offset": 247,
+              "EndOffset": 249,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 109
+            },
+            {
+              "Line": 36,
+              "Offset": 247,
+              "EndOffset": 260,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 252
+            },
+            {
+              "Line": 39,
+              "Offset": 467,
+              "EndOffset": 469,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 3
+            },
+            {
+              "Line": 39,
+              "Offset": 467,
+              "EndOffset": 485,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 249
+            },
+            {
+              "Line": 41,
+              "Offset": 594,
+              "EndOffset": 596,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 125
+            },
+            {
+              "Line": 41,
+              "Offset": 594,
+              "EndOffset": 603,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 124
+            },
+            {
+              "Line": 47,
+              "Offset": 644,
+              "EndOffset": 646,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 249
+            },
+            {
+              "Line": 47,
+              "Offset": 644,
+              "EndOffset": 662,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 0
+            },
+            {
+              "Line": 47,
+              "Offset": 667,
+              "EndOffset": 669,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 249
+            },
+            {
+              "Line": 47,
+              "Offset": 667,
+              "EndOffset": 708,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 249
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Security.PermissionRequirement": {
+        "System.String UrbanFix.Api.Security.PermissionRequirement::get_Permission()": {
+          "Lines": {
+            "54": 155
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Security.CurrentMemberships": {
+        "System.Void UrbanFix.Api.Security.CurrentMemberships::.ctor(UrbanFix.Infrastructure.Persistence.AppDbContext,UrbanFix.SharedKernel.ITenantContext)": {
+          "Lines": {
+            "57": 362
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Security.CurrentMemberships/<CanAsync>d__5": {
+        "System.Void UrbanFix.Api.Security.CurrentMemberships/<CanAsync>d__5::MoveNext()": {
+          "Lines": {
+            "74": 4,
+            "75": 19,
+            "76": 4,
+            "77": 5,
+            "78": 5,
+            "79": 1,
+            "80": 1,
+            "82": 3,
+            "83": 4
+          },
+          "Branches": [
+            {
+              "Line": 75,
+              "Offset": 402,
+              "EndOffset": 157,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 4
+            },
+            {
+              "Line": 77,
+              "Offset": 204,
+              "EndOffset": 211,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 3
+            },
+            {
+              "Line": 78,
+              "Offset": 231,
+              "EndOffset": 233,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 3
+            },
+            {
+              "Line": 78,
+              "Offset": 269,
+              "EndOffset": 271,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 1
+            },
+            {
+              "Line": 78,
+              "Offset": 269,
+              "EndOffset": 274,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 2
+            },
+            {
+              "Line": 78,
+              "Offset": 231,
+              "EndOffset": 290,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 78,
+              "Offset": 295,
+              "EndOffset": 299,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 1
+            },
+            {
+              "Line": 79,
+              "Offset": 319,
+              "EndOffset": 321,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 0
+            },
+            {
+              "Line": 79,
+              "Offset": 357,
+              "EndOffset": 359,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 0
+            },
+            {
+              "Line": 79,
+              "Offset": 357,
+              "EndOffset": 362,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 0
+            },
+            {
+              "Line": 79,
+              "Offset": 319,
+              "EndOffset": 378,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 1
+            },
+            {
+              "Line": 79,
+              "Offset": 383,
+              "EndOffset": 387,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 1
+            },
+            {
+              "Line": 77,
+              "Offset": 204,
+              "EndOffset": 391,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 7
+            },
+            {
+              "Line": 78,
+              "Offset": 295,
+              "EndOffset": 391,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 7
+            },
+            {
+              "Line": 79,
+              "Offset": 383,
+              "EndOffset": 391,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 7
+            },
+            {
+              "Line": 75,
+              "Offset": 402,
+              "EndOffset": 407,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 3
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Security.CurrentMemberships/<GetAsync>d__4": {
+        "System.Void UrbanFix.Api.Security.CurrentMemberships/<GetAsync>d__4::MoveNext()": {
+          "Lines": {
+            "62": 114,
+            "63": 117,
+            "64": 111,
+            "65": 111,
+            "66": 111,
+            "67": 114
+          },
+          "Branches": [
+            {
+              "Line": 63,
+              "Offset": 48,
+              "EndOffset": 50,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 3
+            },
+            {
+              "Line": 63,
+              "Offset": 48,
+              "EndOffset": 67,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 111
+            },
+            {
+              "Line": 64,
+              "Offset": 92,
+              "EndOffset": 94,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 111
+            },
+            {
+              "Line": 64,
+              "Offset": 137,
+              "EndOffset": 139,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 111
+            },
+            {
+              "Line": 64,
+              "Offset": 137,
+              "EndOffset": 160,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 0
+            },
+            {
+              "Line": 64,
+              "Offset": 92,
+              "EndOffset": 166,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 64,
+              "Offset": 169,
+              "EndOffset": 171,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 0
+            },
+            {
+              "Line": 64,
+              "Offset": 169,
+              "EndOffset": 198,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 111
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Security.PermissionHandler": {
+        "System.Void UrbanFix.Api.Security.PermissionHandler::.ctor(UrbanFix.Api.Security.CurrentMemberships)": {
+          "Lines": {
+            "86": 361
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Security.PermissionHandler/<HandleRequirementAsync>d__2": {
+        "System.Void UrbanFix.Api.Security.PermissionHandler/<HandleRequirementAsync>d__2::MoveNext()": {
+          "Lines": {
+            "89": 110,
+            "90": 110,
+            "94": 466,
+            "95": 109,
+            "96": 109,
+            "97": 82,
+            "98": 82,
+            "99": 82,
+            "101": 27,
+            "102": 110
+          },
+          "Branches": [
+            {
+              "Line": 90,
+              "Offset": 40,
+              "EndOffset": 42,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 90,
+              "Offset": 40,
+              "EndOffset": 46,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 110
+            },
+            {
+              "Line": 90,
+              "Offset": 63,
+              "EndOffset": 65,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 90,
+              "Offset": 63,
+              "EndOffset": 70,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 110
+            },
+            {
+              "Line": 94,
+              "Offset": 304,
+              "EndOffset": 213,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 109
+            },
+            {
+              "Line": 96,
+              "Offset": 262,
+              "EndOffset": 264,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 82
+            },
+            {
+              "Line": 96,
+              "Offset": 262,
+              "EndOffset": 285,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 27
+            },
+            {
+              "Line": 94,
+              "Offset": 304,
+              "EndOffset": 306,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 28
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Security.AuthorizationSetup": {
+        "System.Void UrbanFix.Api.Security.AuthorizationSetup::AddUrbanFixAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection)": {
+          "Lines": {
+            "108": 1,
+            "109": 1,
+            "110": 1,
+            "111": 1,
+            "112": 1,
+            "113": 1,
+            "114": 1,
+            "115": 2,
+            "116": 2,
+            "117": 39,
+            "118": 36,
+            "119": 2,
+            "120": 1
+          },
+          "Branches": [
+            {
+              "Line": 117,
+              "Offset": 182,
+              "EndOffset": 128,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 18
+            },
+            {
+              "Line": 117,
+              "Offset": 182,
+              "EndOffset": 184,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Api\\Endpoints\\AdminEndpoints.cs": {
+      "UrbanFix.Api.Endpoints.AdminEndpoints": {
+        "System.Void UrbanFix.Api.Endpoints.AdminEndpoints::MapAdminEndpoints(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder)": {
+          "Lines": {
+            "22": 1,
+            "23": 1,
+            "24": 1,
+            "26": 1,
+            "27": 1,
+            "28": 1,
+            "30": 1,
+            "31": 7,
+            "32": 7,
+            "33": 7,
+            "34": 7,
+            "35": 7,
+            "36": 7,
+            "37": 7,
+            "38": 7,
+            "39": 1,
+            "41": 1,
+            "43": 1,
+            "44": 2,
+            "45": 2,
+            "46": 2,
+            "47": 2,
+            "48": 2,
+            "49": 2,
+            "50": 2,
+            "51": 1,
+            "53": 1,
+            "54": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/CreateOrganizationRequest": {
+        "System.String UrbanFix.Api.Endpoints.AdminEndpoints/CreateOrganizationRequest::get_Name()": {
+          "Lines": {
+            "15": 550
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/OrganizationDto": {
+        "System.Guid UrbanFix.Api.Endpoints.AdminEndpoints/OrganizationDto::get_Id()": {
+          "Lines": {
+            "16": 334
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/AddMemberRequest": {
+        "System.String UrbanFix.Api.Endpoints.AdminEndpoints/AddMemberRequest::get_Email()": {
+          "Lines": {
+            "17": 541
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/MemberDto": {
+        "System.Guid UrbanFix.Api.Endpoints.AdminEndpoints/MemberDto::get_MembershipId()": {
+          "Lines": {
+            "18": 426
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/AuditDto": {
+        "System.Guid UrbanFix.Api.Endpoints.AdminEndpoints/AuditDto::get_Id()": {
+          "Lines": {
+            "19": 490
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/<>c": {
+        "UrbanFix.Api.Endpoints.AdminEndpoints/AuditDto UrbanFix.Api.Endpoints.AdminEndpoints/<>c::<QueryAudit>b__10_10(UrbanFix.Identity.AuditEntry)": {
+          "Lines": {
+            "136": 50,
+            "137": 50,
+            "138": 50,
+            "139": 50,
+            "140": 50
+          },
+          "Branches": [
+            {
+              "Line": 136,
+              "Offset": 36,
+              "EndOffset": 38,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 136,
+              "Offset": 36,
+              "EndOffset": 78,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 42
+            },
+            {
+              "Line": 136,
+              "Offset": 93,
+              "EndOffset": 95,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 43
+            },
+            {
+              "Line": 136,
+              "Offset": 93,
+              "EndOffset": 135,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/<AddMember>d__8": {
+        "System.Void UrbanFix.Api.Endpoints.AdminEndpoints/<AddMember>d__8::MoveNext()": {
+          "Lines": {
+            "87": 31,
+            "88": 31,
+            "89": 31,
+            "90": 31,
+            "91": 2,
+            "93": 29,
+            "94": 30,
+            "96": 28,
+            "97": 28,
+            "98": 28,
+            "99": 28,
+            "100": 28,
+            "101": 28,
+            "102": 28,
+            "103": 31
+          },
+          "Branches": [
+            {
+              "Line": 90,
+              "Offset": 452,
+              "EndOffset": 454,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 2
+            },
+            {
+              "Line": 90,
+              "Offset": 452,
+              "EndOffset": 475,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 29
+            },
+            {
+              "Line": 94,
+              "Offset": 675,
+              "EndOffset": 677,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 1
+            },
+            {
+              "Line": 94,
+              "Offset": 675,
+              "EndOffset": 694,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 28
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/<CreateOrganization>d__7": {
+        "System.Void UrbanFix.Api.Endpoints.AdminEndpoints/<CreateOrganization>d__7::MoveNext()": {
+          "Lines": {
+            "58": 34,
+            "59": 34,
+            "60": 34,
+            "61": 34,
+            "63": 34,
+            "64": 34,
+            "66": 34,
+            "67": 34,
+            "68": 34,
+            "69": 34,
+            "70": 34,
+            "71": 34,
+            "72": 34,
+            "73": 34,
+            "75": 34,
+            "76": 34,
+            "79": 34,
+            "80": 34,
+            "81": 34,
+            "83": 34,
+            "84": 34
+          },
+          "Branches": [
+            {
+              "Line": 59,
+              "Offset": 110,
+              "EndOffset": 112,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 34
+            },
+            {
+              "Line": 59,
+              "Offset": 110,
+              "EndOffset": 135,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 59,
+              "Offset": 138,
+              "EndOffset": 140,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 59,
+              "Offset": 138,
+              "EndOffset": 161,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 34
+            },
+            {
+              "Line": 60,
+              "Offset": 189,
+              "EndOffset": 191,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 60,
+              "Offset": 189,
+              "EndOffset": 212,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 34
+            },
+            {
+              "Line": 61,
+              "Offset": 464,
+              "EndOffset": 466,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 0
+            },
+            {
+              "Line": 61,
+              "Offset": 464,
+              "EndOffset": 487,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 34
+            },
+            {
+              "Line": 76,
+              "Offset": 1112,
+              "EndOffset": 1114,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 0
+            },
+            {
+              "Line": 76,
+              "Offset": 1112,
+              "EndOffset": 1131,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 34
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/<FindOrCreateUser>d__9": {
+        "System.Void UrbanFix.Api.Endpoints.AdminEndpoints/<FindOrCreateUser>d__9::MoveNext()": {
+          "Lines": {
+            "107": 63,
+            "108": 63,
+            "109": 63,
+            "110": 64,
+            "112": 62,
+            "113": 63,
+            "115": 61,
+            "116": 61,
+            "117": 61,
+            "118": 61,
+            "119": 63
+          },
+          "Branches": [
+            {
+              "Line": 110,
+              "Offset": 235,
+              "EndOffset": 237,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 110,
+              "Offset": 235,
+              "EndOffset": 255,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 62
+            },
+            {
+              "Line": 112,
+              "Offset": 262,
+              "EndOffset": 264,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 62
+            },
+            {
+              "Line": 112,
+              "Offset": 262,
+              "EndOffset": 277,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 113,
+              "Offset": 300,
+              "EndOffset": 302,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 1
+            },
+            {
+              "Line": 113,
+              "Offset": 300,
+              "EndOffset": 335,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 61
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/<QueryAudit>d__10": {
+        "System.Void UrbanFix.Api.Endpoints.AdminEndpoints/<QueryAudit>d__10::MoveNext()": {
+          "Lines": {
+            "124": 7,
+            "125": 7,
+            "126": 9,
+            "127": 9,
+            "128": 8,
+            "129": 7,
+            "130": 7,
+            "131": 7,
+            "133": 7,
+            "134": 7,
+            "141": 7
+          },
+          "Branches": [
+            {
+              "Line": 126,
+              "Offset": 128,
+              "EndOffset": 130,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 2
+            },
+            {
+              "Line": 126,
+              "Offset": 128,
+              "EndOffset": 245,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 7
+            },
+            {
+              "Line": 127,
+              "Offset": 268,
+              "EndOffset": 270,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 2
+            },
+            {
+              "Line": 127,
+              "Offset": 268,
+              "EndOffset": 385,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 7
+            },
+            {
+              "Line": 128,
+              "Offset": 396,
+              "EndOffset": 398,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 1
+            },
+            {
+              "Line": 128,
+              "Offset": 396,
+              "EndOffset": 423,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 6
+            },
+            {
+              "Line": 128,
+              "Offset": 428,
+              "EndOffset": 433,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 1
+            },
+            {
+              "Line": 128,
+              "Offset": 428,
+              "EndOffset": 579,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 7
+            },
+            {
+              "Line": 129,
+              "Offset": 602,
+              "EndOffset": 604,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 0
+            },
+            {
+              "Line": 129,
+              "Offset": 602,
+              "EndOffset": 719,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 7
+            },
+            {
+              "Line": 130,
+              "Offset": 730,
+              "EndOffset": 732,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 0
+            },
+            {
+              "Line": 130,
+              "Offset": 730,
+              "EndOffset": 757,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 7
+            },
+            {
+              "Line": 130,
+              "Offset": 762,
+              "EndOffset": 767,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 0
+            },
+            {
+              "Line": 130,
+              "Offset": 762,
+              "EndOffset": 898,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 7
+            },
+            {
+              "Line": 131,
+              "Offset": 909,
+              "EndOffset": 911,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 0
+            },
+            {
+              "Line": 131,
+              "Offset": 909,
+              "EndOffset": 936,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 7
+            },
+            {
+              "Line": 131,
+              "Offset": 941,
+              "EndOffset": 946,
+              "Path": 0,
+              "Ordinal": 16,
+              "Hits": 0
+            },
+            {
+              "Line": 131,
+              "Offset": 941,
+              "EndOffset": 1077,
+              "Path": 1,
+              "Ordinal": 17,
+              "Hits": 7
+            },
+            {
+              "Line": 133,
+              "Offset": 1094,
+              "EndOffset": 1099,
+              "Path": 0,
+              "Ordinal": 18,
+              "Hits": 6
+            },
+            {
+              "Line": 133,
+              "Offset": 1094,
+              "EndOffset": 1234,
+              "Path": 1,
+              "Ordinal": 19,
+              "Hits": 1
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AdminEndpoints/<>c/<<MapAdminEndpoints>b__6_2>d": {
+        "System.Void UrbanFix.Api.Endpoints.AdminEndpoints/<>c/<<MapAdminEndpoints>b__6_2>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 46,
+              "Offset": 321,
+              "EndOffset": 323,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 46,
+              "Offset": 321,
+              "EndOffset": 335,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 2
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Api\\Endpoints\\AuthEndpoints.cs": {
+      "UrbanFix.Api.Endpoints.AuthEndpoints": {
+        "System.Void UrbanFix.Api.Endpoints.AuthEndpoints::MapAuthEndpoints(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder)": {
+          "Lines": {
+            "20": 1,
+            "21": 1,
+            "23": 1,
+            "24": 104,
+            "25": 104,
+            "26": 104,
+            "27": 104,
+            "28": 1,
+            "29": 3,
+            "30": 100,
+            "31": 104,
+            "32": 105,
+            "34": 1,
+            "35": 1,
+            "36": 1,
+            "37": 1,
+            "38": 2,
+            "40": 1,
+            "41": 2,
+            "42": 2,
+            "43": 2,
+            "44": 3,
+            "46": 1,
+            "47": 61,
+            "48": 61,
+            "49": 61,
+            "50": 61,
+            "51": 61,
+            "52": 62,
+            "54": 1,
+            "55": 62,
+            "56": 62,
+            "57": 62,
+            "58": 63,
+            "60": 1,
+            "61": 11,
+            "62": 11,
+            "63": 11,
+            "64": 11,
+            "65": 11,
+            "66": 11,
+            "67": 11,
+            "68": 11,
+            "69": 11,
+            "70": 12,
+            "71": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/LoginRequest": {
+        "System.String UrbanFix.Api.Endpoints.AuthEndpoints/LoginRequest::get_Email()": {
+          "Lines": {
+            "11": 1040
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/LoginResponse": {
+        "System.String UrbanFix.Api.Endpoints.AuthEndpoints/LoginResponse::get_Token()": {
+          "Lines": {
+            "12": 895
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/SwitchOrganizationRequest": {
+        "System.Guid UrbanFix.Api.Endpoints.AuthEndpoints/SwitchOrganizationRequest::get_OrganizationId()": {
+          "Lines": {
+            "13": 8
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/TotpEnrollmentResponse": {
+        "System.String UrbanFix.Api.Endpoints.AuthEndpoints/TotpEnrollmentResponse::get_Secret()": {
+          "Lines": {
+            "14": 306
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/TotpConfirmRequest": {
+        "System.String UrbanFix.Api.Endpoints.AuthEndpoints/TotpConfirmRequest::get_Code()": {
+          "Lines": {
+            "15": 248
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/MembershipDto": {
+        "System.Guid UrbanFix.Api.Endpoints.AuthEndpoints/MembershipDto::get_Id()": {
+          "Lines": {
+            "16": 102
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/MeResponse": {
+        "System.Guid UrbanFix.Api.Endpoints.AuthEndpoints/MeResponse::get_UserId()": {
+          "Lines": {
+            "17": 86
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_0>d": {
+        "System.Void UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_0>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 26,
+              "Offset": 222,
+              "EndOffset": 226,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 101
+            },
+            {
+              "Line": 26,
+              "Offset": 229,
+              "EndOffset": 233,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            },
+            {
+              "Line": 26,
+              "Offset": 222,
+              "EndOffset": 264,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 3
+            },
+            {
+              "Line": 26,
+              "Offset": 229,
+              "EndOffset": 295,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 100
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_2>d": {
+        "System.Void UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_2>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 43,
+              "Offset": 214,
+              "EndOffset": 216,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 43,
+              "Offset": 214,
+              "EndOffset": 225,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_3>d": {
+        "System.Void UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_3>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 50,
+              "Offset": 196,
+              "EndOffset": 198,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 50,
+              "Offset": 196,
+              "EndOffset": 215,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 61
+            },
+            {
+              "Line": 51,
+              "Offset": 401,
+              "EndOffset": 403,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 61
+            },
+            {
+              "Line": 51,
+              "Offset": 401,
+              "EndOffset": 447,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_4>d": {
+        "System.Void UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_4>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 57,
+              "Offset": 217,
+              "EndOffset": 219,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 57,
+              "Offset": 217,
+              "EndOffset": 236,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 61
+            }
+          ]
+        }
+      },
+      "UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_5>d": {
+        "System.Void UrbanFix.Api.Endpoints.AuthEndpoints/<>c/<<MapAuthEndpoints>b__7_5>d::MoveNext()": {
+          "Lines": {},
+          "Branches": [
+            {
+              "Line": 68,
+              "Offset": 1213,
+              "EndOffset": 1215,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 68,
+              "Offset": 1213,
+              "EndOffset": 1227,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 11
+            }
+          ]
+        }
+      }
+    }
+  },
+  "UrbanFix.Complaints.dll": {},
+  "UrbanFix.Identity.dll": {
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Identity\\Credentials.cs": {
+      "UrbanFix.Identity.PasswordService": {
+        "System.String UrbanFix.Identity.PasswordService::Hash(System.String)": {
+          "Lines": {
+            "11": 64
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.Identity.PasswordService::Verify(UrbanFix.Identity.User,System.String)": {
+          "Lines": {
+            "14": 105
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.PasswordService::Validate(System.String)": {
+          "Lines": {
+            "18": 66,
+            "19": 68,
+            "20": 595,
+            "21": 320,
+            "22": 66
+          },
+          "Branches": [
+            {
+              "Line": 19,
+              "Offset": 13,
+              "EndOffset": 15,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 2
+            },
+            {
+              "Line": 19,
+              "Offset": 13,
+              "EndOffset": 26,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 64
+            },
+            {
+              "Line": 21,
+              "Offset": 219,
+              "EndOffset": 221,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 63
+            },
+            {
+              "Line": 21,
+              "Offset": 219,
+              "EndOffset": 224,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            }
+          ]
+        },
+        "System.Void UrbanFix.Identity.PasswordService::.cctor()": {
+          "Lines": {
+            "9": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Identity.TotpService": {
+        "System.String UrbanFix.Identity.TotpService::NewSecret()": {
+          "Lines": {
+            "27": 62
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.TotpService::ProvisioningUri(System.String,System.String,System.String)": {
+          "Lines": {
+            "30": 61
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.Identity.TotpService::Verify(System.String,System.String,System.Nullable`1<System.DateTime>)": {
+          "Lines": {
+            "34": 107,
+            "35": 109,
+            "36": 105,
+            "37": 105,
+            "38": 107
+          },
+          "Branches": [
+            {
+              "Line": 35,
+              "Offset": 8,
+              "EndOffset": 10,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 106
+            },
+            {
+              "Line": 35,
+              "Offset": 8,
+              "EndOffset": 48,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            },
+            {
+              "Line": 35,
+              "Offset": 51,
+              "EndOffset": 53,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 2
+            },
+            {
+              "Line": 35,
+              "Offset": 51,
+              "EndOffset": 57,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 105
+            },
+            {
+              "Line": 37,
+              "Offset": 85,
+              "EndOffset": 87,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 102
+            },
+            {
+              "Line": 37,
+              "Offset": 85,
+              "EndOffset": 94,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 3
+            }
+          ]
+        },
+        "System.String UrbanFix.Identity.TotpService::CodeAt(System.String,System.DateTime)": {
+          "Lines": {
+            "41": 103
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Identity.SessionTokens": {
+        "System.String UrbanFix.Identity.SessionTokens::NewToken()": {
+          "Lines": {
+            "46": 102
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.SessionTokens::Hash(System.String)": {
+          "Lines": {
+            "49": 356
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Identity\\Entities.cs": {
+      "UrbanFix.Identity.Organization": {
+        "System.Guid UrbanFix.Identity.Organization::get_Id()": {
+          "Lines": {
+            "14": 204
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.Organization::get_Name()": {
+          "Lines": {
+            "15": 136
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.Organization::get_Slug()": {
+          "Lines": {
+            "16": 136
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Identity.Organization::get_CreatedAt()": {
+          "Lines": {
+            "17": 34
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Identity.User": {
+        "System.Guid UrbanFix.Identity.User::get_Id()": {
+          "Lines": {
+            "23": 679
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.User::get_Email()": {
+          "Lines": {
+            "24": 378
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.User::get_DisplayName()": {
+          "Lines": {
+            "25": 378
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.User::get_PasswordHash()": {
+          "Lines": {
+            "26": 456
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.User::get_TotpSecretProtected()": {
+          "Lines": {
+            "27": 225
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.Identity.User::get_TotpEnabled()": {
+          "Lines": {
+            "28": 486
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.Identity.User::get_IsActive()": {
+          "Lines": {
+            "29": 392
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Identity.User::get_CreatedAt()": {
+          "Lines": {
+            "30": 289
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Identity.Membership": {
+        "System.Guid UrbanFix.Identity.Membership::get_Id()": {
+          "Lines": {
+            "35": 397
+          },
+          "Branches": []
+        },
+        "System.Guid UrbanFix.Identity.Membership::get_OrganizationId()": {
+          "Lines": {
+            "36": 227
+          },
+          "Branches": []
+        },
+        "System.Guid UrbanFix.Identity.Membership::get_UserId()": {
+          "Lines": {
+            "37": 62
+          },
+          "Branches": []
+        },
+        "UrbanFix.SharedKernel.Role UrbanFix.Identity.Membership::get_Role()": {
+          "Lines": {
+            "38": 175
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.Guid> UrbanFix.Identity.Membership::get_DepartmentId()": {
+          "Lines": {
+            "39": 32
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.Guid> UrbanFix.Identity.Membership::get_GateId()": {
+          "Lines": {
+            "40": 29
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.Identity.Membership::get_IsActive()": {
+          "Lines": {
+            "41": 277
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Identity.Membership::get_CreatedAt()": {
+          "Lines": {
+            "42": 275
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Identity.Session": {
+        "System.Guid UrbanFix.Identity.Session::get_Id()": {
+          "Lines": {
+            "47": 600
+          },
+          "Branches": []
+        },
+        "System.Guid UrbanFix.Identity.Session::get_UserId()": {
+          "Lines": {
+            "48": 847
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.Guid> UrbanFix.Identity.Session::get_OrganizationId()": {
+          "Lines": {
+            "49": 598
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.Session::get_TokenHash()": {
+          "Lines": {
+            "50": 451
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.Identity.Session::get_TotpVerified()": {
+          "Lines": {
+            "52": 349
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Identity.Session::get_CreatedAt()": {
+          "Lines": {
+            "53": 351
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Identity.Session::get_ExpiresAt()": {
+          "Lines": {
+            "54": 350
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.DateTimeOffset> UrbanFix.Identity.Session::get_RevokedAt()": {
+          "Lines": {
+            "55": 251
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.Session::get_Ip()": {
+          "Lines": {
+            "56": 100
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.Session::get_Device()": {
+          "Lines": {
+            "57": 100
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Identity.AuditEntry": {
+        "System.Guid UrbanFix.Identity.AuditEntry::get_Id()": {
+          "Lines": {
+            "62": 185
+          },
+          "Branches": []
+        },
+        "System.Guid UrbanFix.Identity.AuditEntry::get_OrganizationId()": {
+          "Lines": {
+            "63": 99
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.Guid> UrbanFix.Identity.AuditEntry::get_ActorUserId()": {
+          "Lines": {
+            "64": 142
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_Action()": {
+          "Lines": {
+            "65": 284
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_EntityType()": {
+          "Lines": {
+            "66": 284
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_EntityId()": {
+          "Lines": {
+            "67": 284
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_Before()": {
+          "Lines": {
+            "68": 109
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_After()": {
+          "Lines": {
+            "69": 185
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Identity.AuditEntry::get_OccurredAt()": {
+          "Lines": {
+            "70": 185
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_Ip()": {
+          "Lines": {
+            "71": 108
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Identity.AuditEntry::get_Device()": {
+          "Lines": {
+            "72": 108
+          },
+          "Branches": []
+        }
+      }
+    }
+  },
+  "UrbanFix.Infrastructure.dll": {
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\DependencyInjection.cs": {
+      "UrbanFix.Infrastructure.DependencyInjection": {
+        "Microsoft.Extensions.DependencyInjection.IServiceCollection UrbanFix.Infrastructure.DependencyInjection::AddUrbanFixInfrastructure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)": {
+          "Lines": {
+            "22": 1,
+            "24": 1,
+            "25": 397,
+            "26": 1,
+            "27": 7,
+            "28": 1,
+            "29": 1,
+            "30": 1,
+            "31": 383,
+            "32": 383,
+            "33": 383,
+            "34": 383,
+            "37": 1,
+            "38": 1,
+            "39": 1,
+            "40": 1,
+            "43": 1,
+            "44": 1,
+            "45": 1,
+            "46": 1,
+            "47": 1,
+            "48": 2,
+            "51": 1,
+            "52": 1,
+            "53": 2,
+            "54": 1,
+            "55": 2,
+            "56": 2,
+            "57": 1,
+            "60": 1,
+            "61": 1,
+            "62": 1,
+            "63": 1,
+            "64": 1,
+            "65": 1,
+            "67": 1,
+            "68": 1
+          },
+          "Branches": [
+            {
+              "Line": 37,
+              "Offset": 168,
+              "EndOffset": 170,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 37,
+              "Offset": 168,
+              "EndOffset": 176,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 40,
+              "Offset": 197,
+              "EndOffset": 199,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 40,
+              "Offset": 197,
+              "EndOffset": 206,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            },
+            {
+              "Line": 44,
+              "Offset": 236,
+              "EndOffset": 238,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 44,
+              "Offset": 236,
+              "EndOffset": 244,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 1
+            },
+            {
+              "Line": 48,
+              "Offset": 304,
+              "EndOffset": 306,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 1
+            },
+            {
+              "Line": 48,
+              "Offset": 304,
+              "EndOffset": 319,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 342,
+              "EndOffset": 344,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 342,
+              "EndOffset": 350,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 1
+            },
+            {
+              "Line": 57,
+              "Offset": 386,
+              "EndOffset": 388,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 0
+            },
+            {
+              "Line": 57,
+              "Offset": 386,
+              "EndOffset": 395,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 1
+            },
+            {
+              "Line": 60,
+              "Offset": 418,
+              "EndOffset": 420,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 0
+            },
+            {
+              "Line": 60,
+              "Offset": 418,
+              "EndOffset": 426,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 1
+            },
+            {
+              "Line": 31,
+              "Offset": 18,
+              "EndOffset": 20,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 31,
+              "Offset": 18,
+              "EndOffset": 32,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 382
+            },
+            {
+              "Line": 53,
+              "Offset": 8,
+              "EndOffset": 10,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 53,
+              "Offset": 8,
+              "EndOffset": 32,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 54,
+              "Offset": 18,
+              "EndOffset": 20,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 54,
+              "Offset": 18,
+              "EndOffset": 37,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            }
+          ]
+        },
+        "System.Threading.Tasks.Task UrbanFix.Infrastructure.DependencyInjection::MigrateDatabaseAsync(Microsoft.Extensions.Configuration.IConfiguration,System.Threading.CancellationToken)": {
+          "Lines": {
+            "72": 0,
+            "73": 0,
+            "74": 0,
+            "75": 0,
+            "76": 0
+          },
+          "Branches": [
+            {
+              "Line": 73,
+              "Offset": 13,
+              "EndOffset": 15,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 73,
+              "Offset": 13,
+              "EndOffset": 27,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 74,
+              "Offset": 40,
+              "EndOffset": 42,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 74,
+              "Offset": 40,
+              "EndOffset": 54,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Storage\\ObjectStorage.cs": {
+      "UrbanFix.Infrastructure.Storage.StorageOptions": {
+        "System.String UrbanFix.Infrastructure.Storage.StorageOptions::get_ServiceUrl()": {
+          "Lines": {
+            "13": 9
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Storage.StorageOptions::get_PublicUrl()": {
+          "Lines": {
+            "15": 4
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Storage.StorageOptions::get_AccessKey()": {
+          "Lines": {
+            "16": 6
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Storage.StorageOptions::get_SecretKey()": {
+          "Lines": {
+            "17": 6
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Storage.StorageOptions::get_Bucket()": {
+          "Lines": {
+            "18": 24
+          },
+          "Branches": []
+        },
+        "System.TimeSpan UrbanFix.Infrastructure.Storage.StorageOptions::get_MaxUrlLifetime()": {
+          "Lines": {
+            "19": 10
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.GeoPoint": {
+        "System.Double UrbanFix.Infrastructure.Storage.GeoPoint::get_Latitude()": {
+          "Lines": {
+            "22": 6
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.StoredObject": {
+        "System.String UrbanFix.Infrastructure.Storage.StoredObject::get_Key()": {
+          "Lines": {
+            "24": 18
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.ObjectStorage": {
+        "System.String UrbanFix.Infrastructure.Storage.ObjectStorage::CreateDownloadUrl(System.String,System.Nullable`1<System.TimeSpan>)": {
+          "Lines": {
+            "88": 4,
+            "89": 4,
+            "90": 4,
+            "91": 1,
+            "93": 3,
+            "94": 3,
+            "95": 3,
+            "96": 3,
+            "97": 3,
+            "98": 3,
+            "99": 3,
+            "100": 3,
+            "101": 3,
+            "102": 3,
+            "103": 3
+          },
+          "Branches": [
+            {
+              "Line": 89,
+              "Offset": 21,
+              "EndOffset": 23,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 89,
+              "Offset": 21,
+              "EndOffset": 34,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 4
+            },
+            {
+              "Line": 90,
+              "Offset": 78,
+              "EndOffset": 80,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 1
+            },
+            {
+              "Line": 90,
+              "Offset": 78,
+              "EndOffset": 91,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 3
+            },
+            {
+              "Line": 93,
+              "Offset": 98,
+              "EndOffset": 100,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 2
+            },
+            {
+              "Line": 93,
+              "Offset": 98,
+              "EndOffset": 127,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 1
+            },
+            {
+              "Line": 93,
+              "Offset": 125,
+              "EndOffset": 127,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 1
+            },
+            {
+              "Line": 93,
+              "Offset": 125,
+              "EndOffset": 140,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 1
+            },
+            {
+              "Line": 94,
+              "Offset": 237,
+              "EndOffset": 239,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 3
+            },
+            {
+              "Line": 94,
+              "Offset": 237,
+              "EndOffset": 242,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 0
+            },
+            {
+              "Line": 102,
+              "Offset": 270,
+              "EndOffset": 272,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 3
+            },
+            {
+              "Line": 102,
+              "Offset": 270,
+              "EndOffset": 275,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.String UrbanFix.Infrastructure.Storage.ObjectStorage::NewKey(System.String)": {
+          "Lines": {
+            "115": 5,
+            "116": 5,
+            "117": 5,
+            "118": 5
+          },
+          "Branches": [
+            {
+              "Line": 116,
+              "Offset": 20,
+              "EndOffset": 22,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 116,
+              "Offset": 20,
+              "EndOffset": 33,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 5
+            }
+          ]
+        },
+        "System.ValueTuple`2<UrbanFix.Infrastructure.Storage.GeoPoint,System.Nullable`1<System.DateTimeOffset>> UrbanFix.Infrastructure.Storage.ObjectStorage::ReadExif(SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifProfile)": {
+          "Lines": {
+            "121": 4,
+            "122": 4,
+            "124": 4,
+            "125": 4,
+            "126": 4,
+            "127": 4,
+            "128": 4,
+            "129": 4,
+            "130": 8,
+            "131": 4,
+            "133": 4,
+            "134": 4,
+            "135": 4,
+            "136": 4,
+            "138": 4,
+            "139": 4
+          },
+          "Branches": [
+            {
+              "Line": 122,
+              "Offset": 9,
+              "EndOffset": 11,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 122,
+              "Offset": 9,
+              "EndOffset": 34,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 4
+            },
+            {
+              "Line": 125,
+              "Offset": 49,
+              "EndOffset": 51,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 4
+            },
+            {
+              "Line": 125,
+              "Offset": 64,
+              "EndOffset": 66,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 4
+            },
+            {
+              "Line": 125,
+              "Offset": 79,
+              "EndOffset": 81,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 4
+            },
+            {
+              "Line": 125,
+              "Offset": 49,
+              "EndOffset": 96,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 125,
+              "Offset": 64,
+              "EndOffset": 96,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 0
+            },
+            {
+              "Line": 125,
+              "Offset": 79,
+              "EndOffset": 96,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 0
+            },
+            {
+              "Line": 125,
+              "Offset": 101,
+              "EndOffset": 106,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 4
+            },
+            {
+              "Line": 128,
+              "Offset": 134,
+              "EndOffset": 136,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 4
+            },
+            {
+              "Line": 128,
+              "Offset": 134,
+              "EndOffset": 139,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 0
+            },
+            {
+              "Line": 129,
+              "Offset": 172,
+              "EndOffset": 174,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 4
+            },
+            {
+              "Line": 129,
+              "Offset": 172,
+              "EndOffset": 177,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 0
+            },
+            {
+              "Line": 130,
+              "Offset": 193,
+              "EndOffset": 195,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 4
+            },
+            {
+              "Line": 130,
+              "Offset": 206,
+              "EndOffset": 208,
+              "Path": 0,
+              "Ordinal": 16,
+              "Hits": 4
+            },
+            {
+              "Line": 130,
+              "Offset": 193,
+              "EndOffset": 242,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 0
+            },
+            {
+              "Line": 130,
+              "Offset": 206,
+              "EndOffset": 242,
+              "Path": 1,
+              "Ordinal": 17,
+              "Hits": 0
+            },
+            {
+              "Line": 130,
+              "Offset": 247,
+              "EndOffset": 249,
+              "Path": 0,
+              "Ordinal": 18,
+              "Hits": 4
+            },
+            {
+              "Line": 130,
+              "Offset": 247,
+              "EndOffset": 259,
+              "Path": 1,
+              "Ordinal": 19,
+              "Hits": 0
+            },
+            {
+              "Line": 125,
+              "Offset": 101,
+              "EndOffset": 260,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 0
+            },
+            {
+              "Line": 134,
+              "Offset": 281,
+              "EndOffset": 283,
+              "Path": 0,
+              "Ordinal": 20,
+              "Hits": 4
+            },
+            {
+              "Line": 134,
+              "Offset": 281,
+              "EndOffset": 307,
+              "Path": 1,
+              "Ordinal": 21,
+              "Hits": 0
+            },
+            {
+              "Line": 134,
+              "Offset": 312,
+              "EndOffset": 314,
+              "Path": 0,
+              "Ordinal": 22,
+              "Hits": 4
+            },
+            {
+              "Line": 134,
+              "Offset": 312,
+              "EndOffset": 333,
+              "Path": 1,
+              "Ordinal": 23,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Double UrbanFix.Infrastructure.Storage.ObjectStorage::ToDegrees(SixLabors.ImageSharp.Rational[])": {
+          "Lines": {
+            "141": 8
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Storage.ObjectStorage::.ctor(Amazon.S3.IAmazonS3,UrbanFix.Infrastructure.Storage.StorageOptions,UrbanFix.SharedKernel.ITenantContext)": {
+          "Lines": {
+            "40": 8
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.ObjectStorage/<>c": {
+        "System.Void UrbanFix.Infrastructure.Storage.ObjectStorage/<>c::<PutImageAsync>b__4_0(SixLabors.ImageSharp.Processing.IImageProcessingContext)": {
+          "Lines": {
+            "50": 8
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.ObjectStorage/<OpenReadAsync>d__7": {
+        "System.Void UrbanFix.Infrastructure.Storage.ObjectStorage/<OpenReadAsync>d__7::MoveNext()": {
+          "Lines": {
+            "106": 3,
+            "107": 3,
+            "108": 3,
+            "109": 1,
+            "110": 2,
+            "111": 2,
+            "112": 2
+          },
+          "Branches": [
+            {
+              "Line": 107,
+              "Offset": 43,
+              "EndOffset": 45,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 107,
+              "Offset": 43,
+              "EndOffset": 56,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 3
+            },
+            {
+              "Line": 108,
+              "Offset": 113,
+              "EndOffset": 115,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 1
+            },
+            {
+              "Line": 108,
+              "Offset": 113,
+              "EndOffset": 126,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 2
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.ObjectStorage/<PutAsync>d__5": {
+        "System.Void UrbanFix.Infrastructure.Storage.ObjectStorage/<PutAsync>d__5::MoveNext()": {
+          "Lines": {
+            "72": 1,
+            "73": 1,
+            "74": 1,
+            "75": 1,
+            "76": 1,
+            "77": 1,
+            "78": 1,
+            "79": 1,
+            "80": 1,
+            "81": 1,
+            "82": 1,
+            "83": 1,
+            "84": 1,
+            "85": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Storage.ObjectStorage/<PutImageAsync>d__4": {
+        "System.Void UrbanFix.Infrastructure.Storage.ObjectStorage/<PutImageAsync>d__4::MoveNext()": {
+          "Lines": {
+            "43": 5,
+            "44": 5,
+            "45": 4,
+            "47": 4,
+            "51": 4,
+            "52": 4,
+            "53": 4,
+            "54": 4,
+            "56": 4,
+            "57": 4,
+            "58": 4,
+            "60": 4,
+            "61": 4,
+            "62": 4,
+            "63": 4,
+            "64": 4,
+            "65": 4,
+            "66": 4,
+            "67": 4,
+            "68": 4,
+            "69": 4
+          },
+          "Branches": [
+            {
+              "Line": 43,
+              "Offset": 16,
+              "EndOffset": 27,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 5
+            },
+            {
+              "Line": 43,
+              "Offset": 16,
+              "EndOffset": 159,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 8
+            },
+            {
+              "Line": 44,
+              "Offset": 164,
+              "EndOffset": 168,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 4
+            },
+            {
+              "Line": 45,
+              "Offset": 202,
+              "EndOffset": 204,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 45,
+              "Offset": 202,
+              "EndOffset": 216,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 4
+            },
+            {
+              "Line": 44,
+              "Offset": 164,
+              "EndOffset": 410,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 8
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Persistence\\AppDbContext.cs": {
+      "UrbanFix.Infrastructure.Persistence.AppDbContext": {
+        "Microsoft.EntityFrameworkCore.DbSet`1<UrbanFix.Identity.Organization> UrbanFix.Infrastructure.Persistence.AppDbContext::get_Organizations()": {
+          "Lines": {
+            "9": 111
+          },
+          "Branches": []
+        },
+        "Microsoft.EntityFrameworkCore.DbSet`1<UrbanFix.Identity.User> UrbanFix.Infrastructure.Persistence.AppDbContext::get_Users()": {
+          "Lines": {
+            "10": 679
+          },
+          "Branches": []
+        },
+        "Microsoft.EntityFrameworkCore.DbSet`1<UrbanFix.Identity.Membership> UrbanFix.Infrastructure.Persistence.AppDbContext::get_Memberships()": {
+          "Lines": {
+            "11": 296
+          },
+          "Branches": []
+        },
+        "Microsoft.EntityFrameworkCore.DbSet`1<UrbanFix.Identity.Session> UrbanFix.Infrastructure.Persistence.AppDbContext::get_Sessions()": {
+          "Lines": {
+            "12": 415
+          },
+          "Branches": []
+        },
+        "Microsoft.EntityFrameworkCore.DbSet`1<UrbanFix.Identity.AuditEntry> UrbanFix.Infrastructure.Persistence.AppDbContext::get_AuditLog()": {
+          "Lines": {
+            "13": 42
+          },
+          "Branches": []
+        },
+        "Microsoft.EntityFrameworkCore.DbSet`1<UrbanFix.Infrastructure.Persistence.OutboxMessage> UrbanFix.Infrastructure.Persistence.AppDbContext::get_Outbox()": {
+          "Lines": {
+            "14": 15
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.AppDbContext::OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)": {
+          "Lines": {
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 1,
+            "21": 1,
+            "22": 1,
+            "23": 1,
+            "24": 2,
+            "25": 1,
+            "26": 1,
+            "27": 1,
+            "28": 1,
+            "29": 1,
+            "30": 1,
+            "31": 2,
+            "32": 1,
+            "33": 1,
+            "34": 1,
+            "35": 1,
+            "36": 2,
+            "37": 1
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.AppDbContext::.ctor(Microsoft.EntityFrameworkCore.DbContextOptions`1<UrbanFix.Infrastructure.Persistence.AppDbContext>,UrbanFix.SharedKernel.ITenantContext)": {
+          "Lines": {
+            "7": 382
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.AppDbContext/<ChangeTenantAsync>d__15": {
+        "System.Void UrbanFix.Infrastructure.Persistence.AppDbContext/<ChangeTenantAsync>d__15::MoveNext()": {
+          "Lines": {
+            "44": 389,
+            "45": 389,
+            "46": 389,
+            "47": 389
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.OutboxMessage": {
+        "System.Guid UrbanFix.Infrastructure.Persistence.OutboxMessage::get_Id()": {
+          "Lines": {
+            "52": 37
+          },
+          "Branches": []
+        },
+        "System.Guid UrbanFix.Infrastructure.Persistence.OutboxMessage::get_OrganizationId()": {
+          "Lines": {
+            "53": 20
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Persistence.OutboxMessage::get_Type()": {
+          "Lines": {
+            "54": 51
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Persistence.OutboxMessage::get_Payload()": {
+          "Lines": {
+            "55": 40
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Infrastructure.Persistence.OutboxMessage::get_OccurredAt()": {
+          "Lines": {
+            "56": 6
+          },
+          "Branches": []
+        },
+        "System.Int32 UrbanFix.Infrastructure.Persistence.OutboxMessage::get_Attempts()": {
+          "Lines": {
+            "57": 44
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.Infrastructure.Persistence.OutboxMessage::get_NextAttemptAt()": {
+          "Lines": {
+            "58": 30
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.DateTimeOffset> UrbanFix.Infrastructure.Persistence.OutboxMessage::get_ProcessedAt()": {
+          "Lines": {
+            "59": 3
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.DateTimeOffset> UrbanFix.Infrastructure.Persistence.OutboxMessage::get_DeadLetteredAt()": {
+          "Lines": {
+            "60": 1
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Persistence.OutboxMessage::get_Error()": {
+          "Lines": {
+            "61": 14
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Persistence\\Bootstrapper.cs": {
+      "UrbanFix.Infrastructure.Persistence.Bootstrapper/<EnsurePlatformAdminAsync>d__1": {
+        "System.Void UrbanFix.Infrastructure.Persistence.Bootstrapper/<EnsurePlatformAdminAsync>d__1::MoveNext()": {
+          "Lines": {
+            "12": 1,
+            "13": 1,
+            "14": 1,
+            "16": 1,
+            "17": 1,
+            "18": 1,
+            "20": 1,
+            "21": 1,
+            "22": 1,
+            "24": 1,
+            "25": 1,
+            "26": 1,
+            "27": 1,
+            "28": 1,
+            "29": 1,
+            "30": 1
+          },
+          "Branches": [
+            {
+              "Line": 18,
+              "Offset": 480,
+              "EndOffset": 482,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 18,
+              "Offset": 480,
+              "EndOffset": 501,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.Bootstrapper/<Run>d__2": {
+        "System.Void UrbanFix.Infrastructure.Persistence.Bootstrapper/<Run>d__2::MoveNext()": {
+          "Lines": {
+            "33": 3,
+            "34": 3,
+            "35": 33,
+            "36": 3,
+            "37": 3
+          },
+          "Branches": [
+            {
+              "Line": 35,
+              "Offset": 215,
+              "EndOffset": 102,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 8
+            },
+            {
+              "Line": 35,
+              "Offset": 215,
+              "EndOffset": 217,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 3
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Persistence\\Interceptors.cs": {
+      "UrbanFix.Infrastructure.Persistence.RequestInfo": {
+        "System.String UrbanFix.Infrastructure.Persistence.RequestInfo::get_Ip()": {
+          "Lines": {
+            "13": 526
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Persistence.RequestInfo::get_Device()": {
+          "Lines": {
+            "14": 526
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor": {
+        "System.Void UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor::ConnectionOpened(System.Data.Common.DbConnection,Microsoft.EntityFrameworkCore.Diagnostics.ConnectionEndEventData)": {
+          "Lines": {
+            "26": 0
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor::AddParam(System.Data.Common.DbCommand,System.String,System.String)": {
+          "Lines": {
+            "38": 3274,
+            "39": 3274,
+            "40": 3274,
+            "41": 3274,
+            "42": 3274,
+            "43": 3274
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor::.ctor(UrbanFix.SharedKernel.ITenantContext)": {
+          "Lines": {
+            "18": 382
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor/<Apply>d__5": {
+        "System.Void UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor/<Apply>d__5::MoveNext()": {
+          "Lines": {
+            "29": 1637,
+            "30": 1637,
+            "31": 1637,
+            "32": 1637,
+            "33": 1637,
+            "34": 1637,
+            "35": 1637
+          },
+          "Branches": [
+            {
+              "Line": 32,
+              "Offset": 121,
+              "EndOffset": 123,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 571
+            },
+            {
+              "Line": 32,
+              "Offset": 121,
+              "EndOffset": 127,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1066
+            },
+            {
+              "Line": 32,
+              "Offset": 147,
+              "EndOffset": 149,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 571
+            },
+            {
+              "Line": 32,
+              "Offset": 147,
+              "EndOffset": 155,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1637
+            },
+            {
+              "Line": 33,
+              "Offset": 197,
+              "EndOffset": 199,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 376
+            },
+            {
+              "Line": 33,
+              "Offset": 197,
+              "EndOffset": 203,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 1261
+            },
+            {
+              "Line": 33,
+              "Offset": 223,
+              "EndOffset": 225,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 376
+            },
+            {
+              "Line": 33,
+              "Offset": 223,
+              "EndOffset": 231,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 1637
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor/<ConnectionOpenedAsync>d__3": {
+        "System.Void UrbanFix.Infrastructure.Persistence.TenantConnectionInterceptor/<ConnectionOpenedAsync>d__3::MoveNext()": {
+          "Lines": {
+            "23": 1637
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor": {
+        "System.Threading.Tasks.ValueTask`1<Microsoft.EntityFrameworkCore.Diagnostics.InterceptionResult`1<System.Int32>> UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor::SavingChangesAsync(Microsoft.EntityFrameworkCore.Diagnostics.DbContextEventData,Microsoft.EntityFrameworkCore.Diagnostics.InterceptionResult`1<System.Int32>,System.Threading.CancellationToken)": {
+          "Lines": {
+            "54": 401,
+            "55": 802,
+            "56": 401,
+            "57": 401
+          },
+          "Branches": [
+            {
+              "Line": 55,
+              "Offset": 14,
+              "EndOffset": 16,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 401
+            },
+            {
+              "Line": 55,
+              "Offset": 14,
+              "EndOffset": 24,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        },
+        "Microsoft.EntityFrameworkCore.Diagnostics.InterceptionResult`1<System.Int32> UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor::SavingChanges(Microsoft.EntityFrameworkCore.Diagnostics.DbContextEventData,Microsoft.EntityFrameworkCore.Diagnostics.InterceptionResult`1<System.Int32>)": {
+          "Lines": {
+            "60": 0,
+            "61": 0,
+            "62": 0,
+            "63": 0
+          },
+          "Branches": [
+            {
+              "Line": 61,
+              "Offset": 14,
+              "EndOffset": 16,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 61,
+              "Offset": 14,
+              "EndOffset": 24,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            }
+          ]
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor::Capture(Microsoft.EntityFrameworkCore.DbContext)": {
+          "Lines": {
+            "66": 401,
+            "67": 401,
+            "69": 401,
+            "70": 1533,
+            "71": 165,
+            "72": 265,
+            "74": 65,
+            "75": 65,
+            "76": 62,
+            "77": 0,
+            "78": 3,
+            "79": 65,
+            "80": 65,
+            "81": 65,
+            "82": 65,
+            "83": 65,
+            "84": 65,
+            "85": 65,
+            "86": 65,
+            "87": 65,
+            "88": 65,
+            "89": 65,
+            "90": 65,
+            "91": 65,
+            "92": 65,
+            "93": 401,
+            "95": 1215,
+            "96": 6,
+            "97": 6,
+            "98": 6,
+            "99": 6,
+            "100": 6,
+            "101": 6,
+            "102": 6,
+            "103": 6,
+            "104": 6,
+            "105": 6,
+            "106": 401
+          },
+          "Branches": [
+            {
+              "Line": 70,
+              "Offset": 358,
+              "EndOffset": 42,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 165
+            },
+            {
+              "Line": 72,
+              "Offset": 63,
+              "EndOffset": 67,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 65
+            },
+            {
+              "Line": 72,
+              "Offset": 63,
+              "EndOffset": 72,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 100
+            },
+            {
+              "Line": 72,
+              "Offset": 84,
+              "EndOffset": 91,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 65
+            },
+            {
+              "Line": 74,
+              "Offset": 106,
+              "EndOffset": 110,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 65
+            },
+            {
+              "Line": 74,
+              "Offset": 113,
+              "EndOffset": 117,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 62
+            },
+            {
+              "Line": 74,
+              "Offset": 106,
+              "EndOffset": 126,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 0
+            },
+            {
+              "Line": 74,
+              "Offset": 113,
+              "EndOffset": 135,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 3
+            },
+            {
+              "Line": 80,
+              "Offset": 265,
+              "EndOffset": 267,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 3
+            },
+            {
+              "Line": 80,
+              "Offset": 265,
+              "EndOffset": 276,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 62
+            },
+            {
+              "Line": 80,
+              "Offset": 291,
+              "EndOffset": 293,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 65
+            },
+            {
+              "Line": 80,
+              "Offset": 291,
+              "EndOffset": 302,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 0
+            },
+            {
+              "Line": 72,
+              "Offset": 84,
+              "EndOffset": 352,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 566
+            },
+            {
+              "Line": 70,
+              "Offset": 358,
+              "EndOffset": 363,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 401
+            },
+            {
+              "Line": 95,
+              "Offset": 557,
+              "EndOffset": 408,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 6
+            },
+            {
+              "Line": 95,
+              "Offset": 557,
+              "EndOffset": 562,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 401
+            }
+          ]
+        },
+        "System.String UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor::Snapshot(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry,System.Boolean)": {
+          "Lines": {
+            "109": 68,
+            "110": 68,
+            "111": 544,
+            "112": 612,
+            "113": 68,
+            "114": 68
+          },
+          "Branches": [
+            {
+              "Line": 112,
+              "Offset": 6,
+              "EndOffset": 8,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 520
+            },
+            {
+              "Line": 112,
+              "Offset": 6,
+              "EndOffset": 16,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 24
+            }
+          ]
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor::.ctor(UrbanFix.SharedKernel.ITenantContext,UrbanFix.Infrastructure.Persistence.EventBus,UrbanFix.Infrastructure.Persistence.RequestInfo)": {
+          "Lines": {
+            "49": 382
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.UnitOfWorkInterceptor::.cctor()": {
+          "Lines": {
+            "51": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.EventBus": {
+        "System.Void UrbanFix.Infrastructure.Persistence.EventBus::Publish(UrbanFix.SharedKernel.IDomainEvent)": {
+          "Lines": {
+            "121": 6
+          },
+          "Branches": []
+        },
+        "System.Collections.Generic.IReadOnlyList`1<UrbanFix.SharedKernel.IDomainEvent> UrbanFix.Infrastructure.Persistence.EventBus::Drain()": {
+          "Lines": {
+            "124": 401,
+            "125": 401,
+            "126": 401,
+            "127": 401,
+            "128": 401
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.EventBus::.ctor()": {
+          "Lines": {
+            "119": 382
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Persistence\\Migrator.cs": {
+      "UrbanFix.Infrastructure.Persistence.Migrator/<>c": {
+        "System.Boolean UrbanFix.Infrastructure.Persistence.Migrator/<>c::<MigrateAsync>b__1_0(System.String)": {
+          "Lines": {
+            "28": 3
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Persistence.Migrator/<>c::<MigrateAsync>b__1_1(System.String)": {
+          "Lines": {
+            "29": 6
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.Migrator/<EnsureAppRole>d__2": {
+        "System.Void UrbanFix.Infrastructure.Persistence.Migrator/<EnsureAppRole>d__2::MoveNext()": {
+          "Lines": {
+            "61": 3,
+            "62": 3,
+            "63": 3,
+            "64": 3,
+            "65": 3,
+            "66": 3,
+            "67": 3
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.Migrator/<Exec>d__3": {
+        "System.Void UrbanFix.Infrastructure.Persistence.Migrator/<Exec>d__3::MoveNext()": {
+          "Lines": {
+            "70": 12,
+            "71": 12,
+            "72": 12,
+            "73": 12
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.Migrator/<MigrateAsync>d__1": {
+        "System.Void UrbanFix.Infrastructure.Persistence.Migrator/<MigrateAsync>d__1::MoveNext()": {
+          "Lines": {
+            "15": 3,
+            "16": 3,
+            "17": 3,
+            "20": 3,
+            "22": 3,
+            "23": 3,
+            "24": 3,
+            "26": 3,
+            "27": 3,
+            "31": 15,
+            "32": 3,
+            "33": 3,
+            "34": 3,
+            "35": 3,
+            "36": 3,
+            "37": 3,
+            "38": 5,
+            "39": 1,
+            "41": 1,
+            "42": 1,
+            "44": 1,
+            "45": 2,
+            "46": 1,
+            "47": 1,
+            "48": 1,
+            "49": 1,
+            "50": 1,
+            "51": 1,
+            "52": 1,
+            "53": 3,
+            "55": 3,
+            "56": 3,
+            "57": 3,
+            "58": 3
+          },
+          "Branches": [
+            {
+              "Line": 31,
+              "Offset": 2922,
+              "EndOffset": 873,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 3
+            },
+            {
+              "Line": 38,
+              "Offset": 1143,
+              "EndOffset": 1145,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 2
+            },
+            {
+              "Line": 38,
+              "Offset": 1143,
+              "EndOffset": 1161,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            },
+            {
+              "Line": 31,
+              "Offset": 2922,
+              "EndOffset": 2927,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 3
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Persistence\\OutboxDispatcher.cs": {
+      "UrbanFix.Infrastructure.Persistence.OutboxOptions": {
+        "System.Int32 UrbanFix.Infrastructure.Persistence.OutboxOptions::get_MaxAttempts()": {
+          "Lines": {
+            "12": 13
+          },
+          "Branches": []
+        },
+        "System.Int32 UrbanFix.Infrastructure.Persistence.OutboxOptions::get_BatchSize()": {
+          "Lines": {
+            "13": 15
+          },
+          "Branches": []
+        },
+        "System.TimeSpan UrbanFix.Infrastructure.Persistence.OutboxOptions::get_PollInterval()": {
+          "Lines": {
+            "14": 1
+          },
+          "Branches": []
+        },
+        "System.TimeSpan UrbanFix.Infrastructure.Persistence.OutboxOptions::get_MaxBackoff()": {
+          "Lines": {
+            "15": 11
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.OutboxProcessor": {
+        "System.Void UrbanFix.Infrastructure.Persistence.OutboxProcessor::.ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,UrbanFix.Infrastructure.Persistence.OutboxOptions,Microsoft.Extensions.Logging.ILogger`1<UrbanFix.Infrastructure.Persistence.OutboxProcessor>)": {
+          "Lines": {
+            "23": 1
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Persistence.OutboxProcessor::.cctor()": {
+          "Lines": {
+            "25": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.OutboxProcessor/<Deliver>d__6": {
+        "System.Void UrbanFix.Infrastructure.Persistence.OutboxProcessor/<Deliver>d__6::MoveNext()": {
+          "Lines": {
+            "76": 14,
+            "77": 14,
+            "78": 14,
+            "81": 14,
+            "82": 14,
+            "84": 14,
+            "85": 14,
+            "86": 59,
+            "87": 14,
+            "88": 3
+          },
+          "Branches": [
+            {
+              "Line": 77,
+              "Offset": 47,
+              "EndOffset": 49,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 77,
+              "Offset": 47,
+              "EndOffset": 77,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 14
+            },
+            {
+              "Line": 86,
+              "Offset": 500,
+              "EndOffset": 324,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 14
+            },
+            {
+              "Line": 86,
+              "Offset": 500,
+              "EndOffset": 505,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 3
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.OutboxProcessor/<ProcessBatchAsync>d__5": {
+        "System.Void UrbanFix.Infrastructure.Persistence.OutboxProcessor/<ProcessBatchAsync>d__5::MoveNext()": {
+          "Lines": {
+            "29": 14,
+            "30": 14,
+            "31": 14,
+            "33": 14,
+            "34": 14,
+            "35": 14,
+            "36": 14,
+            "37": 14,
+            "38": 14,
+            "39": 14,
+            "40": 14,
+            "41": 14,
+            "42": 14,
+            "44": 70,
+            "45": 14,
+            "47": 14,
+            "48": 14,
+            "49": 3,
+            "50": 3,
+            "51": 3,
+            "52": 11,
+            "53": 11,
+            "54": 11,
+            "55": 11,
+            "56": 11,
+            "57": 1,
+            "58": 1,
+            "59": 1,
+            "60": 1,
+            "62": 10,
+            "63": 10,
+            "64": 10,
+            "65": 10,
+            "66": 10,
+            "67": 11,
+            "68": 14,
+            "70": 14,
+            "71": 14,
+            "72": 14,
+            "73": 14
+          },
+          "Branches": [
+            {
+              "Line": 44,
+              "Offset": 1186,
+              "EndOffset": 543,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 14
+            },
+            {
+              "Line": 55,
+              "Offset": 790,
+              "EndOffset": 792,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 11
+            },
+            {
+              "Line": 55,
+              "Offset": 790,
+              "EndOffset": 805,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 56,
+              "Offset": 869,
+              "EndOffset": 871,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 1
+            },
+            {
+              "Line": 56,
+              "Offset": 869,
+              "EndOffset": 986,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 10
+            },
+            {
+              "Line": 44,
+              "Offset": 1186,
+              "EndOffset": 1191,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 14
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.OutboxDispatcher": {
+        "System.Void UrbanFix.Infrastructure.Persistence.OutboxDispatcher::.ctor(UrbanFix.Infrastructure.Persistence.OutboxProcessor,UrbanFix.Infrastructure.Persistence.OutboxOptions,Microsoft.Extensions.Logging.ILogger`1<UrbanFix.Infrastructure.Persistence.OutboxDispatcher>)": {
+          "Lines": {
+            "91": 0
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Persistence.OutboxDispatcher/<ExecuteAsync>d__4": {
+        "System.Void UrbanFix.Infrastructure.Persistence.OutboxDispatcher/<ExecuteAsync>d__4::MoveNext()": {
+          "Lines": {
+            "94": 0,
+            "95": 0,
+            "96": 0,
+            "98": 0,
+            "99": 0,
+            "100": 0,
+            "101": 0,
+            "102": 0,
+            "103": 0,
+            "104": 0,
+            "105": 0,
+            "106": 0,
+            "107": 0
+          },
+          "Branches": [
+            {
+              "Line": 95,
+              "Offset": 411,
+              "EndOffset": 31,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 99,
+              "Offset": 169,
+              "EndOffset": 171,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 99,
+              "Offset": 169,
+              "EndOffset": 176,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 95,
+              "Offset": 411,
+              "EndOffset": 416,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Jobs\\Jobs.cs": {
+      "UrbanFix.Infrastructure.Jobs.LoggingJobFailureNotifier": {
+        "System.Void UrbanFix.Infrastructure.Jobs.LoggingJobFailureNotifier::JobFailed(System.String,System.String,System.String)": {
+          "Lines": {
+            "18": 0
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Jobs.LoggingJobFailureNotifier::.ctor(Microsoft.Extensions.Logging.ILogger`1<UrbanFix.Infrastructure.Jobs.LoggingJobFailureNotifier>)": {
+          "Lines": {
+            "15": 0
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Jobs.FailureAlertFilter": {
+        "System.Void UrbanFix.Infrastructure.Jobs.FailureAlertFilter::OnStateApplied(Hangfire.States.ApplyStateContext,Hangfire.Storage.IWriteOnlyTransaction)": {
+          "Lines": {
+            "25": 9,
+            "26": 9,
+            "27": 1,
+            "28": 9
+          },
+          "Branches": [
+            {
+              "Line": 26,
+              "Offset": 19,
+              "EndOffset": 21,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 27,
+              "Offset": 61,
+              "EndOffset": 63,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 27,
+              "Offset": 61,
+              "EndOffset": 67,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            },
+            {
+              "Line": 26,
+              "Offset": 19,
+              "EndOffset": 78,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 8
+            }
+          ]
+        },
+        "System.Void UrbanFix.Infrastructure.Jobs.FailureAlertFilter::OnStateUnapplied(Hangfire.States.ApplyStateContext,Hangfire.Storage.IWriteOnlyTransaction)": {
+          "Lines": {
+            "30": 18
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Jobs.FailureAlertFilter::.ctor(UrbanFix.Infrastructure.Jobs.IJobFailureNotifier)": {
+          "Lines": {
+            "22": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Jobs.JobOptions": {
+        "System.Int32 UrbanFix.Infrastructure.Jobs.JobOptions::get_Attempts()": {
+          "Lines": {
+            "36": 3
+          },
+          "Branches": []
+        },
+        "System.Int32[] UrbanFix.Infrastructure.Jobs.JobOptions::get_DelaysInSeconds()": {
+          "Lines": {
+            "37": 3
+          },
+          "Branches": []
+        },
+        "System.Int32[] UrbanFix.Infrastructure.Jobs.JobOptions::get_EffectiveDelays()": {
+          "Lines": {
+            "39": 1
+          },
+          "Branches": [
+            {
+              "Line": 39,
+              "Offset": 8,
+              "EndOffset": 10,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 39,
+              "Offset": 8,
+              "EndOffset": 16,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 39,
+              "Offset": 14,
+              "EndOffset": 16,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 39,
+              "Offset": 14,
+              "EndOffset": 35,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            }
+          ]
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.Infrastructure\\Auth\\AuthService.cs": {
+      "UrbanFix.Infrastructure.Auth.AuthOptions": {
+        "System.TimeSpan UrbanFix.Infrastructure.Auth.AuthOptions::get_SessionLifetime()": {
+          "Lines": {
+            "11": 103
+          },
+          "Branches": []
+        },
+        "System.String UrbanFix.Infrastructure.Auth.AuthOptions::get_Issuer()": {
+          "Lines": {
+            "12": 63
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.LoginResult": {
+        "UrbanFix.Infrastructure.Auth.LoginOutcome UrbanFix.Infrastructure.Auth.LoginResult::get_Outcome()": {
+          "Lines": {
+            "17": 508
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.SessionPrincipal": {
+        "System.Guid UrbanFix.Infrastructure.Auth.SessionPrincipal::get_SessionId()": {
+          "Lines": {
+            "19": 1435
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService": {
+        "Microsoft.AspNetCore.DataProtection.IDataProtector UrbanFix.Infrastructure.Auth.AuthService::get_Protector()": {
+          "Lines": {
+            "24": 163
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService::.ctor(UrbanFix.Infrastructure.Persistence.AppDbContext,UrbanFix.Identity.PasswordService,Microsoft.AspNetCore.DataProtection.IDataProtectionProvider,UrbanFix.Infrastructure.Auth.AuthOptions,UrbanFix.Infrastructure.Persistence.RequestInfo)": {
+          "Lines": {
+            "21": 361,
+            "22": 361
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<>c": {
+        "System.Nullable`1<System.Guid> UrbanFix.Infrastructure.Auth.AuthService/<>c::<LoginAsync>b__8_1(UrbanFix.Identity.Membership)": {
+          "Lines": {
+            "53": 139
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<>c__DisplayClass8_0": {
+        "System.Boolean UrbanFix.Infrastructure.Auth.AuthService/<>c__DisplayClass8_0::<LoginAsync>b__0(UrbanFix.Identity.Membership)": {
+          "Lines": {
+            "52": 61
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<AuthenticateAsync>d__10": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<AuthenticateAsync>d__10::MoveNext()": {
+          "Lines": {
+            "79": 252,
+            "80": 252,
+            "81": 252,
+            "82": 255,
+            "84": 249,
+            "85": 249,
+            "86": 249,
+            "87": 252
+          },
+          "Branches": [
+            {
+              "Line": 82,
+              "Offset": 263,
+              "EndOffset": 265,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 251
+            },
+            {
+              "Line": 82,
+              "Offset": 290,
+              "EndOffset": 292,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 250
+            },
+            {
+              "Line": 82,
+              "Offset": 263,
+              "EndOffset": 320,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 2
+            },
+            {
+              "Line": 82,
+              "Offset": 290,
+              "EndOffset": 320,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 2
+            },
+            {
+              "Line": 82,
+              "Offset": 325,
+              "EndOffset": 327,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 3
+            },
+            {
+              "Line": 82,
+              "Offset": 325,
+              "EndOffset": 334,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 249
+            },
+            {
+              "Line": 86,
+              "Offset": 798,
+              "EndOffset": 800,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 0
+            },
+            {
+              "Line": 86,
+              "Offset": 798,
+              "EndOffset": 803,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 249
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<BeginTotpEnrollmentAsync>d__14": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<BeginTotpEnrollmentAsync>d__14::MoveNext()": {
+          "Lines": {
+            "112": 61,
+            "113": 61,
+            "114": 61,
+            "115": 61,
+            "116": 61,
+            "117": 61,
+            "118": 61,
+            "119": 61
+          },
+          "Branches": [
+            {
+              "Line": 114,
+              "Offset": 319,
+              "EndOffset": 321,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 61
+            },
+            {
+              "Line": 114,
+              "Offset": 319,
+              "EndOffset": 334,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 0
+            },
+            {
+              "Line": 114,
+              "Offset": 339,
+              "EndOffset": 341,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 0
+            },
+            {
+              "Line": 114,
+              "Offset": 339,
+              "EndOffset": 354,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 61
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<ConfirmTotpEnrollmentAsync>d__15": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<ConfirmTotpEnrollmentAsync>d__15::MoveNext()": {
+          "Lines": {
+            "122": 62,
+            "123": 62,
+            "124": 62,
+            "125": 63,
+            "127": 61,
+            "128": 61,
+            "129": 61,
+            "130": 61,
+            "131": 61,
+            "132": 62
+          },
+          "Branches": [
+            {
+              "Line": 124,
+              "Offset": 354,
+              "EndOffset": 356,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 0
+            },
+            {
+              "Line": 124,
+              "Offset": 354,
+              "EndOffset": 360,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 62
+            },
+            {
+              "Line": 124,
+              "Offset": 365,
+              "EndOffset": 367,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 62
+            },
+            {
+              "Line": 124,
+              "Offset": 365,
+              "EndOffset": 380,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 124,
+              "Offset": 385,
+              "EndOffset": 387,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 0
+            },
+            {
+              "Line": 124,
+              "Offset": 385,
+              "EndOffset": 394,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 62
+            },
+            {
+              "Line": 125,
+              "Offset": 449,
+              "EndOffset": 451,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 1
+            },
+            {
+              "Line": 125,
+              "Offset": 449,
+              "EndOffset": 458,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 61
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<CreateSessionAsync>d__9": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<CreateSessionAsync>d__9::MoveNext()": {
+          "Lines": {
+            "61": 100,
+            "62": 100,
+            "63": 100,
+            "64": 100,
+            "65": 100,
+            "66": 100,
+            "67": 100,
+            "68": 100,
+            "69": 100,
+            "70": 100,
+            "71": 100,
+            "72": 100,
+            "73": 100,
+            "74": 100,
+            "75": 100
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<LoginAsync>d__8": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<LoginAsync>d__8::MoveNext()": {
+          "Lines": {
+            "31": 104,
+            "32": 104,
+            "35": 104,
+            "36": 1,
+            "37": 1,
+            "38": 1,
+            "40": 104,
+            "42": 102,
+            "43": 41,
+            "44": 42,
+            "45": 40,
+            "46": 1,
+            "47": 39,
+            "49": 100,
+            "50": 100,
+            "51": 100,
+            "54": 100,
+            "56": 100,
+            "57": 100,
+            "58": 104
+          },
+          "Branches": [
+            {
+              "Line": 35,
+              "Offset": 262,
+              "EndOffset": 264,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 35,
+              "Offset": 262,
+              "EndOffset": 311,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 103
+            },
+            {
+              "Line": 40,
+              "Offset": 327,
+              "EndOffset": 329,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 103
+            },
+            {
+              "Line": 40,
+              "Offset": 327,
+              "EndOffset": 367,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 0
+            },
+            {
+              "Line": 40,
+              "Offset": 372,
+              "EndOffset": 374,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 1
+            },
+            {
+              "Line": 40,
+              "Offset": 372,
+              "EndOffset": 397,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 102
+            },
+            {
+              "Line": 42,
+              "Offset": 417,
+              "EndOffset": 419,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 41
+            },
+            {
+              "Line": 44,
+              "Offset": 435,
+              "EndOffset": 437,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 1
+            },
+            {
+              "Line": 44,
+              "Offset": 435,
+              "EndOffset": 460,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 40
+            },
+            {
+              "Line": 45,
+              "Offset": 520,
+              "EndOffset": 522,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 1
+            },
+            {
+              "Line": 45,
+              "Offset": 520,
+              "EndOffset": 545,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 39
+            },
+            {
+              "Line": 42,
+              "Offset": 417,
+              "EndOffset": 546,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 100
+            },
+            {
+              "Line": 51,
+              "Offset": 1017,
+              "EndOffset": 1019,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 61
+            },
+            {
+              "Line": 51,
+              "Offset": 1017,
+              "EndOffset": 1043,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 39
+            },
+            {
+              "Line": 51,
+              "Offset": 1120,
+              "EndOffset": 1122,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 0
+            },
+            {
+              "Line": 51,
+              "Offset": 1120,
+              "EndOffset": 1134,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 61
+            },
+            {
+              "Line": 54,
+              "Offset": 1166,
+              "EndOffset": 1168,
+              "Path": 0,
+              "Ordinal": 16,
+              "Hits": 61
+            },
+            {
+              "Line": 54,
+              "Offset": 1166,
+              "EndOffset": 1184,
+              "Path": 1,
+              "Ordinal": 17,
+              "Hits": 39
+            },
+            {
+              "Line": 54,
+              "Offset": 1189,
+              "EndOffset": 1191,
+              "Path": 0,
+              "Ordinal": 18,
+              "Hits": 0
+            },
+            {
+              "Line": 54,
+              "Offset": 1189,
+              "EndOffset": 1214,
+              "Path": 1,
+              "Ordinal": 19,
+              "Hits": 100
+            },
+            {
+              "Line": 57,
+              "Offset": 1402,
+              "EndOffset": 1404,
+              "Path": 0,
+              "Ordinal": 20,
+              "Hits": 61
+            },
+            {
+              "Line": 57,
+              "Offset": 1402,
+              "EndOffset": 1407,
+              "Path": 1,
+              "Ordinal": 21,
+              "Hits": 39
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<RevokeAllForUserAsync>d__12": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<RevokeAllForUserAsync>d__12::MoveNext()": {
+          "Lines": {
+            "96": 0,
+            "97": 0,
+            "98": 0,
+            "99": 0
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<RevokeAsync>d__11": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<RevokeAsync>d__11::MoveNext()": {
+          "Lines": {
+            "90": 1,
+            "91": 1,
+            "92": 1,
+            "93": 1
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<SwitchOrganizationAsync>d__13": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<SwitchOrganizationAsync>d__13::MoveNext()": {
+          "Lines": {
+            "103": 2,
+            "104": 2,
+            "105": 3,
+            "106": 1,
+            "107": 1,
+            "108": 1,
+            "109": 2
+          },
+          "Branches": [
+            {
+              "Line": 105,
+              "Offset": 465,
+              "EndOffset": 467,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 105,
+              "Offset": 465,
+              "EndOffset": 474,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            }
+          ]
+        }
+      },
+      "UrbanFix.Infrastructure.Auth.AuthService/<UserEmailAsync>d__16": {
+        "System.Void UrbanFix.Infrastructure.Auth.AuthService/<UserEmailAsync>d__16::MoveNext()": {
+          "Lines": {
+            "135": 61
+          },
+          "Branches": []
+        }
+      }
+    }
+  },
+  "UrbanFix.SharedKernel.dll": {
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.SharedKernel\\Events.cs": {
+      "UrbanFix.SharedKernel.DomainEvent": {
+        "System.Guid UrbanFix.SharedKernel.DomainEvent::get_OrganizationId()": {
+          "Lines": {
+            "10": 41
+          },
+          "Branches": []
+        },
+        "System.Guid UrbanFix.SharedKernel.DomainEvent::get_EventId()": {
+          "Lines": {
+            "12": 55
+          },
+          "Branches": []
+        },
+        "System.DateTimeOffset UrbanFix.SharedKernel.DomainEvent::get_OccurredAt()": {
+          "Lines": {
+            "13": 49
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.SharedKernel\\Security.cs": {
+      "UrbanFix.SharedKernel.Permissions": {
+        "System.Collections.Generic.IReadOnlyList`1<System.String> UrbanFix.SharedKernel.Permissions::get_All()": {
+          "Lines": {
+            "38": 4
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.SharedKernel.Permissions::.cctor()": {
+          "Lines": {
+            "39": 37
+          },
+          "Branches": []
+        }
+      },
+      "UrbanFix.SharedKernel.RolePermissions": {
+        "System.Collections.Generic.IReadOnlySet`1<System.String> UrbanFix.SharedKernel.RolePermissions::For(UrbanFix.SharedKernel.Role)": {
+          "Lines": {
+            "70": 9
+          },
+          "Branches": []
+        },
+        "System.Boolean UrbanFix.SharedKernel.RolePermissions::Allows(UrbanFix.SharedKernel.Role,System.String)": {
+          "Lines": {
+            "72": 148
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.SharedKernel.RolePermissions::.cctor()": {
+          "Lines": {
+            "45": 1,
+            "46": 1,
+            "47": 1,
+            "48": 1,
+            "49": 1,
+            "50": 1,
+            "51": 1,
+            "52": 1,
+            "53": 1,
+            "54": 1,
+            "55": 1,
+            "56": 1,
+            "57": 1,
+            "58": 1,
+            "59": 1,
+            "60": 1,
+            "61": 1,
+            "62": 1,
+            "63": 1,
+            "64": 1,
+            "65": 1,
+            "66": 1,
+            "67": 1,
+            "68": 1
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\Projects\\AIUrbanComplaintManagement\\core\\src\\UrbanFix.SharedKernel\\Tenancy.cs": {
+      "UrbanFix.SharedKernel.TenantContext": {
+        "System.Nullable`1<System.Guid> UrbanFix.SharedKernel.TenantContext::get_OrganizationId()": {
+          "Lines": {
+            "12": 2209
+          },
+          "Branches": []
+        },
+        "System.Nullable`1<System.Guid> UrbanFix.SharedKernel.TenantContext::get_UserId()": {
+          "Lines": {
+            "13": 2226
+          },
+          "Branches": []
+        },
+        "System.Void UrbanFix.SharedKernel.TenantContext::Set(System.Nullable`1<System.Guid>,System.Nullable`1<System.Guid>)": {
+          "Lines": {
+            "16": 413,
+            "17": 413,
+            "18": 413,
+            "19": 413
+          },
+          "Branches": []
+        }
+      }
+    }
+  }
+}

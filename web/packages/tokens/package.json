@@ -1,0 +1,13 @@
+{
+  "name": "@urbanfix/tokens",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "tokens.ts",
+  "types": "tokens.ts",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test",
+    "lint": "node --check build.mjs"
+  }
+}

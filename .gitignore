@@ -10,3 +10,4 @@ __pycache__/
 *.user
 .vs/
 *.egg-info/
+.keys/
