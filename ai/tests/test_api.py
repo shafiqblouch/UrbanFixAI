@@ -116,3 +116,39 @@ def test_provider_failure_maps_to_502(auth):
 
 def test_provider_status_shows_pinned_models(client, auth):
     assert client.get("/v1/providers", headers=auth).json()["llm"] == "fake:fake-llm-1"
+
+def test_provider_failure_switches_once_to_the_fallback_model(auth):
+    from dataclasses import replace
+
+    from app.providers import Providers
+    from app.providers.base import LlmResult, ProviderError
+
+    seen = []
+
+    class Flaky:
+        async def complete(self, *, model, system, user, json_mode):
+            seen.append(model)
+            if model == "primary":
+                raise ProviderError("down")
+            return LlmResult(reply(), model)
+
+    s = replace(Settings(service_token=TOKEN), llm_model="primary", llm_fallback_model="backup")
+    c = TestClient(create_app(s, Providers(llm=Flaky(), vision=Flaky(), speech=Flaky(), embedding=Flaky())))
+    r = c.post("/v1/complaints/understand", json=BODY, headers=auth)
+    assert r.status_code == 200 and r.json()["model"] == "backup"
+    assert seen == ["primary", "backup"]
+
+
+def test_both_models_failing_is_a_502(auth):
+    from dataclasses import replace
+
+    from app.providers import Providers
+    from app.providers.base import ProviderError
+
+    class Down:
+        async def complete(self, **_):
+            raise ProviderError("down")
+
+    s = replace(Settings(service_token=TOKEN), llm_model="primary", llm_fallback_model="backup")
+    c = TestClient(create_app(s, Providers(llm=Down(), vision=Down(), speech=Down(), embedding=Down())))
+    assert c.post("/v1/complaints/understand", json=BODY, headers=auth).status_code == 502

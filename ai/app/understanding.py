@@ -44,13 +44,18 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
     feedback = ""
 
     last_error = "no attempt made"
+    model = settings.llm_model
     for _ in range(settings.max_output_retries + 1):
-        result = await providers.llm.complete(
-            model=settings.llm_model,
-            system=system,
-            user=ScrubbedText(user + feedback),
-            json_mode=True,
-        )
+        try:
+            result = await providers.llm.complete(
+                model=model, system=system, user=ScrubbedText(user + feedback), json_mode=True
+            )
+        except ProviderError:
+            # One switch to the fallback model (a different vendor); if that also fails the error propagates.
+            if not settings.llm_fallback_model or model == settings.llm_fallback_model:
+                raise
+            model = settings.llm_fallback_model
+            continue
         try:
             output = ModelOutput.model_validate(_extract_json(result.text))
             if output.category not in allowed:

@@ -124,3 +124,12 @@ def test_prompts_are_versioned_files_and_path_traversal_is_refused():
         load_prompt("complaint_understanding", "../../config")
     with pytest.raises(FileNotFoundError):
         load_prompt("complaint_understanding", "v99")
+
+def test_recommended_model_is_default_when_a_key_is_present():
+    s = Settings.from_env({"OPENROUTER_API_KEY": "k"})
+    assert (s.llm_provider, s.llm_model) == ("openrouter", "anthropic/claude-haiku-5.5")
+    assert s.llm_fallback_model == "deepseek/deepseek-v4.1-flash"
+    # environment still overrides the recommendation
+    assert Settings.from_env({"OPENROUTER_API_KEY": "k", "AI_LLM_MODEL": "x/y"}).llm_model == "x/y"
+    # no key: stays on the hermetic fake provider
+    assert Settings.from_env({}).llm_provider == "fake"

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+
+# Chosen in AI-01 (docs/AI-01-model-selection.md). Provisional until re-run on the real golden set (QA-03).
+RECOMMENDED_LLM_PROVIDER = "openrouter"
+RECOMMENDED_LLM_MODEL = "anthropic/claude-haiku-5.5"
+RECOMMENDED_FALLBACK_MODEL = "deepseek/deepseek-v4.1-flash"
 
 
 @dataclass(frozen=True)
@@ -27,6 +32,9 @@ class Settings:
     # Pinned prompt versions (files under app/prompts/<name>/<version>.txt).
     prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v1"})
 
+    # Used once if the primary model's provider call fails (AI-01 picked a second vendor on purpose).
+    llm_fallback_model: str = ""
+
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     request_timeout_seconds: float = 30.0
@@ -36,7 +44,16 @@ class Settings:
     def from_env(env: dict[str, str] | None = None) -> Settings:
         e = os.environ if env is None else env
         d = Settings()
+        # With an OpenRouter key present, the AI-01 recommendation is the default; env vars still override.
+        live = bool(e.get("OPENROUTER_API_KEY"))
+        d = replace(
+            d,
+            llm_provider=RECOMMENDED_LLM_PROVIDER if live else d.llm_provider,
+            llm_model=RECOMMENDED_LLM_MODEL if live else d.llm_model,
+            llm_fallback_model=RECOMMENDED_FALLBACK_MODEL if live else d.llm_fallback_model,
+        )
         return Settings(
+            llm_fallback_model=e.get("AI_LLM_FALLBACK_MODEL", d.llm_fallback_model),
             service_token=e.get("AI_SERVICE_TOKEN", d.service_token),
             service_token_previous=e.get("AI_SERVICE_TOKEN_PREVIOUS", d.service_token_previous),
             llm_provider=e.get("AI_LLM_PROVIDER", d.llm_provider),

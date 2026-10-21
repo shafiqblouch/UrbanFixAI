@@ -1,4 +1,4 @@
-﻿# UrbanFix
+# UrbanFix
 
 | Folder | Contents |
 | --- | --- |
@@ -26,3 +26,5 @@ Tests need Docker (they start throwaway Postgres and S3 containers).
 Changing the API: `$env:UPDATE_CONTRACT=1; dotnet test core --filter OperationsTests`, then `pnpm --filter @urbanfix/api-client generate`.
 
 Dev credentials in `infra/docker-compose.yml` and `core/src/UrbanFix.Api/appsettings.json` are local-only; CORE refuses to start outside Development with the default database role password.
+
+AI service: copy `ai/.env.example` to `ai/.env` and set `OPENROUTER_API_KEY` plus `AI_SERVICE_TOKEN`; with a key present it uses Claude Haiku 5.5 (fallback DeepSeek v4.1 Flash), see `docs/AI-01-model-selection.md`. Run: `cd ai; python -m uvicorn app.main:app --env-file .env`.
