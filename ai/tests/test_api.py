@@ -1,4 +1,4 @@
-import json
+﻿import json
 
 from fastapi.testclient import TestClient
 
@@ -44,7 +44,7 @@ def test_understand_returns_typed_response(client, auth, fake):
     body = r.json()
     assert body["category"] == "water"
     assert body["needs_more_info"] is False
-    assert body["prompt_version"] == "v1"
+    assert body["prompt_version"] == "v3"
     assert body["model"] == "fake-llm-1"
 
 
@@ -70,7 +70,7 @@ def test_pii_never_reaches_the_provider(client, auth, fake):
 def test_invalid_output_is_rejected_and_retried(client, auth, fake):
     fake.llm_replies += ["not json at all", reply(category="plumbing"), reply(confidence=7), reply()]
     r = client.post("/v1/complaints/understand", json=BODY, headers=auth)
-    # default max_output_retries = 2 → 3 attempts, all invalid
+    # default max_output_retries = 2 â†’ 3 attempts, all invalid
     assert r.status_code == 502
     assert r.json()["error"] == "invalid_model_output"
     assert len(fake.llm_replies) == 1
@@ -152,3 +152,22 @@ def test_both_models_failing_is_a_502(auth):
     s = replace(Settings(service_token=TOKEN), llm_model="primary", llm_fallback_model="backup")
     c = TestClient(create_app(s, Providers(llm=Down(), vision=Down(), speech=Down(), embedding=Down())))
     assert c.post("/v1/complaints/understand", json=BODY, headers=auth).status_code == 502
+
+
+
+
+def test_landmarks_reach_the_prompt_as_data_and_old_prompt_versions_ignore_them(client, auth, fake):
+    fake.llm_replies.append(reply())
+    r = client.post("/v1/complaints/understand", json={**BODY, "landmarks": ["Madni Masjid", "Green Gate"]}, headers=auth)
+    assert r.status_code == 200
+    system = fake.sent_text[0]
+    assert "Madni Masjid" in system and "Green Gate" in system
+
+    fake.llm_replies.append(reply())
+    client.post("/v1/complaints/understand", json=BODY, headers=auth)
+    assert "(none configured)" in fake.sent_text[2]
+
+
+def test_landmark_limits(client, auth):
+    too_many = [f"L{i}" for i in range(101)]
+    assert client.post("/v1/complaints/understand", json={**BODY, "landmarks": too_many}, headers=auth).status_code == 422

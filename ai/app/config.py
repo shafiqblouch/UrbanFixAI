@@ -7,6 +7,8 @@ from dataclasses import dataclass, field, replace
 RECOMMENDED_LLM_PROVIDER = "openrouter"
 RECOMMENDED_LLM_MODEL = "anthropic/claude-haiku-5.5"
 RECOMMENDED_FALLBACK_MODEL = "deepseek/deepseek-v4.1-flash"
+# Vision is NOT yet compared (AI-01 covered text only): same family as the text model until the photo test exists.
+RECOMMENDED_VISION_MODEL = "anthropic/claude-haiku-5.5"
 
 
 @dataclass(frozen=True)
@@ -30,7 +32,7 @@ class Settings:
     embedding_model: str = "fake-embed-1"
 
     # Pinned prompt versions (files under app/prompts/<name>/<version>.txt).
-    prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v1"})
+    prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v3", "photo_interpretation": "v1"})
 
     # Used once if the primary model's provider call fails (AI-01 picked a second vendor on purpose).
     llm_fallback_model: str = ""
@@ -51,6 +53,8 @@ class Settings:
             llm_provider=RECOMMENDED_LLM_PROVIDER if live else d.llm_provider,
             llm_model=RECOMMENDED_LLM_MODEL if live else d.llm_model,
             llm_fallback_model=RECOMMENDED_FALLBACK_MODEL if live else d.llm_fallback_model,
+            vision_provider=RECOMMENDED_LLM_PROVIDER if live else d.vision_provider,
+            vision_model=RECOMMENDED_VISION_MODEL if live else d.vision_model,
         )
         return Settings(
             llm_fallback_model=e.get("AI_LLM_FALLBACK_MODEL", d.llm_fallback_model),

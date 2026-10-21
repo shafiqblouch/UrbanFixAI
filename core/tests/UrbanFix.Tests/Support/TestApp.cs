@@ -1,10 +1,13 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Testcontainers.PostgreSql;
+using UrbanFix.Infrastructure.Complaints;
 using UrbanFix.Api.Endpoints;
 using UrbanFix.Identity;
 using UrbanFix.Infrastructure.Jobs;
@@ -28,6 +31,11 @@ public static class TestSecrets
 public sealed class TestApp : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _pg = new PostgreSqlBuilder().WithImage("postgres:16-alpine").Build();
+    private readonly IContainer _minio = new ContainerBuilder()
+        .WithImage("bitnamilegacy/minio:latest").WithPortBinding(9000, true)
+        .WithEnvironment("MINIO_ROOT_USER", "testkey").WithEnvironment("MINIO_ROOT_PASSWORD", "testsecret-123").WithEnvironment("MINIO_DEFAULT_BUCKETS", "test-media")
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(9000).ForPath("/minio/health/live"))).Build();
+    private string _minioUrl = "";
     private readonly string _keyDir = Path.Combine(Path.GetTempPath(), "urbanfix-test-keys-" + Guid.NewGuid().ToString("N"));
 
     public string OwnerConnectionString { get; private set; } = "";
@@ -36,7 +44,9 @@ public sealed class TestApp : WebApplicationFactory<Program>, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _pg.StartAsync();
+        await Task.WhenAll(_pg.StartAsync(), _minio.StartAsync());
+        _minioUrl = $"http://{_minio.Hostname}:{_minio.GetMappedPublicPort(9000)}";
+        await WaitForBucketAsync();
         var b = new NpgsqlConnectionStringBuilder(_pg.GetConnectionString());
         OwnerConnectionString = b.ConnectionString;
         b.Username = Migrator.AppRole;
@@ -57,6 +67,7 @@ public sealed class TestApp : WebApplicationFactory<Program>, IAsyncLifetime
     {
         await base.DisposeAsync();
         await _pg.DisposeAsync();
+        await _minio.DisposeAsync();
         try { Directory.Delete(_keyDir, true); } catch (IOException) { }
     }
 
@@ -69,6 +80,10 @@ public sealed class TestApp : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Database:MigrateOnStartup", "false");
         builder.UseSetting("DataProtection:KeyPath", _keyDir);
         builder.UseSetting("Background:Disabled", "true");
+        builder.UseSetting("Storage:ServiceUrl", _minioUrl);
+        builder.UseSetting("Storage:AccessKey", "testkey");
+        builder.UseSetting("Storage:SecretKey", "testsecret-123");
+        builder.UseSetting("Storage:Bucket", "test-media");
         builder.UseSetting("Jobs:Attempts", "2");
         builder.UseSetting("Jobs:DelaysInSeconds:0", "1");
         builder.UseSetting("Jobs:DelaysInSeconds:1", "1");
@@ -79,7 +94,20 @@ public sealed class TestApp : WebApplicationFactory<Program>, IAsyncLifetime
     {
         services.AddSingleton<EventCollector>();
         services.AddSingleton<IJobFailureNotifier, RecordingNotifier>();
+        services.AddSingleton<FakeAiClient>();
+        services.AddSingleton<IAiClient>(sp => sp.GetRequiredService<FakeAiClient>());
         services.AddScoped<IEventHandler<TestHappened>, RecordingHandler>();
+    }
+
+    private async Task WaitForBucketAsync()
+    {
+        var s3 = new Amazon.S3.AmazonS3Client(new Amazon.Runtime.BasicAWSCredentials("testkey", "testsecret-123"),
+            new Amazon.S3.AmazonS3Config { ServiceURL = _minioUrl, ForcePathStyle = true, AuthenticationRegion = "us-east-1" });
+        for (var i = 0; i < 40; i++)
+        {
+            try { await s3.ListObjectsV2Async(new Amazon.S3.Model.ListObjectsV2Request { BucketName = "test-media" }); return; }
+            catch (Amazon.S3.AmazonS3Exception) { await Task.Delay(500); }
+        }
     }
 
     // Direct SQL as the application role, with a tenant context, for isolation tests -------------------------
@@ -182,6 +210,20 @@ public sealed class RecordingHandler(EventCollector collector, ITenantContext te
             collector.Handled.Add((e.OrganizationId, e.Note));
         }
         return Task.CompletedTask;
+    }
+}
+
+/// <summary>Scriptable stand-in for the AI service.</summary>
+public sealed class FakeAiClient : IAiClient
+{
+    public bool Down { get; set; }
+    public AiUnderstanding Reply { get; set; } = new("water", "No water supply in the street.", "Street 4", "en", 0.9f, false, "fake-model", "v1");
+    public List<(string Text, IReadOnlyList<AiCategory> Categories, IReadOnlyList<string> Names, IReadOnlyList<string> Landmarks)> Calls { get; } = [];
+
+    public Task<AiUnderstanding> UnderstandAsync(string text, IReadOnlyList<AiCategory> categories, IReadOnlyList<string> knownNames, IReadOnlyList<string> landmarks, CancellationToken ct)
+    {
+        lock (Calls) Calls.Add((text, categories, knownNames, landmarks));
+        return Down ? throw new HttpRequestException("AI service unreachable") : Task.FromResult(Reply);
     }
 }
 

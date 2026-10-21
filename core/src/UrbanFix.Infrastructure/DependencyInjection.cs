@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime;
+using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UrbanFix.Complaints;
 using UrbanFix.Identity;
+using UrbanFix.Infrastructure.Complaints;
 using UrbanFix.Infrastructure.Auth;
 using UrbanFix.Infrastructure.Jobs;
 using UrbanFix.Infrastructure.Persistence;
@@ -49,6 +51,7 @@ public static class DependencyInjection
 
         // Background jobs ------------------------------------------------------------------------------
         var jobs = config.GetSection("Jobs").Get<JobOptions>() ?? new JobOptions();
+        services.AddSingleton(jobs);
         services.AddSingleton<IJobFailureNotifier, LoggingJobFailureNotifier>();
         services.AddHangfire((sp, c) => c
             .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(config.GetConnectionString("Owner") ?? config.GetConnectionString("App")!))
@@ -63,6 +66,20 @@ public static class DependencyInjection
             new BasicAWSCredentials(storage.AccessKey, storage.SecretKey),
             new AmazonS3Config { ServiceURL = storage.ServiceUrl, ForcePathStyle = true, AuthenticationRegion = "us-east-1" }));
         services.AddScoped<IObjectStorage, ObjectStorage>();
+
+        // Complaints: numbering, media, AI enrichment ---------------------------------------------------
+        var ai = config.GetSection("Ai").Get<AiOptions>() ?? new AiOptions();
+        services.AddSingleton(ai);
+        services.AddHttpClient<IAiClient, HttpAiClient>(http =>
+        {
+            http.BaseAddress = new Uri(ai.BaseUrl);
+            http.Timeout = TimeSpan.FromSeconds(40);
+            if (!string.IsNullOrEmpty(ai.ServiceToken)) http.DefaultRequestHeaders.Authorization = new("Bearer", ai.ServiceToken);
+        });
+        services.AddScoped<ComplaintEnrichmentJob>();
+        services.AddScoped<IEventHandler<ComplaintCreated>, EnqueueEnrichmentOnCreate>();
+        services.AddScoped<NumberGenerator>();
+        services.AddScoped<IMediaProcessor, MediaProcessor>();
 
         return services;
     }

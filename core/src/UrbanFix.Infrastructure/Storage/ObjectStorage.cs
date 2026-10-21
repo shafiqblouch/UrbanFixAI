@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using Amazon.S3.Model;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -35,6 +35,11 @@ public interface IObjectStorage
     string CreateDownloadUrl(string key, TimeSpan? lifetime = null);
 
     Task<Stream> OpenReadAsync(string key, CancellationToken ct);
+
+    /// <summary>Stores a temporary object (e.g. an upload chunk) under the organization's tmp prefix.</summary>
+    Task<string> PutTempAsync(string name, Stream content, CancellationToken ct);
+
+    Task DeleteAsync(string key, CancellationToken ct);
 }
 
 public sealed class ObjectStorage(IAmazonS3 s3, StorageOptions options, ITenantContext tenant) : IObjectStorage
@@ -109,6 +114,25 @@ public sealed class ObjectStorage(IAmazonS3 s3, StorageOptions options, ITenantC
             throw new UnauthorizedAccessException("Object belongs to another organization");
         var response = await s3.GetObjectAsync(options.Bucket, key, ct);
         return response.ResponseStream;
+    }
+
+    public async Task<string> PutTempAsync(string name, Stream content, CancellationToken ct)
+    {
+        var org = tenant.OrganizationId ?? throw new InvalidOperationException("No organization context");
+        var key = $"{org:N}/tmp/{name}";
+        using var buffer = new MemoryStream();
+        await content.CopyToAsync(buffer, ct);
+        buffer.Position = 0;
+        await s3.PutObjectAsync(new PutObjectRequest { BucketName = options.Bucket, Key = key, InputStream = buffer, ContentType = "application/octet-stream" }, ct);
+        return key;
+    }
+
+    public async Task DeleteAsync(string key, CancellationToken ct)
+    {
+        var org = tenant.OrganizationId ?? throw new InvalidOperationException("No organization context");
+        if (!key.StartsWith(org.ToString("N") + "/", StringComparison.Ordinal))
+            throw new UnauthorizedAccessException("Object belongs to another organization");
+        await s3.DeleteObjectAsync(options.Bucket, key, ct);
     }
 
     private string NewKey(string extension)

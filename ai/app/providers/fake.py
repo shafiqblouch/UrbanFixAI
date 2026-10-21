@@ -15,6 +15,8 @@ class FakeProvider:
     def __init__(self) -> None:
         self.sent_text: list[str] = []
         self.llm_replies: list[str] = []  # queued raw replies; used before the default
+        self.vision_replies: list[str] = []
+        self.images_seen: list[bytes] = []
 
     async def complete(self, *, model: str, system: ScrubbedText, user: ScrubbedText, json_mode: bool) -> LlmResult:
         self.sent_text += [system, user]
@@ -31,6 +33,9 @@ class FakeProvider:
 
     async def describe(self, *, model: str, prompt: ScrubbedText, image: bytes, mime_type: str) -> VisionResult:
         self.sent_text.append(prompt)
+        self.images_seen.append(image)
+        if self.vision_replies:
+            return VisionResult(self.vision_replies.pop(0), model)
         return VisionResult("possible visible issue", model)
 
     async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None) -> SpeechResult:

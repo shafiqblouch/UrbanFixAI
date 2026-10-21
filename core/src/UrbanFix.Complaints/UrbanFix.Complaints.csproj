@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UrbanFix.SharedKernel\UrbanFix.SharedKernel.csproj" />
+    <ProjectReference Include="..\UrbanFix.Identity\UrbanFix.Identity.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

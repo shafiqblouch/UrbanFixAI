@@ -215,6 +215,750 @@
         }
       }
     },
+    "/organization/settings": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/locations": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "parentId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLocation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/locations/tree": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/locations/{id}/descendants": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/locations/{id}": {
+      "put": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLocation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/landmarks": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locationId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLandmark"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/landmarks/{id}": {
+      "put": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLandmark"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/departments": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveDepartment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/departments/{id}": {
+      "put": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveDepartment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/teams": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeam"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/members": {
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTeamMember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/members/{memberId}": {
+      "delete": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCategory"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "put": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCategory"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/categories/seed-templates": {
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/houses": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "underLocationId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHouse"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/houses/{houseId}/residents": {
+      "get": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateResidentLink"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/resident-links/{id}/end": {
+      "post": {
+        "tags": [
+          "Setup"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndResidentLink"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/price-items": {
+      "get": {
+        "tags": [
+          "Pricing"
+        ],
+        "parameters": [
+          {
+            "name": "at",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Pricing"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePriceItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/price-items/{id}/rates": {
+      "get": {
+        "tags": [
+          "Pricing"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Pricing"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddRate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/price-items/{id}": {
+      "put": {
+        "tags": [
+          "Pricing"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePriceItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/auth/login": {
       "post": {
         "tags": [
@@ -304,6 +1048,366 @@
           }
         }
       }
+    },
+    "/complaints": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateComplaint"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "New",
+                "OnHold",
+                "UnderReview",
+                "Assigned",
+                "InProgress",
+                "Resolved",
+                "Closed",
+                "Rejected",
+                "Merged",
+                null
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/complaints/{id}": {
+      "get": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/complaints/{id}/transition": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/complaints/{id}/location": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteLocation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/complaints/{id}/jobs": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJob"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/complaints/{id}/media": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartUpload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/uploads/{uploadId}": {
+      "get": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/complaints/{id}/media/from-upload/{uploadId}": {
+      "post": {
+        "tags": [
+          "Complaints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -344,6 +1448,206 @@
           }
         }
       },
+      "AddRate": {
+        "required": [
+          "rate",
+          "effectiveFrom"
+        ],
+        "type": "object",
+        "properties": {
+          "rate": {
+            "type": "number",
+            "format": "double"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "AddTeamMember": {
+        "required": [
+          "userId",
+          "isSupervisor"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isSupervisor": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ComplaintStatus": {
+        "enum": [
+          "New",
+          "OnHold",
+          "UnderReview",
+          "Assigned",
+          "InProgress",
+          "Resolved",
+          "Closed",
+          "Rejected",
+          "Merged"
+        ]
+      },
+      "CompleteLocation": {
+        "required": [
+          "houseId",
+          "locationId",
+          "locationText"
+        ],
+        "type": "object",
+        "properties": {
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "locationText": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateComplaint": {
+        "required": [
+          "description",
+          "channel",
+          "categoryId",
+          "houseId",
+          "locationId",
+          "locationText",
+          "reportedByUserId"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "locationText": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportedByUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "CreateHouse": {
+        "required": [
+          "locationId",
+          "plotSizeSqYd",
+          "houseCategory",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "plotSizeSqYd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "houseCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateJob": {
+        "required": [
+          "instructions",
+          "assignedTeamId"
+        ],
+        "type": "object",
+        "properties": {
+          "instructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedTeamId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "CreateLocation": {
+        "required": [
+          "parentId",
+          "kind",
+          "name",
+          "nameUr",
+          "latitude",
+          "longitude"
+        ],
+        "type": "object",
+        "properties": {
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
       "CreateOrganizationRequest": {
         "required": [
           "name",
@@ -368,6 +1672,88 @@
           },
           "managerPassword": {
             "type": "string"
+          }
+        }
+      },
+      "CreatePriceItem": {
+        "required": [
+          "name",
+          "nameUr",
+          "unit",
+          "rate",
+          "effectiveFrom"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "number",
+            "format": "double"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "CreateResidentLink": {
+        "required": [
+          "userId",
+          "relation",
+          "fromDate"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "relation": {
+            "type": "string"
+          },
+          "fromDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          }
+        }
+      },
+      "CreateTeam": {
+        "required": [
+          "departmentId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "EndResidentLink": {
+        "required": [
+          "toDate"
+        ],
+        "type": "object",
+        "properties": {
+          "toDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
           }
         }
       },
@@ -410,6 +1796,173 @@
           "PlatformAdmin"
         ]
       },
+      "SaveCategory": {
+        "required": [
+          "key",
+          "nameEn",
+          "nameUr",
+          "departmentId",
+          "defaultPriority",
+          "evidenceRule",
+          "checklist",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "departmentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "defaultPriority": {
+            "type": "string",
+            "nullable": true
+          },
+          "evidenceRule": {
+            "type": "string",
+            "nullable": true
+          },
+          "checklist": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "SaveDepartment": {
+        "required": [
+          "name",
+          "nameUr",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "SaveLandmark": {
+        "required": [
+          "name",
+          "nameUr",
+          "aliases",
+          "locationId",
+          "latitude",
+          "longitude",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "SettingsDto": {
+        "required": [
+          "displayName",
+          "timezone",
+          "locale",
+          "locationTemplate",
+          "primaryColor",
+          "logoKey"
+        ],
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "locationTemplate": {
+            "type": "string"
+          },
+          "primaryColor": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoKey": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "StartUpload": {
+        "required": [
+          "mimeType",
+          "totalBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "mimeType": {
+            "type": "string"
+          },
+          "totalBytes": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "SwitchOrganizationRequest": {
         "required": [
           "organizationId"
@@ -432,6 +1985,89 @@
             "type": "string"
           }
         }
+      },
+      "Transition": {
+        "required": [
+          "to",
+          "reason",
+          "mergedIntoId"
+        ],
+        "type": "object",
+        "properties": {
+          "to": {
+            "$ref": "#/components/schemas/ComplaintStatus"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "mergedIntoId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateLocation": {
+        "required": [
+          "name",
+          "nameUr",
+          "latitude",
+          "longitude",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "UpdatePriceItem": {
+        "required": [
+          "name",
+          "nameUr",
+          "unit",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
       }
     }
   },
@@ -450,6 +2086,15 @@
     },
     {
       "name": "Audit"
+    },
+    {
+      "name": "Setup"
+    },
+    {
+      "name": "Pricing"
+    },
+    {
+      "name": "Complaints"
     }
   ]
 }

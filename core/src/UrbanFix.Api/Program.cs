@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -73,6 +73,9 @@ app.MapGet("/health/ready", async (UrbanFix.Infrastructure.Persistence.AppDbCont
 
 app.MapAuthEndpoints();
 app.MapAdminEndpoints();
+app.MapSetupEndpoints();
+app.MapComplaintEndpoints();
+app.MapPricingEndpoints();
 app.MapHangfireDashboard("/admin/jobs", new DashboardOptions { Authorization = [] })
     .RequireAuthorization(AuthPolicies.For(Permissions.JobsDashboard));
 

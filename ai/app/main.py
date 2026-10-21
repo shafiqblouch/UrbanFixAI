@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, FastAPI, Request
+from fastapi import APIRouter, Depends, FastAPI, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 from app.config import Settings
+from app.photos import PhotoError, PhotoResult, interpret
 from app.providers import Providers, build_providers
 from app.providers.base import ProviderError
 from app.schemas import ErrorBody, ProviderStatus, UnderstandRequest, UnderstandResponse
@@ -47,6 +48,16 @@ def create_app(settings: Settings | None = None, providers: Providers | None = N
             return await understand(body, request.app.state.providers, request.app.state.settings)
         except InvalidModelOutput as exc:
             return JSONResponse(ErrorBody(error="invalid_model_output", detail=str(exc)).model_dump(), status_code=502)
+        except ProviderError as exc:
+            return JSONResponse(ErrorBody(error="provider_unavailable", detail=str(exc)).model_dump(), status_code=502)
+
+    @v1.post("/photos/interpret", response_model=PhotoResult, responses={413: {"model": ErrorBody}, 415: {"model": ErrorBody}, 502: {"model": ErrorBody}})
+    async def interpret_photo(request: Request, file: UploadFile = File(...)):  # noqa: B008
+        try:
+            return await interpret(await file.read(), request.app.state.providers, request.app.state.settings)
+        except PhotoError as exc:
+            status = {"file_too_large": 413, "unsupported_file_type": 415}.get(exc.code, 400)
+            return JSONResponse(ErrorBody(error=exc.code).model_dump(), status_code=status)
         except ProviderError as exc:
             return JSONResponse(ErrorBody(error="provider_unavailable", detail=str(exc)).model_dump(), status_code=502)
 

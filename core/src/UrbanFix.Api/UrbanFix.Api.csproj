@@ -22,6 +22,7 @@
     <ProjectReference Include="..\UrbanFix.Complaints\UrbanFix.Complaints.csproj" />
     <ProjectReference Include="..\UrbanFix.SharedKernel\UrbanFix.SharedKernel.csproj" />
     <ProjectReference Include="..\UrbanFix.Infrastructure\UrbanFix.Infrastructure.csproj" />
+    <ProjectReference Include="..\UrbanFix.Organization\UrbanFix.Organization.csproj" />
   </ItemGroup>
 
 </Project>

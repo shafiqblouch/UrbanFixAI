@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 Language = Literal["en", "ur", "roman_ur", "mixed"]
 
@@ -20,11 +20,15 @@ class UnderstandRequest(BaseModel):
     categories: list[CategoryDef] = Field(min_length=1, max_length=60)
     # Names CORE already knows (resident, neighbours named in the form) so they are scrubbed even without titles.
     known_names: list[str] = Field(default_factory=list, max_length=20)
+    # Local landmarks ("Madni Masjid", "Green Gate") so "near the mosque" can be turned into a place.
+    landmarks: list[str] = Field(default_factory=list, max_length=100)
     language_hint: Language | None = None
 
 
 class ModelOutput(BaseModel):
-    """What the LLM must return; validated strictly, invalid output is rejected and retried."""
+    """What the LLM must return; validated strictly (no extra keys), invalid output is rejected and retried."""
+
+    model_config = ConfigDict(extra="forbid")
 
     category: str
     summary: str = Field(min_length=1, max_length=600)
@@ -43,6 +47,8 @@ class UnderstandResponse(BaseModel):
     model: str
     prompt_version: str
     pii_redactions: int
+    # Complaint text looked like an instruction aimed at the model; a person should review the result.
+    injection_suspected: bool = False
 
 
 class ProviderStatus(BaseModel):

@@ -7,6 +7,8 @@ import json
 from pydantic import ValidationError
 
 from app.config import Settings
+from app.injection import fence, looks_like_injection
+from app.language import detect_language
 from app.pii import ScrubbedText, scrub
 from app.prompts import load_prompt
 from app.providers import Providers
@@ -37,10 +39,13 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
     category_lines = "\n".join(
         f"- {c.key}: {c.label}" + (f" ({c.description})" if c.description else "") for c in req.categories
     )
-    system = scrub(template.format(categories=category_lines)).text
+    landmark_lines = "\n".join(f"- {name[:120]}" for name in req.landmarks) or "(none configured)"
+    system = scrub(template.format(categories=category_lines, landmarks=landmark_lines)).text
 
     scrubbed = scrub(req.text, req.known_names)
-    user = scrubbed.text
+    injection_suspected = looks_like_injection(req.text)
+    # The complaint is fenced as data; the retry feedback below stays outside the fence.
+    user = fence(scrubbed.text)
     feedback = ""
 
     last_error = "no attempt made"
@@ -65,16 +70,21 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
             feedback = f"\n\n[Your previous reply was rejected: {last_error}. Reply with valid JSON only.]"
             continue
 
+        # Script and word counts are more reliable than the model for Urdu / Roman Urdu / English, so they win when sure.
+        detected = detect_language(req.text)
+        language = detected.language if detected.confidence >= 0.8 else output.language
+
         return UnderstandResponse(
             category=output.category,
             summary=scrub(output.summary, req.known_names).text,
             location_text=output.location_text,
-            language=output.language,
+            language=language,
             confidence=output.confidence,
-            needs_more_info=output.category == "other" or output.confidence < LOW_CONFIDENCE,
+            needs_more_info=output.category == "other" or output.confidence < LOW_CONFIDENCE or injection_suspected,
             model=result.model,
             prompt_version=version,
             pii_redactions=sum(scrubbed.counts.values()),
+            injection_suspected=injection_suspected,
         )
 
     raise InvalidModelOutput(last_error)

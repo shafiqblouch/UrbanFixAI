@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using UrbanFix.Api.Security;
@@ -79,6 +79,10 @@ public static class AdminEndpoints
         await db.ChangeTenantAsync(org.Id, actor, ct);
         db.Memberships.Add(new Membership { OrganizationId = org.Id, UserId = manager.User!.Id, Role = Role.Manager });
         await db.SaveChangesAsync(ct);
+
+        // Day-one configuration: default settings and the seeded category templates.
+        await SetupEndpoints.GetOrCreateSettings(db, org.Id, ct);
+        await SetupEndpoints.SeedCategoriesAsync(db, org.Id, ct);
 
         return Results.Created($"/admin/organizations/{org.Id}", new OrganizationDto(org.Id, org.Name, org.Slug));
     }

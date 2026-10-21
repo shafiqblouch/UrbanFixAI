@@ -1,4 +1,4 @@
-﻿namespace UrbanFix.SharedKernel;
+namespace UrbanFix.SharedKernel;
 
 [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public enum Role
@@ -34,6 +34,13 @@ public static class Permissions
     public const string MembershipManage = "membership.manage";
     public const string OrganizationManage = "organization.manage";
     public const string JobsDashboard = "jobs.dashboard";
+    public const string OrganizationSettings = "organization.settings";
+    public const string CatalogManage = "catalog.manage";
+    public const string ComplaintCreateBehalf = "complaint.create.behalf";
+    public const string HouseLink = "house.link";
+    public const string PricingManage = "pricing.manage";
+    public const string JobCreate = "job.create";
+    public const string PricingRead = "pricing.read";
 
     public static IReadOnlyList<string> All { get; } = typeof(Permissions)
         .GetFields().Where(f => f.IsLiteral).Select(f => (string)f.GetRawConstantValue()!).ToArray();
@@ -46,20 +53,21 @@ public static class RolePermissions
     {
         [Role.Resident] = [Permissions.ComplaintCreate, Permissions.ComplaintReadOwn, Permissions.BillRead],
         [Role.Guard] = [Permissions.GateLog],
-        [Role.Technician] = [Permissions.ComplaintRead, Permissions.ComplaintWork],
-        [Role.Office] = [Permissions.ComplaintCreate, Permissions.ComplaintRead, Permissions.ComplaintTriage, Permissions.BillRead],
+        [Role.Technician] = [Permissions.ComplaintRead, Permissions.ComplaintWork, Permissions.PricingRead],
+        [Role.Office] = [Permissions.ComplaintCreate, Permissions.ComplaintCreateBehalf, Permissions.ComplaintRead, Permissions.ComplaintTriage, Permissions.BillRead, Permissions.HouseLink, Permissions.PricingRead],
         [Role.Supervisor] =
         [
             Permissions.ComplaintRead, Permissions.ComplaintTriage, Permissions.ComplaintAssign,
-            Permissions.ComplaintClose, Permissions.EstimateApprove,
+            Permissions.ComplaintClose, Permissions.EstimateApprove, Permissions.ComplaintCreateBehalf, Permissions.JobCreate, Permissions.PricingRead,
         ],
-        [Role.Accounts] = [Permissions.BillRead, Permissions.BillManage, Permissions.PaymentRecord, Permissions.LedgerRead],
-        [Role.Committee] = [Permissions.ComplaintRead, Permissions.LedgerRead, Permissions.EstimateApprove, Permissions.AuditRead],
+        [Role.Accounts] = [Permissions.BillRead, Permissions.BillManage, Permissions.PaymentRecord, Permissions.LedgerRead, Permissions.PricingManage, Permissions.PricingRead],
+        [Role.Committee] = [Permissions.ComplaintRead, Permissions.PricingRead, Permissions.LedgerRead, Permissions.EstimateApprove, Permissions.AuditRead],
         [Role.Manager] =
         [
             Permissions.ComplaintRead, Permissions.ComplaintTriage, Permissions.ComplaintAssign, Permissions.ComplaintClose,
             Permissions.EstimateApprove, Permissions.GateManage, Permissions.BillRead, Permissions.LedgerRead,
-            Permissions.AuditRead, Permissions.MembershipManage,
+            Permissions.AuditRead, Permissions.MembershipManage, Permissions.OrganizationSettings, Permissions.CatalogManage,
+            Permissions.ComplaintCreateBehalf, Permissions.HouseLink, Permissions.PricingManage, Permissions.PricingRead, Permissions.JobCreate,
         ],
         [Role.PlatformAdmin] =
         [

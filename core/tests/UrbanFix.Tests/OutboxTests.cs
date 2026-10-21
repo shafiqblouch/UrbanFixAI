@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using UrbanFix.Identity;
@@ -11,6 +11,12 @@ namespace UrbanFix.Tests;
 [Collection("db")]
 public class OutboxTests(TestApp app)
 {
+    /// <summary>The outbox is shared by every test, so work through the whole backlog rather than one batch.</summary>
+    private static async Task Drain(OutboxProcessor processor)
+    {
+        for (var i = 0; i < 200 && await processor.ProcessBatchAsync(default) > 0; i++) { }
+    }
+
     private async Task<Guid> PublishViaSaveChanges(Guid org, string note, bool rollback = false)
     {
         await using var scope = app.Services.CreateAsyncScope();
@@ -53,7 +59,7 @@ public class OutboxTests(TestApp app)
         var id = await PublishViaSaveChanges(org, "delivered-" + Guid.NewGuid().ToString("N"));
 
         var processor = app.Services.GetRequiredService<OutboxProcessor>();
-        await processor.ProcessBatchAsync(default);
+        await Drain(processor);
 
         var state = await State(id);
         Assert.True(state.Processed);
@@ -84,15 +90,15 @@ public class OutboxTests(TestApp app)
         var id = await PublishViaSaveChanges(org, note);
         var processor = app.Services.GetRequiredService<OutboxProcessor>();
 
-        await processor.ProcessBatchAsync(default);
+        await Drain(processor);
         Assert.Equal((1, false, false), await State(id));
 
         await MakeDue(id);
-        await processor.ProcessBatchAsync(default);
+        await Drain(processor);
         Assert.Equal((2, false, false), await State(id));
 
         await MakeDue(id);
-        await processor.ProcessBatchAsync(default);
+        await Drain(processor);
         var done = await State(id);
         Assert.True(done.Processed);
         Assert.Contains(collector.Handled, h => h.Note == note);
@@ -111,7 +117,7 @@ public class OutboxTests(TestApp app)
         for (var i = 0; i < max; i++)
         {
             await MakeDue(id);
-            await processor.ProcessBatchAsync(default);
+            await Drain(processor);
         }
 
         var state = await State(id);
@@ -121,7 +127,7 @@ public class OutboxTests(TestApp app)
 
         var before = app.Services.GetRequiredService<EventCollector>().Attempts;
         await MakeDue(id);
-        await processor.ProcessBatchAsync(default);
+        await Drain(processor);
         Assert.Equal(before, app.Services.GetRequiredService<EventCollector>().Attempts);
     }
 
@@ -132,7 +138,7 @@ public class OutboxTests(TestApp app)
         var note = "backoff-" + Guid.NewGuid().ToString("N");
         app.Services.GetRequiredService<EventCollector>().FailuresRemaining[note] = 1;
         var id = await PublishViaSaveChanges(org, note);
-        await app.Services.GetRequiredService<OutboxProcessor>().ProcessBatchAsync(default);
+        await Drain(app.Services.GetRequiredService<OutboxProcessor>());
 
         await using var conn = new NpgsqlConnection(app.OwnerConnectionString);
         await conn.OpenAsync();
