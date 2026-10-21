@@ -23,11 +23,11 @@ import httpx
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT.parent))
 
-from app.config import Settings  # noqa: E402
-from app.providers import build_providers  # noqa: E402
-from app.providers.base import LlmResult, ProviderError  # noqa: E402
-from app.schemas import CategoryDef, UnderstandRequest  # noqa: E402
-from app.understanding import InvalidModelOutput, understand  # noqa: E402
+from app.config import Settings
+from app.providers import build_providers
+from app.providers.base import LlmResult, ProviderError
+from app.schemas import CategoryDef, UnderstandRequest
+from app.understanding import InvalidModelOutput, understand
 
 CATEGORIES = [
     CategoryDef(key="water", label="Water supply", description="no water, low pressure, dirty water"),
