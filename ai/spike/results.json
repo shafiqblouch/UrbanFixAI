@@ -1,0 +1,132 @@
+[
+  {
+    "model": "anthropic/claude-haiku-5.5",
+    "n": 60,
+    "accuracy": 1.0,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 1.0
+    },
+    "valid_rate": 1.0,
+    "p50_s": 1.3485967500600964,
+    "p95_s": 2.0214629999827594,
+    "cost_usd": 0.006777399999999999,
+    "cost_per_1000": 0.11295666666666666,
+    "errors": [],
+    "wrong": []
+  },
+  {
+    "model": "google/gemini-3.5-flash-lite",
+    "n": 60,
+    "accuracy": 1.0,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 1.0
+    },
+    "valid_rate": 1.0,
+    "p50_s": 1.310167899937369,
+    "p95_s": 2.3433364001102746,
+    "cost_usd": 0.0161752,
+    "cost_per_1000": 0.2695866666666667,
+    "errors": [],
+    "wrong": []
+  },
+  {
+    "model": "qwen/qwen3.7-flash",
+    "n": 60,
+    "accuracy": 0.9666666666666667,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 0.9
+    },
+    "valid_rate": 1.0,
+    "p50_s": 14.794037199928425,
+    "p95_s": 20.52944409986958,
+    "cost_usd": 0.00903475,
+    "cost_per_1000": 0.15057916666666665,
+    "errors": [],
+    "wrong": [
+      [
+        "ur07",
+        "sewage_drainage",
+        "roads"
+      ],
+      [
+        "ur20",
+        "electricity",
+        "noise"
+      ]
+    ]
+  },
+  {
+    "model": "deepseek/deepseek-v4.1-flash",
+    "n": 60,
+    "accuracy": 1.0,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 1.0
+    },
+    "valid_rate": 1.0,
+    "p50_s": 1.9231272999895737,
+    "p95_s": 3.7411342998966575,
+    "cost_usd": 0.005024695,
+    "cost_per_1000": 0.08374491666666666,
+    "errors": [],
+    "wrong": []
+  },
+  {
+    "model": "openai/gpt-5.6-luna",
+    "n": 60,
+    "accuracy": 1.0,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 1.0
+    },
+    "valid_rate": 1.0,
+    "p50_s": 2.645158499944955,
+    "p95_s": 3.6719973001163453,
+    "cost_usd": 0.0081516,
+    "cost_per_1000": 0.13585999999999998,
+    "errors": [],
+    "wrong": []
+  },
+  {
+    "model": "mistralai/mistral-large-4-0",
+    "n": 60,
+    "accuracy": 1.0,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 1.0
+    },
+    "valid_rate": 1.0,
+    "p50_s": 7.784436500049196,
+    "p95_s": 18.731413300149143,
+    "cost_usd": 0.23080685999999997,
+    "cost_per_1000": 3.8467809999999996,
+    "errors": [],
+    "wrong": []
+  },
+  {
+    "model": "anthropic/claude-sonnet-5.5",
+    "n": 60,
+    "accuracy": 1.0,
+    "by_language": {
+      "en": 1.0,
+      "roman_ur": 1.0,
+      "ur": 1.0
+    },
+    "valid_rate": 1.0,
+    "p50_s": 1.3287458999548107,
+    "p95_s": 2.177022499963641,
+    "cost_usd": 0.11308800000000001,
+    "cost_per_1000": 1.8848,
+    "errors": [],
+    "wrong": []
+  }
+]
