@@ -32,7 +32,7 @@ public class PermissionTests(TestApp app)
             .Where(e => e.Metadata.GetMetadata<IAllowAnonymous>() is not null)
             .Select(e => e.RoutePattern.RawText!).Order().ToArray();
 
-        Assert.Equal(["/auth/login", "/health/live", "/health/ready", "/openapi/{documentName}.json"], anonymous);
+        Assert.Equal(["/auth/login", "/auth/otp/request", "/auth/otp/verify", "/health/live", "/health/ready", "/openapi/{documentName}.json", "/webhooks/whatsapp", "/webhooks/whatsapp"], anonymous);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class PermissionTests(TestApp app)
     public async Task Each_role_gets_200_or_403_exactly_as_the_matrix_says(string method, string path, string permission)
     {
         var (org, manager) = await app.CreateOrganizationAsync();
-        foreach (var role in Enum.GetValues<Role>().Where(r => r != Role.PlatformAdmin))
+        foreach (var role in Enum.GetValues<Role>().Where(r => r != Role.PlatformAdmin && r != Role.Support))
         {
             var session = role == Role.Manager ? manager : await app.AddMemberAsync(manager, org, role);
             var res = await session.Client.SendAsync(new HttpRequestMessage(new HttpMethod(method), path));

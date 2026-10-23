@@ -28,11 +28,11 @@ public static class PricingEndpoints
             var items = await db.PriceItems.AsNoTracking().Where(i => includeInactive == true || i.IsActive).OrderBy(i => i.Name).ToListAsync(ct);
             var rates = await db.PriceRates.AsNoTracking().Where(r => r.EffectiveFrom <= when).ToListAsync(ct);
             return Results.Ok(items.Select(i => ToDto(i, Current(rates.Where(r => r.ItemId == i.Id), when))));
-        }).WithTags("Pricing").RequireAuthorization(read);
+        }).WithTags("Pricing").Produces<List<PriceItemDto>>(200).RequireAuthorization(read);
 
         app.MapGet("/price-items/{id:guid}/rates", async (Guid id, AppDbContext db, CancellationToken ct) =>
             Results.Ok((await db.PriceRates.AsNoTracking().Where(r => r.ItemId == id).OrderByDescending(r => r.EffectiveFrom).ThenByDescending(r => r.CreatedAt).ToListAsync(ct)).Select(ToDto)))
-            .WithTags("Pricing").RequireAuthorization(read);
+            .WithTags("Pricing").Produces<List<RateDto>>(200).RequireAuthorization(read);
 
         app.MapPost("/price-items", async (CreatePriceItem req, ClaimsPrincipal user, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -45,7 +45,7 @@ public static class PricingEndpoints
             try { await db.SaveChangesAsync(ct); }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation }) { return Results.Conflict(new { error = "duplicate_name" }); }
             return Results.Created($"/price-items/{item.Id}", ToDto(item, rate));
-        }).WithTags("Pricing").RequireAuthorization(manage);
+        }).WithTags("Pricing").Produces<PriceItemDto>(201).RequireAuthorization(manage);
 
         app.MapPut("/price-items/{id:guid}", async (Guid id, UpdatePriceItem req, AppDbContext db, CancellationToken ct) =>
         {
@@ -58,7 +58,7 @@ public static class PricingEndpoints
             try { await db.SaveChangesAsync(ct); }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation }) { return Results.Conflict(new { error = "duplicate_name" }); }
             return Results.Ok(ToDto(item, null));
-        }).WithTags("Pricing").RequireAuthorization(manage);
+        }).WithTags("Pricing").Produces<PriceItemDto>(200).RequireAuthorization(manage);
 
         app.MapPost("/price-items/{id:guid}/rates", async (Guid id, AddRate req, ClaimsPrincipal user, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -68,7 +68,7 @@ public static class PricingEndpoints
             db.PriceRates.Add(rate);
             await db.SaveChangesAsync(ct);
             return Results.Created($"/price-items/{id}/rates", ToDto(rate));
-        }).WithTags("Pricing").RequireAuthorization(manage);
+        }).WithTags("Pricing").Produces<RateDto>(201).RequireAuthorization(manage);
     }
 
     private static PriceRate NewRate(Guid itemId, decimal rate, DateTimeOffset? from, ClaimsPrincipal user, ITenantContext tenant) => new()

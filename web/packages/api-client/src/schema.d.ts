@@ -91,7 +91,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["MeResponse"];
+                    };
                 };
             };
         };
@@ -124,7 +126,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["OrganizationDto"][];
+                    };
                 };
             };
         };
@@ -142,12 +146,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["OrganizationDto"];
+                    };
                 };
             };
         };
@@ -178,7 +184,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["MemberDto"][];
+                    };
                 };
             };
         };
@@ -196,12 +204,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["MemberDto"];
+                    };
                 };
             };
         };
@@ -277,7 +287,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["AuditDto"][];
+                    };
                 };
             };
         };
@@ -310,7 +322,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["SettingsDto"];
+                    };
                 };
             };
         };
@@ -332,7 +346,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["SettingsDto"];
+                    };
                 };
             };
         };
@@ -367,7 +383,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LocationDto"][];
+                    };
                 };
             };
         };
@@ -385,12 +403,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LocationDto"];
+                    };
                 };
             };
         };
@@ -421,7 +441,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LocationDto"][];
+                    };
                 };
             };
         };
@@ -456,7 +478,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LocationDto"][];
+                    };
                 };
             };
         };
@@ -496,7 +520,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LocationDto"];
+                    };
                 };
             };
         };
@@ -531,7 +557,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LandmarkDto"][];
+                    };
                 };
             };
         };
@@ -549,12 +577,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LandmarkDto"];
+                    };
                 };
             };
         };
@@ -592,7 +622,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["LandmarkDto"];
+                    };
                 };
             };
         };
@@ -624,7 +656,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["DepartmentDto"][];
+                    };
                 };
             };
         };
@@ -642,12 +676,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["DepartmentDto"];
+                    };
                 };
             };
         };
@@ -685,7 +721,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["DepartmentDto"];
+                    };
                 };
             };
         };
@@ -717,7 +755,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["TeamDto"][];
+                    };
                 };
             };
         };
@@ -735,12 +775,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["TeamDto"];
+                    };
                 };
             };
         };
@@ -774,12 +816,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["TeamMemberDto"];
+                    };
                 };
             };
         };
@@ -848,7 +892,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CategoryDto"][];
+                    };
                 };
             };
         };
@@ -866,12 +912,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CategoryDto"];
+                    };
                 };
             };
         };
@@ -909,7 +957,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CategoryDto"];
+                    };
                 };
             };
         };
@@ -976,7 +1026,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["HouseDto"][];
+                    };
                 };
             };
         };
@@ -994,12 +1046,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["HouseDto"];
+                    };
                 };
             };
         };
@@ -1032,7 +1086,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ResidentLinkDto"][];
+                    };
                 };
             };
         };
@@ -1052,12 +1108,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ResidentLinkDto"];
+                    };
                 };
             };
         };
@@ -1096,10 +1154,50 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ResidentLinkDto"];
+                    };
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Summary"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1130,7 +1228,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["PriceItemDto"][];
+                    };
                 };
             };
         };
@@ -1148,12 +1248,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["PriceItemDto"];
+                    };
                 };
             };
         };
@@ -1186,7 +1288,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["RateDto2"][];
+                    };
                 };
             };
         };
@@ -1206,12 +1310,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["RateDto2"];
+                    };
                 };
             };
         };
@@ -1249,10 +1355,250 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
+                    content: {
+                        "application/json": components["schemas"]["PriceItemDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webhooks/whatsapp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
                     content?: never;
                 };
             };
         };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/costs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    groupBy?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CostReport"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/repeated-repairs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    by?: string;
+                    months?: number;
+                    minCount?: number;
+                    sameCategory?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RepeatedRepair"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/directory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    role?: "Resident" | "Guard" | "Technician" | "Office" | "Supervisor" | "Accounts" | "Committee" | "Manager" | "PlatformAdmin" | "Support" | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PersonDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/push/vapid-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VapidKeyPair"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1287,7 +1633,85 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
+                    content: {
+                        "application/json": components["schemas"]["LoginResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/otp/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OtpRequestBody"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
                     content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/otp/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OtpVerifyBody"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LoginResponse"];
+                    };
                 };
             };
         };
@@ -1390,7 +1814,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["TotpEnrollmentResponse"];
+                    };
                 };
             };
         };
@@ -1447,7 +1873,14 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    status?: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged" | null;
+                    status?: components["schemas"]["NullableOfComplaintStatus2"];
+                    q?: string;
+                    categoryId?: string;
+                    departmentId?: string;
+                    locationId?: string;
+                    priority?: string;
+                    from?: string;
+                    to?: string;
                     limit?: number;
                     offset?: number;
                 };
@@ -1462,7 +1895,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDto"][];
+                    };
                 };
             };
         };
@@ -1480,12 +1915,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CreatedDto"];
+                    };
                 };
             };
         };
@@ -1518,11 +1955,274 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDetailDto"];
+                    };
                 };
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveFeedback"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FeedbackDto2"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/voice/transcribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    language?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TranscriptDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/similar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    days?: number;
+                    limit?: number;
+                    minSimilarity?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SimilarDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/by-reference/{reference}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    reference: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/verify-reporter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyReporter"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrgPolicy"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrgPolicy"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrgPolicy"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1559,7 +2259,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDto"];
+                    };
                 };
             };
         };
@@ -1598,7 +2300,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDto"];
+                    };
                 };
             };
         };
@@ -1631,7 +2335,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["JobDto"][];
+                    };
                 };
             };
         };
@@ -1651,12 +2357,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
                 };
             };
         };
@@ -1687,18 +2395,19 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file: string;
+                        file: components["schemas"]["IFormFile"];
                     };
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["MediaDto"];
+                    };
                 };
             };
         };
@@ -1730,12 +2439,14 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["UploadDto"];
+                    };
                 };
             };
         };
@@ -1768,7 +2479,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["UploadDto"];
+                    };
                 };
             };
         };
@@ -1790,7 +2503,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["UploadDto"];
+                    };
                 };
             };
         };
@@ -1822,6 +2537,1587 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MediaDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                    mine?: boolean;
+                    limit?: number;
+                    offset?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobListItemDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDetailDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssignJob"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["StartWork"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddUpdate"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    stage?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MediaDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/media/from-upload/{uploadId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    stage?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                    uploadId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MediaDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/costs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveCosts"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CostsResult"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/comparison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ComparisonDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    refresh?: boolean;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ComparisonDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CompleteJob"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/cannot-complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReasonRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/sign-off": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReasonRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/overruns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OverrunDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/chargeable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetChargeable"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["JobDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/{id}/estimates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EstimateDto2"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveEstimate"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EstimateDto2"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routing-rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RuleDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveRule"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RuleDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routing-rules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveRule"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RuleDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sla-policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SlaDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveSla"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SlaDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sla-policies/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveSla"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SlaDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/auto-route-readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ReadinessDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/categories/{id}/auto-route": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveAutoRoute"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AutoRouteDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/locations/{id}/risk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveRisk"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/escalation-levels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LevelDto"][];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LevelDto"][];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LevelDto"][];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/escalations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    open?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EscalationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/review-queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["QueueItemDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/ai-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuggestionDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/triage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Triage"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ComplaintDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/ai-usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UsageReport"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/ai-accuracy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    field?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AccuracyRow"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Layout"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/trends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    granularity?: string;
+                    by?: string;
+                    periods?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrendReport"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/spend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpendWidget"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/delivery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ChannelStats"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    unreadOnly?: boolean;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InboxDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NotificationDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
                 /** @description OK */
                 200: {
                     headers: {
@@ -1837,10 +4133,2602 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/me/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PreferencesDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SavePreferences"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PreferencesDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DeliveryDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApprovalDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/approvals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApprovalDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/approvals/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Decide"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApprovalDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    houseId?: string;
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VehicleDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveVehicle"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VehicleDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveVehicle"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VehicleDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/daily-help": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    houseId?: string;
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HelpDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveHelp"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HelpDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/daily-help/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveHelp"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HelpDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/daily-help/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HelpDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/directory/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query: {
+                    kind: string;
+                    dryRun?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "text/csv": string;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ImportReport"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/directory/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SearchResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/directory/duplicates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DuplicateGroup"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/directory/duplicates/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Dismiss"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StockLevelDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/items/{id}/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MovementDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/items/{id}/threshold": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Threshold"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Threshold"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/receipts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Receive"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MovementResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Adjust"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MovementResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["IssueOrReturn"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MovementResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["IssueOrReturn"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MovementResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/jobs/{jobId}/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    jobId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MaterialLine"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CountDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveCount"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CountDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                    jobId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RequestDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RequestDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/requests/{id}/fulfil": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Fulfil"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RequestDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/requests/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Reason"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RequestDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stock/requests/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RequestDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ChargeDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charges/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChargeDecision"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ChargeDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/duplicates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuggestionDto2"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/complaints/{id}/duplicate-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuggestionDto2"][];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/duplicate-suggestions/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SuggestionDecision"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateIncident"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{id}/complaints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddToIncident"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{id}/complaints/{complaintId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    complaintId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NoticeDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateNotice"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NoticeDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notices/audience": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query: {
+                    kind: string;
+                    locationId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AudienceDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NoticeDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notices/{id}/readers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ReaderDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notices/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NoticeDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyNoticeDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/exports/complaints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    format?: string;
+                    lang?: string;
+                    status?: components["schemas"]["NullableOfComplaintStatus2"];
+                    q?: string;
+                    categoryId?: string;
+                    departmentId?: string;
+                    locationId?: string;
+                    priority?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/exports/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    format?: string;
+                    lang?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/exports/costs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    groupBy?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/push/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PushConfigDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/push-devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DeviceDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RegisterDevice"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DeviceDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/push-devices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/push-test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestResultDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/organizations/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PlatformOrganizationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/organizations/{id}/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OnboardingDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/organizations/{id}/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FeatureDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/organizations/{id}/features/{feature}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    feature: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetFeature"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FeatureDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/ai/quality": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    organizationId?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AiQualityRow"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/ai/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    month?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AiUsageDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/organizations/{id}/ai-cap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetAiCap"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SetAiCap"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/support-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SupportSessionRow"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/organizations/{id}/support-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OpenSupport"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SupportOpened"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/support-sessions/{id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/summary-schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScheduleDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ScheduleDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScheduleDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/summaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SummaryDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MakeSummary"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SummaryDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/summaries/{id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AccuracyRow: {
+            language: string | null;
+            suggested: string;
+            /** Format: int32 */
+            total: number;
+            /** Format: int32 */
+            accepted: number;
+            /** Format: double */
+            acceptRate: number;
+        };
         AddMemberRequest: {
             email: string;
             displayName: string;
@@ -1850,6 +6738,8 @@ export interface components {
             departmentId: string | null;
             /** Format: uuid */
             gateId: string | null;
+            /** @default null */
+            phone: string | null;
         };
         AddRate: {
             /** Format: double */
@@ -1862,14 +6752,408 @@ export interface components {
             userId: string;
             isSupervisor: boolean;
         };
+        AddToIncident: {
+            /** Format: uuid */
+            complaintId: string;
+        };
+        AddUpdate: {
+            note: string | null;
+            /** Format: double */
+            latitude: number | null;
+            /** Format: double */
+            longitude: number | null;
+            checklistDone: number[] | null;
+        };
+        Adjust: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: double */
+            quantity: number;
+            reason: string;
+        };
+        AiQualityRow: {
+            /** Format: uuid */
+            organizationId: string;
+            organization: string;
+            category: string;
+            language: string | null;
+            /** Format: int32 */
+            total: number;
+            /** Format: int32 */
+            accepted: number;
+            /** Format: int32 */
+            overridden: number;
+            /** Format: double */
+            acceptRate: number;
+            /** Format: double */
+            overrideRate: number;
+        };
+        AiUsageDto: {
+            /** Format: date-time */
+            monthStart: string;
+            organizations: components["schemas"]["AiUsageRow"][];
+        };
+        AiUsageRow: {
+            /** Format: uuid */
+            organizationId: string;
+            organization: string;
+            /** Format: int32 */
+            calls: number;
+            /** Format: int64 */
+            inputTokens: number;
+            /** Format: int64 */
+            outputTokens: number;
+            /** Format: double */
+            costUsd: number | null;
+            priced: boolean;
+            /** Format: int32 */
+            complaints: number;
+            /** Format: double */
+            costPerComplaintUsd: number | null;
+            /** Format: int64 */
+            tokensThisMonth: number;
+            /** Format: int64 */
+            monthlyCap: number;
+            /** Format: double */
+            usedFraction: number;
+            overCap: boolean;
+        };
+        ApprovalDto: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            /** Format: uuid */
+            jobId: string | null;
+            jobNumber: string | null;
+            reference: string | null;
+            /** Format: int32 */
+            estimateVersion: number | null;
+            /** Format: double */
+            amount: number;
+            /** Format: uuid */
+            requestedBy: string;
+            /** Format: date-time */
+            requestedAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: int32 */
+            approvalsNeeded: number;
+            status: string;
+            note: string | null;
+            decisions: components["schemas"]["DecisionDto"][];
+        };
+        AssignJob: {
+            /** Format: uuid */
+            teamId: string | null;
+            /** Format: uuid */
+            userId: string | null;
+        };
+        AudienceDto: {
+            /** Format: int32 */
+            recipients: number;
+        };
+        AuditDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            actorUserId: string | null;
+            action: string;
+            entityType: string;
+            entityId: string;
+            before: components["schemas"]["NullableOfJsonElement"];
+            after: components["schemas"]["NullableOfJsonElement"];
+            /** Format: date-time */
+            occurredAt: string;
+            ip: string | null;
+            device: string | null;
+        };
+        AutoRouteDto: {
+            /** Format: uuid */
+            categoryId: string;
+            enabled: boolean;
+            /** Format: float */
+            threshold: number;
+        };
+        BrowserKeys: {
+            p256dh: string;
+            auth: string;
+        } | null;
+        CategoryDto: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            nameEn: string;
+            nameUr: string | null;
+            /** Format: uuid */
+            departmentId: string | null;
+            defaultPriority: string;
+            evidenceRule: string;
+            checklist: components["schemas"]["JsonElement"];
+            isActive: boolean;
+            requiresCosts: boolean;
+        };
+        ChannelStats: {
+            channel: string;
+            /** Format: int32 */
+            total: number;
+            /** Format: int32 */
+            sent: number;
+            /** Format: int32 */
+            delivered: number;
+            /** Format: int32 */
+            read: number;
+            /** Format: int32 */
+            failed: number;
+            /** Format: double */
+            failureRate: number;
+        };
+        ChargeDecision: {
+            action: string;
+            /** Format: double */
+            amount: number | null;
+            note: string | null;
+        };
+        ChargeDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            jobId: string;
+            jobNumber: string;
+            reference: string;
+            description: string;
+            /** Format: uuid */
+            houseId: string;
+            houseLabel: string;
+            residents: components["schemas"]["ChargeResident"][];
+            /** Format: double */
+            proposedAmount: number;
+            /** Format: double */
+            finalAmount: number | null;
+            status: string;
+            readyToPost: boolean;
+            note: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            decidedAt: string | null;
+            costs: components["schemas"]["ChargeLine"][];
+            evidence: components["schemas"]["ChargeEvidence"][];
+        };
+        ChargeEvidence: {
+            stage: string;
+            url: string;
+        };
+        ChargeLine: {
+            kind: string;
+            description: string;
+            /** Format: double */
+            quantity: number;
+            /** Format: double */
+            amount: number;
+        };
+        ChargeResident: {
+            /** Format: uuid */
+            userId: string;
+            name: string;
+            relation: string;
+        };
+        ChecklistItem: {
+            label: string;
+            done: boolean;
+        };
+        ComparisonDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            beforeMediaId: string;
+            /** Format: uuid */
+            afterMediaId: string;
+            /** Format: float */
+            sameLocationLikelihood: number;
+            changeNote: string;
+            needsMoreInfo: boolean;
+            /** Format: float */
+            confidence: number;
+            degraded: boolean;
+            model: string | null;
+            promptVersion: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** @default true */
+            advisory: boolean;
+        };
+        ComplaintDetailDto: {
+            complaint: components["schemas"]["ComplaintDto"];
+            history: components["schemas"]["HistoryDto"][];
+            media: components["schemas"]["MediaDto"][];
+            jobs: components["schemas"]["JobDto"][];
+            allowedNext: components["schemas"]["ComplaintStatus"][];
+            feedback?: components["schemas"]["FeedbackDto"];
+        };
+        ComplaintDto: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            status: components["schemas"]["ComplaintStatus"];
+            channel: string;
+            description: string;
+            /** Format: uuid */
+            categoryId: string | null;
+            priority: string;
+            /** Format: uuid */
+            houseId: string | null;
+            /** Format: uuid */
+            locationId: string | null;
+            locationText: string | null;
+            language: string | null;
+            aiStatus: string;
+            aiCategoryKey: string | null;
+            aiSummary: string | null;
+            /** Format: float */
+            aiConfidence: number | null;
+            holdReason: string | null;
+            statusReason: string | null;
+            /** Format: uuid */
+            reportedByUserId: string | null;
+            /** Format: uuid */
+            enteredByUserId: string | null;
+            /** Format: uuid */
+            mergedIntoId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** @default false */
+            safetyFlag: boolean;
+            /**
+             * Format: date-time
+             * @default null
+             */
+            dueAt: string | null;
+            /**
+             * Format: date-time
+             * @default null
+             */
+            respondBy: string | null;
+            /** @default false */
+            autoRouted: boolean;
+            /** @default null */
+            reporterPhone: string | null;
+            /** @default true */
+            reporterVerified: boolean;
+            /** @default null */
+            assetRef: string | null;
+            /** @default false */
+            autoConfirmed: boolean;
+            /** @default null */
+            aiModel: string | null;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            incidentId: string | null;
+        };
         /** @enum {unknown} */
         ComplaintStatus: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged";
+        CompleteJob: {
+            note: string | null;
+        };
         CompleteLocation: {
             /** Format: uuid */
             houseId: string | null;
             /** Format: uuid */
             locationId: string | null;
             locationText: string | null;
+        };
+        CostLineDto: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            description: string;
+            /** Format: uuid */
+            priceItemId: string | null;
+            /** Format: double */
+            quantity: number;
+            unit: string;
+            /** Format: double */
+            unitRate: number;
+            /** Format: double */
+            amount: number;
+        };
+        CostLineInput: {
+            kind: string;
+            /** Format: uuid */
+            priceItemId: string | null;
+            description: string | null;
+            /** Format: double */
+            quantity: number;
+            unit: string | null;
+            /** Format: double */
+            unitRate: number | null;
+        };
+        CostReport: {
+            groupBy: string;
+            /** Format: date-time */
+            from: string | null;
+            /** Format: date-time */
+            to: string | null;
+            rows: components["schemas"]["CostRow"][];
+            /** Format: int32 */
+            jobs: number;
+            /** Format: double */
+            estimated: number;
+            /** Format: double */
+            actual: number;
+        };
+        CostRow: {
+            key: string;
+            name: string;
+            /** Format: int32 */
+            jobs: number;
+            /** Format: double */
+            estimated: number;
+            /** Format: double */
+            actual: number;
+            /** Format: double */
+            variance: number;
+        };
+        CostsResult: {
+            lines: components["schemas"]["CostLineDto"][];
+            variance: components["schemas"]["VarianceDto"];
+        };
+        CountDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            countedBy: string;
+            note: string | null;
+            /** Format: date-time */
+            countedAt: string;
+            lines: components["schemas"]["CountLineDto"][];
+        };
+        CountLineDto: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: double */
+            expected: number;
+            /** Format: double */
+            counted: number;
+            /** Format: double */
+            difference: number;
+            reason: string | null;
+        };
+        CountLineInput: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: double */
+            counted: number;
+            reason: string | null;
+        };
+        CountRow: {
+            key: string;
+            name: string;
+            /** Format: int32 */
+            count: number;
         };
         CreateComplaint: {
             description: string;
@@ -1883,6 +7167,17 @@ export interface components {
             locationText: string | null;
             /** Format: uuid */
             reportedByUserId: string | null;
+            /** @default null */
+            reporterPhone: string | null;
+            /** @default null */
+            assetRef: string | null;
+        };
+        CreatedDto: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            status: components["schemas"]["ComplaintStatus"];
+            needsLocation: boolean;
         };
         CreateHouse: {
             /** Format: uuid */
@@ -1891,6 +7186,10 @@ export interface components {
             plotSizeSqYd: number | null;
             houseCategory: string | null;
             status: string | null;
+        };
+        CreateIncident: {
+            complaintIds: string[];
+            title: string | null;
         };
         CreateJob: {
             instructions: string | null;
@@ -1908,12 +7207,31 @@ export interface components {
             /** Format: double */
             longitude: number | null;
         };
+        CreateNotice: {
+            title: string;
+            body: string;
+            titleUr: string | null;
+            bodyUr: string | null;
+            audienceKind: string;
+            /** Format: uuid */
+            locationId: string | null;
+            /** Format: date-time */
+            scheduledAt: string | null;
+        };
         CreateOrganizationRequest: {
             name: string;
             slug: string;
             managerEmail: string;
             managerName: string;
             managerPassword: string;
+            /** @default null */
+            displayName: string | null;
+            /** @default null */
+            locationTemplate: string | null;
+            /** @default null */
+            timezone: string | null;
+            /** @default null */
+            locale: string | null;
         };
         CreatePriceItem: {
             name: string;
@@ -1936,9 +7254,365 @@ export interface components {
             departmentId: string;
             name: string;
         };
+        Decide: {
+            approve: boolean;
+            note: string | null;
+        };
+        DecisionDto: {
+            /** Format: uuid */
+            userId: string;
+            approve: boolean;
+            note: string | null;
+            /** Format: date-time */
+            decidedAt: string;
+        };
+        DeliveryDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            notificationId: string;
+            /** Format: uuid */
+            userId: string;
+            template: string;
+            channel: string;
+            status: string;
+            /** Format: int32 */
+            attempts: number;
+            lastError: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            lastAttemptAt: string | null;
+            /** Format: date-time */
+            sentAt: string | null;
+        };
+        DepartmentDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            nameUr: string | null;
+            isActive: boolean;
+        };
+        DeviceDto: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            label: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            lastSentAt: string | null;
+            /** Format: int32 */
+            failures: number;
+            lastError: string | null;
+        };
+        DeviceResultDto: {
+            /** Format: uuid */
+            deviceId: string;
+            kind: string;
+            label: string | null;
+            outcome: string;
+            detail: string | null;
+        };
+        Dismiss: {
+            kind: string;
+            key: string;
+        };
+        DuplicateGroup: {
+            kind: string;
+            key: string;
+            description: string;
+            items: string[];
+        };
         EndResidentLink: {
             /** Format: date */
             toDate: string | null;
+        };
+        EscalationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            complaintId: string;
+            reference: string;
+            /** Format: uuid */
+            jobId: string | null;
+            rule: string;
+            /** Format: int32 */
+            level: number;
+            /** Format: date-time */
+            since: string;
+            /** Format: date-time */
+            raisedAt: string;
+            /** Format: date-time */
+            resolvedAt: string | null;
+            resolution: string | null;
+        };
+        EstimateDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            version: number;
+            status: string;
+            note: string | null;
+            /** Format: double */
+            total: number;
+            /** Format: uuid */
+            createdBy: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            lines: components["schemas"]["CostLineDto"][];
+            /** @default NotRequired */
+            approvalStatus: string;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            approvalId: string | null;
+        } | null;
+        EstimateDto2: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            version: number;
+            status: string;
+            note: string | null;
+            /** Format: double */
+            total: number;
+            /** Format: uuid */
+            createdBy: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            lines: components["schemas"]["CostLineDto"][];
+            /** @default NotRequired */
+            approvalStatus: string;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            approvalId: string | null;
+        };
+        EvidenceMediaDto: {
+            /** Format: uuid */
+            id: string;
+            stage: string;
+            kind: string;
+            url: string;
+            thumbUrl: string | null;
+            /** Format: double */
+            latitude: number | null;
+            /** Format: double */
+            longitude: number | null;
+            /** Format: uuid */
+            uploadedBy: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        FeatureDto: {
+            feature: string;
+            enabled: boolean;
+            default: boolean;
+        };
+        /** @default null */
+        FeedbackDto: {
+            /** Format: int32 */
+            rating: number;
+            confirmedFixed: boolean;
+            comment: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+        } | null;
+        FeedbackDto2: {
+            /** Format: int32 */
+            rating: number;
+            confirmedFixed: boolean;
+            comment: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        Fulfil: {
+            lines: components["schemas"]["RequestLineInput"][] | null;
+        };
+        HelpDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            phone: string | null;
+            idNumberMasked: string | null;
+            photoUrl: string | null;
+            role: string;
+            status: string;
+            allowedDays: string[];
+            allowedFrom: string | null;
+            allowedTo: string | null;
+            houseIds: string[];
+            warnings: string[];
+        };
+        HistoryDto: {
+            from: components["schemas"]["NullableOfComplaintStatus"];
+            to: components["schemas"]["ComplaintStatus"];
+            /** Format: uuid */
+            actorUserId: string | null;
+            reason: string | null;
+            /** Format: date-time */
+            occurredAt: string;
+        };
+        HouseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            locationId: string;
+            locationPath: string;
+            /** Format: double */
+            plotSizeSqYd: number | null;
+            houseCategory: string | null;
+            status: string;
+        };
+        HouseHit: {
+            /** Format: uuid */
+            id: string;
+            label: string;
+        };
+        /** Format: binary */
+        IFormFile: string;
+        ImportIssue: {
+            /** Format: int32 */
+            line: number;
+            field: string;
+            message: string;
+        };
+        ImportReport: {
+            kind: string;
+            dryRun: boolean;
+            /** Format: int32 */
+            rows: number;
+            /** Format: int32 */
+            created: number;
+            /** Format: int32 */
+            updated: number;
+            /** Format: int32 */
+            unchanged: number;
+            issues: components["schemas"]["ImportIssue"][];
+        };
+        InboxDto: {
+            /** Format: int32 */
+            unread: number;
+            items: components["schemas"]["NotificationDto"][];
+        };
+        IncidentComplaint: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            status: string;
+            /** Format: uuid */
+            reportedByUserId: string | null;
+            isPrimary: boolean;
+        };
+        IncidentDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            status: string;
+            /** Format: uuid */
+            primaryComplaintId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            complaints: components["schemas"]["IncidentComplaint"][];
+        };
+        IssueOrReturn: {
+            /** Format: uuid */
+            jobId: string;
+            /** Format: uuid */
+            itemId: string;
+            /** Format: double */
+            quantity: number;
+            note: string | null;
+        };
+        JobDetailDto: {
+            job: components["schemas"]["JobDto"];
+            completionNote: string | null;
+            checklist: components["schemas"]["ChecklistItem"][];
+            timeline: components["schemas"]["UpdateDto"][];
+            evidence: components["schemas"]["EvidenceMediaDto"][];
+            estimate: components["schemas"]["EstimateDto"];
+            actuals: unknown[];
+            variance: components["schemas"]["VarianceDto"];
+        };
+        JobDto: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            /** Format: int32 */
+            sequenceNo: number;
+            status: string;
+            instructions: string | null;
+            /** Format: uuid */
+            assignedTeamId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            complaintId: string;
+            /** Format: uuid */
+            assignedUserId: string | null;
+            evidenceRule: string;
+            requiresCosts: boolean;
+            /** @default false */
+            chargeable: boolean;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            chargeHouseId: string | null;
+        };
+        JobListItemDto: {
+            job: components["schemas"]["JobDto"];
+            reference: string;
+            priority: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+        };
+        JsonElement: unknown;
+        LandmarkDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            nameUr: string | null;
+            aliases: string[];
+            /** Format: uuid */
+            locationId: string | null;
+            /** Format: double */
+            latitude: number | null;
+            /** Format: double */
+            longitude: number | null;
+            isActive: boolean;
+        };
+        Layout: {
+            view: string;
+            widgets: string[];
+        };
+        LevelDto: {
+            /** Format: int32 */
+            level: number;
+            /** Format: int32 */
+            afterHours: number;
+            role: components["schemas"]["Role"];
+        };
+        LocationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            parentId: string | null;
+            kind: string;
+            name: string;
+            nameUr: string | null;
+            path: string;
+            /** Format: int32 */
+            depth: number;
+            /** Format: double */
+            latitude: number | null;
+            /** Format: double */
+            longitude: number | null;
+            isActive: boolean;
         };
         LoginRequest: {
             email: string;
@@ -1947,8 +7621,522 @@ export interface components {
             /** Format: uuid */
             organizationId: string | null;
         };
+        LoginResponse: {
+            token: string;
+            /** Format: uuid */
+            organizationId: string | null;
+            totpEnrollmentRequired: boolean;
+        };
+        LowStockItem: {
+            /** Format: uuid */
+            itemId: string;
+            item: string;
+            unit: string;
+            /** Format: double */
+            onHand: number;
+            /** Format: double */
+            threshold: number;
+        };
+        MakeSummary: {
+            period: string;
+        };
+        MaterialLine: {
+            /** Format: uuid */
+            itemId: string;
+            item: string;
+            unit: string;
+            /** Format: double */
+            issued: number;
+            /** Format: double */
+            returned: number;
+            /** Format: double */
+            used: number;
+            /** Format: double */
+            unexplained: number;
+            flagged: boolean;
+        };
+        MediaDto: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            mimeType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+            /** Format: int32 */
+            width: number | null;
+            /** Format: int32 */
+            height: number | null;
+            qualityFlags: string[];
+            url: string;
+            thumbUrl: string | null;
+            /** @default null */
+            transcript: string | null;
+            /**
+             * Format: float
+             * @default null
+             */
+            transcriptConfidence: number | null;
+            /** @default null */
+            transcriptLanguage: string | null;
+            /** @default null */
+            transcriptStatus: string | null;
+            /** @default null */
+            aiLabels: string[] | null;
+            /** @default null */
+            aiDescription: string | null;
+            /** @default null */
+            aiNeedsMoreInfo: boolean | null;
+        };
+        MemberDto: {
+            /** Format: uuid */
+            membershipId: string;
+            /** Format: uuid */
+            userId: string;
+            email: string;
+            displayName: string;
+            role: components["schemas"]["Role"];
+            /** Format: uuid */
+            departmentId: string | null;
+            /** Format: uuid */
+            gateId: string | null;
+            isActive: boolean;
+            /** @default null */
+            phone: string | null;
+        };
+        MembershipDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            organizationId: string;
+            organizationName: string;
+            role: string;
+            /** Format: uuid */
+            departmentId: string | null;
+            /** Format: uuid */
+            gateId: string | null;
+        };
+        MeResponse: {
+            /** Format: uuid */
+            userId: string;
+            email: string;
+            displayName: string;
+            /** Format: uuid */
+            organizationId: string | null;
+            memberships: components["schemas"]["MembershipDto"][];
+            support?: components["schemas"]["SupportInfo"];
+        };
+        MovementDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            itemId: string;
+            kind: string;
+            /** Format: double */
+            quantity: number;
+            /** Format: uuid */
+            jobId: string | null;
+            /** Format: uuid */
+            requestId: string | null;
+            reason: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        MovementResult: {
+            movement: components["schemas"]["MovementDto"];
+            /** Format: double */
+            onHand: number;
+        };
+        MyNoticeDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            noticeId: string;
+            title: string;
+            body: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            readAt: string | null;
+        };
+        NoticeDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            body: string;
+            titleUr: string | null;
+            bodyUr: string | null;
+            audienceKind: string;
+            /** Format: uuid */
+            locationId: string | null;
+            status: string;
+            /** Format: date-time */
+            scheduledAt: string | null;
+            /** Format: date-time */
+            sentAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int32 */
+            recipients: number;
+            /** Format: int32 */
+            delivered: number;
+            /** Format: int32 */
+            read: number;
+            /** Format: int32 */
+            failed: number;
+        };
+        NotificationDto: {
+            /** Format: uuid */
+            id: string;
+            template: string;
+            title: string;
+            body: string;
+            link: string | null;
+            locale: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            readAt: string | null;
+        };
+        /** @enum {unknown|null} */
+        NullableOfComplaintStatus: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged" | null;
         /** @enum {unknown} */
-        Role: "Resident" | "Guard" | "Technician" | "Office" | "Supervisor" | "Accounts" | "Committee" | "Manager" | "PlatformAdmin";
+        NullableOfComplaintStatus2: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged" | null;
+        NullableOfJsonElement: unknown;
+        OnboardingDto: {
+            /** Format: uuid */
+            organizationId: string;
+            steps: components["schemas"]["OnboardingStep"][];
+            readyForUse: boolean;
+        };
+        OnboardingStep: {
+            key: string;
+            done: boolean;
+            /** Format: int32 */
+            count: number;
+        };
+        OpenSupport: {
+            reason: string;
+            /** Format: int32 */
+            minutes: number | null;
+        };
+        OrganizationDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+        };
+        OrgPolicy: {
+            unknownSender: string;
+            closureNeedsResident: boolean;
+            autoConfirm: boolean;
+            /** Format: int32 */
+            autoConfirmDays: number;
+            /** Format: int32 */
+            reminderDays: number;
+            /**
+             * Format: int32
+             * @default 2000000
+             */
+            aiMonthlyTokenCap: number;
+            /**
+             * Format: double
+             * @default 0
+             */
+            estimateApprovalLimit: number;
+            /**
+             * Format: double
+             * @default 0
+             */
+            secondApproverAbove: number;
+            /**
+             * Format: int32
+             * @default 72
+             */
+            approvalExpiryHours: number;
+            /**
+             * Format: int32
+             * @default 24
+             */
+            estimateWaitHours: number;
+            /**
+             * Format: int32
+             * @default 20
+             */
+            overrunPercent: number;
+            /**
+             * Format: int32
+             * @default 3
+             */
+            repeatedRepairCount: number;
+            /**
+             * Format: int32
+             * @default 6
+             */
+            repeatedRepairMonths: number;
+            /**
+             * Format: int32
+             * @default 300
+             */
+            duplicateRadiusMetres: number;
+            /**
+             * Format: int32
+             * @default 7
+             */
+            duplicateWindowDays: number;
+            /**
+             * Format: int32
+             * @default 70
+             */
+            duplicateThresholdPercent: number;
+        };
+        OtpRequestBody: {
+            phone: string;
+        };
+        OtpVerifyBody: {
+            phone: string;
+            code: string;
+            /** Format: uuid */
+            organizationId: string | null;
+        };
+        OverdueJob: {
+            /** Format: uuid */
+            jobId: string;
+            number: string;
+            reference: string;
+            priority: string;
+            status: string;
+            /** Format: uuid */
+            teamId: string | null;
+            /** Format: double */
+            hoursOverdue: number;
+        };
+        OverrunDto: {
+            /** Format: uuid */
+            jobId: string;
+            number: string;
+            reference: string;
+            status: string;
+            /** Format: double */
+            estimated: number;
+            /** Format: double */
+            actual: number;
+            /** Format: double */
+            difference: number;
+            /** Format: double */
+            percent: number;
+            /** Format: date-time */
+            flaggedAt: string | null;
+        };
+        PersonDto: {
+            /** Format: uuid */
+            userId: string;
+            displayName: string;
+            role: components["schemas"]["Role"];
+            teamIds: string[];
+        };
+        PersonHit: {
+            /** Format: uuid */
+            userId: string;
+            displayName: string;
+            phone: string | null;
+            email: string | null;
+            houseIds: string[];
+        };
+        PlatformOrganizationDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int32 */
+            members: number;
+            /** Format: int32 */
+            houses: number;
+            /** Format: int32 */
+            complaints: number;
+            /** Format: date-time */
+            lastComplaintAt: string | null;
+        };
+        PreferencesDto: {
+            locale: string | null;
+            channels: string[];
+            availableChannels: string[];
+        };
+        PriceItemDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            nameUr: string | null;
+            unit: string;
+            isActive: boolean;
+            currentRate: components["schemas"]["RateDto"];
+        };
+        PushConfigDto: {
+            fcm: boolean;
+            web: boolean;
+            webPublicKey: string | null;
+        };
+        QueueItemDto: {
+            complaint: components["schemas"]["ComplaintDto"];
+            /** Format: uuid */
+            suggestedCategoryId: string | null;
+            suggestedPriority: string | null;
+            /** Format: uuid */
+            suggestedTeamId: string | null;
+            suggestedTeamName: string | null;
+        };
+        RateDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: double */
+            rate: number;
+            /** Format: date-time */
+            effectiveFrom: string;
+            /** Format: date-time */
+            createdAt: string;
+        } | null;
+        RateDto2: {
+            /** Format: uuid */
+            id: string;
+            /** Format: double */
+            rate: number;
+            /** Format: date-time */
+            effectiveFrom: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ReaderDto: {
+            /** Format: uuid */
+            userId: string;
+            name: string;
+            delivered: boolean;
+            failed: boolean;
+            /** Format: date-time */
+            readAt: string | null;
+        };
+        ReadinessDto: {
+            /** Format: uuid */
+            categoryId: string;
+            key: string;
+            name: string;
+            autoRoute: boolean;
+            /** Format: int32 */
+            samples: number;
+            /** Format: double */
+            accuracy: number | null;
+            /** Format: double */
+            requiredAccuracy: number;
+            /** Format: int32 */
+            requiredSamples: number;
+            ready: boolean;
+        };
+        Reason: {
+            text: string | null;
+        };
+        ReasonRequest: {
+            reason: string | null;
+        };
+        Receive: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: double */
+            quantity: number;
+            reason: string | null;
+        };
+        RegisterDevice: {
+            kind: string;
+            token: string;
+            keys: components["schemas"]["BrowserKeys"];
+            label: string | null;
+        };
+        RepeatedJob: {
+            /** Format: uuid */
+            jobId: string;
+            number: string;
+            reference: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: double */
+            actual: number;
+        };
+        RepeatedRepair: {
+            place: string;
+            placeKey: string;
+            category: string | null;
+            /** Format: int32 */
+            repairs: number;
+            /** Format: double */
+            totalCost: number;
+            jobs: components["schemas"]["RepeatedJob"][];
+        };
+        RequestDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            jobId: string;
+            jobNumber: string;
+            /** Format: uuid */
+            requestedBy: string;
+            status: string;
+            note: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            decisionNote: string | null;
+            lines: components["schemas"]["RequestLineDto"][];
+        };
+        RequestLineDto: {
+            /** Format: uuid */
+            itemId: string;
+            item: string;
+            unit: string;
+            /** Format: double */
+            quantity: number;
+            /** Format: double */
+            onHand: number;
+        };
+        RequestLineInput: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: double */
+            quantity: number;
+        };
+        ResidentLinkDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            houseId: string;
+            /** Format: uuid */
+            userId: string;
+            relation: string;
+            /** Format: date */
+            fromDate: string;
+            /** Format: date */
+            toDate: string | null;
+        };
+        /** @enum {unknown} */
+        Role: "Resident" | "Guard" | "Technician" | "Office" | "Supervisor" | "Accounts" | "Committee" | "Manager" | "PlatformAdmin" | "Support";
+        RuleDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: uuid */
+            categoryId: string | null;
+            /** Format: uuid */
+            locationId: string | null;
+            /** Format: uuid */
+            teamId: string;
+            /** Format: int32 */
+            sortOrder: number;
+            isActive: boolean;
+        };
+        SaveAutoRoute: {
+            enabled: boolean;
+            /** Format: float */
+            threshold: number | null;
+        };
         SaveCategory: {
             key: string;
             nameEn: string;
@@ -1959,11 +8147,41 @@ export interface components {
             evidenceRule: string | null;
             checklist: string[] | null;
             isActive: boolean | null;
+            /** @default null */
+            requiresCosts: boolean | null;
+        };
+        SaveCosts: {
+            lines: components["schemas"]["CostLineInput"][];
+        };
+        SaveCount: {
+            note: string | null;
+            lines: components["schemas"]["CountLineInput"][];
         };
         SaveDepartment: {
             name: string;
             nameUr: string | null;
             isActive: boolean | null;
+        };
+        SaveEstimate: {
+            note: string | null;
+            lines: components["schemas"]["CostLineInput"][];
+        };
+        SaveFeedback: {
+            /** Format: int32 */
+            rating: number;
+            confirmedFixed: boolean;
+            comment: string | null;
+        };
+        SaveHelp: {
+            name: string;
+            phone: string | null;
+            idNumber: string | null;
+            role: string | null;
+            status: string | null;
+            allowedDays: string[] | null;
+            allowedFrom: string | null;
+            allowedTo: string | null;
+            houseIds: string[] | null;
         };
         SaveLandmark: {
             name: string;
@@ -1977,6 +8195,77 @@ export interface components {
             longitude: number | null;
             isActive: boolean | null;
         };
+        SavePreferences: {
+            locale: string | null;
+            channels: string[] | null;
+        };
+        SaveRequest: {
+            /** Format: uuid */
+            jobId: string;
+            note: string | null;
+            lines: components["schemas"]["RequestLineInput"][];
+        };
+        SaveRisk: {
+            /** Format: int32 */
+            level: number;
+        };
+        SaveRule: {
+            name: string;
+            /** Format: uuid */
+            categoryId: string | null;
+            /** Format: uuid */
+            locationId: string | null;
+            /** Format: uuid */
+            teamId: string;
+            /** Format: int32 */
+            sortOrder: number | null;
+            isActive: boolean | null;
+        };
+        SaveSla: {
+            /** Format: uuid */
+            categoryId: string | null;
+            priority: string;
+            /** Format: int32 */
+            respondHours: number;
+            /** Format: int32 */
+            resolveHours: number;
+            businessHoursOnly: boolean | null;
+            isActive: boolean | null;
+        };
+        SaveVehicle: {
+            plate: string;
+            type: string | null;
+            /** Format: uuid */
+            houseId: string | null;
+            stickerCode: string | null;
+            status: string | null;
+            note: string | null;
+        };
+        ScheduleDto: {
+            enabled: boolean;
+            /** Format: int32 */
+            dayOfMonth: number;
+            language: string | null;
+            recipientUserIds: string[];
+        };
+        SearchResult: {
+            houses: components["schemas"]["HouseHit"][];
+            people: components["schemas"]["PersonHit"][];
+            vehicles: components["schemas"]["VehicleDto"][];
+            help: components["schemas"]["HelpDto"][];
+        };
+        SetAiCap: {
+            /** Format: int64 */
+            monthlyTokenCap: number;
+        };
+        SetChargeable: {
+            chargeable: boolean;
+            /** Format: uuid */
+            houseId: string | null;
+        };
+        SetFeature: {
+            enabled: boolean;
+        };
         SettingsDto: {
             displayName: string | null;
             timezone: string;
@@ -1985,23 +8274,284 @@ export interface components {
             primaryColor: string | null;
             logoKey: string | null;
         };
+        SimilarDto: {
+            /** Format: uuid */
+            complaintId: string;
+            reference: string;
+            /** Format: double */
+            similarity: number;
+        };
+        SlaDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            categoryId: string | null;
+            priority: string;
+            /** Format: int32 */
+            respondHours: number;
+            /** Format: int32 */
+            resolveHours: number;
+            businessHoursOnly: boolean;
+            isActive: boolean;
+        };
+        SpendWidget: {
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            /** Format: int32 */
+            jobs: number;
+            /** Format: double */
+            estimated: number;
+            /** Format: double */
+            actual: number;
+            byCategory: components["schemas"]["CostRow"][];
+            overruns: components["schemas"]["OverrunDto"][];
+            lowStock: components["schemas"]["LowStockItem"][];
+            /** Format: int32 */
+            chargesWaiting: number | null;
+        };
         StartUpload: {
             mimeType: string;
             /** Format: int64 */
             totalBytes: number;
         };
+        StartWork: {
+            note: string | null;
+            /** Format: double */
+            latitude: number | null;
+            /** Format: double */
+            longitude: number | null;
+        } | null;
+        StockLevelDto: {
+            /** Format: uuid */
+            itemId: string;
+            item: string;
+            unit: string;
+            /** Format: double */
+            onHand: number;
+            /** Format: double */
+            lowThreshold: number | null;
+            low: boolean;
+        };
+        SuggestionDecision: {
+            accept: boolean;
+            note: string | null;
+        };
+        SuggestionDto: {
+            /** Format: uuid */
+            id: string;
+            task: string;
+            status: string;
+            /** Format: int32 */
+            attempt: number;
+            categoryKey: string | null;
+            summary: string | null;
+            language: string | null;
+            locationText: string | null;
+            needsMoreInfo: boolean | null;
+            /** Format: float */
+            confidence: number | null;
+            model: string | null;
+            promptVersion: string | null;
+            error: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        SuggestionDto2: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            complaintId: string;
+            reference: string;
+            description: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: float */
+            score: number;
+            /** Format: float */
+            textSimilarity: number | null;
+            /** Format: double */
+            distanceMetres: number | null;
+            /** Format: double */
+            hoursApart: number;
+            sameCategory: boolean;
+            reason: string;
+            status: string;
+        };
+        Summary: {
+            /** Format: int32 */
+            total: number;
+            byStatus: components["schemas"]["CountRow"][];
+            byDepartment: unknown[];
+            bySector: unknown[];
+            overdueJobs: components["schemas"]["OverdueJob"][];
+            teamWorkload: components["schemas"]["WorkloadRow"][];
+            /** Format: double */
+            averageResolutionHours: number | null;
+            /** Format: int32 */
+            resolvedCount: number;
+            /** Format: int32 */
+            reopenedComplaints: number;
+            /** Format: int32 */
+            reopenEvents: number;
+            /**
+             * Format: double
+             * @default null
+             */
+            averageRating: number | null;
+            /**
+             * Format: int32
+             * @default 0
+             */
+            ratingCount: number;
+            /**
+             * Format: int32
+             * @default 0
+             */
+            confirmedFixedCount: number;
+        };
+        SummaryDto: {
+            /** Format: uuid */
+            id: string;
+            period: string;
+            /** Format: date */
+            periodStart: string;
+            /** Format: date */
+            periodEnd: string;
+            language: string;
+            includesCosts: boolean;
+            /** Format: int64 */
+            sizeBytes: number;
+            /** Format: int32 */
+            recipients: number;
+            /** Format: date-time */
+            createdAt: string;
+            scheduled: boolean;
+        };
+        /** @default null */
+        SupportInfo: {
+            /** Format: uuid */
+            sessionId: string;
+            /** Format: date-time */
+            expiresAt: string;
+        } | null;
+        SupportOpened: {
+            /** Format: uuid */
+            sessionId: string;
+            token: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: uuid */
+            organizationId: string;
+        };
+        SupportSessionRow: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            organizationId: string;
+            organization: string;
+            /** Format: uuid */
+            adminUserId: string;
+            admin: string;
+            reason: string;
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            endedAt: string | null;
+            active: boolean;
+        };
         SwitchOrganizationRequest: {
             /** Format: uuid */
             organizationId: string;
         };
+        TeamDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            departmentId: string;
+            name: string;
+            isActive: boolean;
+            members: components["schemas"]["TeamMemberDto"][];
+        };
+        TeamMemberDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            userId: string;
+            isSupervisor: boolean;
+        };
+        TestResultDto: {
+            /** Format: int32 */
+            sent: number;
+            /** Format: int32 */
+            gone: number;
+            /** Format: int32 */
+            failed: number;
+            devices: components["schemas"]["DeviceResultDto"][];
+        };
+        Threshold: {
+            /** Format: double */
+            lowThreshold: number;
+        };
         TotpConfirmRequest: {
             code: string;
+        };
+        TotpEnrollmentResponse: {
+            secret: string;
+            provisioningUri: string;
+        };
+        TranscriptDto: {
+            transcript: string;
+            /** Format: float */
+            confidence: number;
+            language: string;
+            lowConfidence: boolean;
         };
         Transition: {
             to: components["schemas"]["ComplaintStatus"];
             reason: string | null;
             /** Format: uuid */
             mergedIntoId: string | null;
+        };
+        TrendReport: {
+            granularity: string;
+            by: string;
+            periods: string[];
+            series: components["schemas"]["TrendSeries"][];
+        };
+        TrendSeries: {
+            key: string;
+            name: string;
+            created: number[];
+            resolved: number[];
+        };
+        Triage: {
+            acceptAi: boolean | null;
+            /** Format: uuid */
+            categoryId: string | null;
+            priority: string | null;
+            /** Format: uuid */
+            locationId: string | null;
+            locationText: string | null;
+        };
+        UpdateDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            authorId: string | null;
+            kind: string;
+            fromStatus: string | null;
+            toStatus: string | null;
+            note: string | null;
+            /** Format: double */
+            latitude: number | null;
+            /** Format: double */
+            longitude: number | null;
+            /** Format: date-time */
+            createdAt: string;
         };
         UpdateLocation: {
             name: string | null;
@@ -2017,6 +8567,100 @@ export interface components {
             nameUr: string | null;
             unit: string | null;
             isActive: boolean | null;
+        };
+        UploadDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int64 */
+            receivedBytes: number;
+            /** Format: int64 */
+            totalBytes: number;
+        };
+        UsageReport: {
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            /** Format: int64 */
+            monthTokens: number;
+            /** Format: int32 */
+            monthlyTokenCap: number;
+            /** Format: int32 */
+            calls: number;
+            /** Format: int64 */
+            inputTokens: number;
+            /** Format: int64 */
+            outputTokens: number;
+            /** Format: double */
+            costUsd: number | null;
+            costComplete: boolean;
+            /** Format: int32 */
+            complaintsWithAi: number;
+            /** Format: double */
+            costPerComplaint: number | null;
+            /** Format: int64 */
+            tokensPerComplaint: number;
+            byTask: components["schemas"]["UsageRow"][];
+        };
+        UsageRow: {
+            task: string;
+            model: string;
+            /** Format: int32 */
+            calls: number;
+            /** Format: int64 */
+            inputTokens: number;
+            /** Format: int64 */
+            outputTokens: number;
+            /** Format: double */
+            costUsd: number | null;
+        };
+        VapidKeyPair: {
+            publicKey: string;
+            privateKey: string;
+        };
+        VarianceDto: {
+            /** Format: double */
+            estimated: number | null;
+            /** Format: double */
+            actual: number;
+            /** Format: double */
+            difference: number | null;
+            /** Format: double */
+            percent: number | null;
+            /** @default false */
+            overrun: boolean;
+            /**
+             * Format: int32
+             * @default 0
+             */
+            thresholdPercent: number;
+        };
+        VehicleDto: {
+            /** Format: uuid */
+            id: string;
+            plate: string;
+            type: string;
+            /** Format: uuid */
+            houseId: string | null;
+            houseLabel: string | null;
+            stickerCode: string | null;
+            status: string;
+            note: string | null;
+        };
+        VerifyReporter: {
+            /** Format: uuid */
+            userId: string | null;
+        };
+        WorkloadRow: {
+            /** Format: uuid */
+            teamId: string | null;
+            team: string;
+            /** Format: int32 */
+            open: number;
+            /** Format: int32 */
+            inProgress: number;
+            /** Format: int32 */
+            pendingVerification: number;
         };
     };
     responses: never;

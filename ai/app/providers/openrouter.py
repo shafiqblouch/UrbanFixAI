@@ -1,14 +1,17 @@
-"""OpenRouter (OpenAI-compatible) provider for LLM, vision and embeddings. Speech comes from a dedicated
-provider once AI-01 picks one."""
+"""OpenRouter (OpenAI-compatible) provider for LLM, vision and embeddings. Speech goes through a chat model that
+accepts audio input; AI-01 has not yet compared models for Urdu speech, so the model is a configured choice."""
 
 from __future__ import annotations
 
 import base64
+import json
+from typing import ClassVar
 
 import httpx
 
 from app.pii import ScrubbedText
-from app.providers.base import EmbeddingResult, LlmResult, ProviderError, Usage, VisionResult
+from app.prompts import load_prompt
+from app.providers.base import EmbeddingResult, LlmResult, ProviderError, SpeechResult, Usage, VisionResult
 
 
 class OpenRouterProvider:
@@ -67,6 +70,45 @@ class OpenRouterProvider:
                 ],
             },
         )
+        return VisionResult(self._content(data), data.get("model", model), self._usage(data))
+
+    # OpenRouter names the container, not the MIME type.
+    _AUDIO_FORMATS: ClassVar[dict[str, str]] = {"audio/mpeg": "mp3", "audio/wav": "wav", "audio/ogg": "ogg", "audio/mp4": "m4a", "audio/aac": "aac"}
+
+    async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None, prompt_version: str = "v1") -> SpeechResult:
+        fmt = self._AUDIO_FORMATS.get(mime_type.split(";")[0].strip().lower())
+        if fmt is None:
+            raise ProviderError(f"Audio type {mime_type} is not supported by the speech provider")
+        prompt = load_prompt("speech_transcription", prompt_version).format(hint=language_hint or "none")
+        data = await self._post(
+            "/chat/completions",
+            {
+                "model": model,
+                "temperature": 0,
+                "response_format": {"type": "json_object"},
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {"type": "input_audio", "input_audio": {"data": base64.b64encode(audio).decode(), "format": fmt}},
+                        ],
+                    }
+                ],
+            },
+        )
+        try:
+            body = json.loads(self._content(data).strip().strip("`").removeprefix("json").strip())
+            return SpeechResult(str(body["transcript"]), float(body["confidence"]), str(body["language"]), data.get("model", model))
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ProviderError("Speech response was not the expected JSON") from exc
+
+    async def describe_images(self, *, model: str, prompt: ScrubbedText, images: list[bytes], mime_type: str) -> VisionResult:
+        parts: list[dict] = [{"type": "text", "text": prompt}]
+        for image in images:
+            url = f"data:{mime_type};base64,{base64.b64encode(image).decode()}"
+            parts.append({"type": "image_url", "image_url": {"url": url}})
+        data = await self._post("/chat/completions", {"model": model, "temperature": 0, "messages": [{"role": "user", "content": parts}]})
         return VisionResult(self._content(data), data.get("model", model), self._usage(data))
 
     async def embed(self, *, model: str, texts: list[ScrubbedText]) -> EmbeddingResult:

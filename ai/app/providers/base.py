@@ -53,6 +53,8 @@ class LlmProvider(Protocol):
 class VisionProvider(Protocol):
     async def describe(self, *, model: str, prompt: ScrubbedText, image: bytes, mime_type: str) -> VisionResult: ...
 
+    async def describe_images(self, *, model: str, prompt: ScrubbedText, images: list[bytes], mime_type: str) -> VisionResult: ...
+
 
 class SpeechProvider(Protocol):
     # Audio carries no text to scrub; it is stripped of identity at the source by not sending any metadata.
@@ -61,3 +63,14 @@ class SpeechProvider(Protocol):
 
 class EmbeddingProvider(Protocol):
     async def embed(self, *, model: str, texts: list[ScrubbedText]) -> EmbeddingResult: ...
+
+
+class Unconfigured:
+    """Stands in for a provider nobody has chosen yet (AI-01 has not compared embedding models), so a missing choice
+    fails loudly instead of returning meaningless vectors."""
+
+    def __init__(self, kind: str) -> None:
+        self._kind = kind
+
+    async def embed(self, **_: object):
+        raise ProviderError(f"No {self._kind} provider is configured")

@@ -13,7 +13,7 @@ from app.pii import ScrubbedText, scrub
 from app.prompts import load_prompt
 from app.providers import Providers
 from app.providers.base import ProviderError
-from app.schemas import ModelOutput, UnderstandRequest, UnderstandResponse
+from app.schemas import ModelOutput, UnderstandRequest, UnderstandResponse, UsageBody
 
 LOW_CONFIDENCE = 0.5
 
@@ -50,6 +50,7 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
 
     last_error = "no attempt made"
     model = settings.llm_model
+    used_in = used_out = 0
     for _ in range(settings.max_output_retries + 1):
         try:
             result = await providers.llm.complete(
@@ -61,6 +62,8 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
                 raise
             model = settings.llm_fallback_model
             continue
+        used_in += result.usage.input_tokens
+        used_out += result.usage.output_tokens
         try:
             output = ModelOutput.model_validate(_extract_json(result.text))
             if output.category not in allowed:
@@ -85,6 +88,7 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
             prompt_version=version,
             pii_redactions=sum(scrubbed.counts.values()),
             injection_suspected=injection_suspected,
+            usage=UsageBody(input_tokens=used_in, output_tokens=used_out),
         )
 
     raise InvalidModelOutput(last_error)

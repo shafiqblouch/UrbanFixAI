@@ -6,7 +6,14 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from app.config import Settings
-from app.providers.base import EmbeddingProvider, LlmProvider, ProviderError, SpeechProvider, VisionProvider
+from app.providers.base import (
+    EmbeddingProvider,
+    LlmProvider,
+    ProviderError,
+    SpeechProvider,
+    Unconfigured,
+    VisionProvider,
+)
 from app.providers.fake import FakeProvider
 from app.providers.openrouter import OpenRouterProvider
 
@@ -31,7 +38,7 @@ def build_providers(settings: Settings) -> Providers:
             OpenRouterProvider(settings.openrouter_api_key, settings.openrouter_base_url, settings.request_timeout_seconds),
         )
 
-    factories: dict[str, Callable[[], object]] = {"fake": fake, "openrouter": openrouter}
+    factories: dict[str, Callable[[], object]] = {"fake": fake, "openrouter": openrouter, "unconfigured": lambda: Unconfigured("embedding")}
 
     def pick(kind: str, name: str, supported: set[str]) -> object:
         if name not in factories or name not in supported:
@@ -41,6 +48,6 @@ def build_providers(settings: Settings) -> Providers:
     return Providers(
         llm=pick("llm", settings.llm_provider, {"fake", "openrouter"}),  # type: ignore[arg-type]
         vision=pick("vision", settings.vision_provider, {"fake", "openrouter"}),  # type: ignore[arg-type]
-        speech=pick("speech", settings.speech_provider, {"fake"}),  # type: ignore[arg-type]
-        embedding=pick("embedding", settings.embedding_provider, {"fake", "openrouter"}),  # type: ignore[arg-type]
+        speech=pick("speech", settings.speech_provider, {"fake", "openrouter"}),  # type: ignore[arg-type]
+        embedding=pick("embedding", settings.embedding_provider, {"fake", "openrouter", "unconfigured"}),  # type: ignore[arg-type]
     )

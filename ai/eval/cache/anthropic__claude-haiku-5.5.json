@@ -1,0 +1,446 @@
+{
+ "02e0f783613f2545f522260947c7e16ec82114f067e6dcbd3a0816a8c2b4e12b": {
+  "input_tokens": 755,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 169,
+  "text": "{\"category\": \"electricity\", \"summary\": \"An electricity wire is hanging low near the park gate, where children play, and residents consider it very dangerous.\", \"location_text\": \"پارک کے دروازے کے پاس\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "095af131d53f89640875c42a9a5c8eccae8bab24ebd135767e95c63e8e147661": {
+  "input_tokens": 727,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 85,
+  "text": "{\"category\": \"garbage\", \"summary\": \"Garbage has not been collected from the resident's block for four days, and stray dogs are tearing open the waste bags.\", \"location_text\": \"Hamare block\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "0b8d29d314b596ddfbf02a2eeea64f9fd34372d822348e0cafd1d3b7774d25cb": {
+  "input_tokens": 719,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 167,
+  "text": "{\n  \"category\": \"roads\",\n  \"summary\": \"The speed breaker in front of the school has worn down, and vehicles are driving fast past it.\",\n  \"location_text\": \"School ke samne (in front of the school)\",\n  \"language\": \"roman_ur\",\n  \"confidence\": 0.9\n}"
+ },
+ "13223a30422ee5abfc65a9188b04348a8295ed71f89f8c978a4574a819e480a7": {
+  "input_tokens": 739,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 93,
+  "text": "{\"category\": \"electricity\", \"summary\": \"An electricity wire is hanging low near the park gate, and children play there, making it very dangerous.\", \"location_text\": \"Park ke darwaze ke paas (near the park gate)\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "1424c7c91510108ff7d49a620d1247ec83f407b545277ae1140339ba41273231": {
+  "input_tokens": 724,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 72,
+  "text": "{\"category\": \"water\", \"summary\": \"Water pressure in Block C is very low, and the rooftop water tank is not filling.\", \"location_text\": \"Block C\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "14b23739b9c5143f5d9b5e94476159ed36726455841610a789cfe42d7c7aa9be": {
+  "input_tokens": 717,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 75,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident is asking what time the next general body meeting will be held. This is an information request rather than a service complaint.\", \"location_text\": null, \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "18bc1eb29fa8e22876df9eebbb457a155e86826d563f7400a3c2093e31378071": {
+  "input_tokens": 712,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 82,
+  "text": "{\n  \"category\": \"sewage_drainage\",\n  \"summary\": \"A sewer is overflowing onto the road, causing the road to flood and become damaged.\",\n  \"location_text\": null,\n  \"language\": \"en\",\n  \"confidence\": 0.9\n}"
+ },
+ "19fa59d81f8fe2bbd2f7334dcc074b1739470cf177dfd7202e296a42ae8ae788": {
+  "input_tokens": 713,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 209,
+  "text": "{\n  \"category\": \"other\",\n  \"summary\": \"The resident's message is cut off and mentions a child's school fee, which is not a housing society service issue. No specific problem can be identified.\",\n  \"location_text\": null,\n  \"language\": \"ur\",\n  \"confidence\": 0.1\n}"
+ },
+ "1ac110a9e12e0dba38b29e7094caf927faf8187f18dc46cf4357e93fc823028d": {
+  "input_tokens": 756,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 204,
+  "text": "{\n  \"category\": \"roads\",\n  \"summary\": \"There is a large pit at the society gate, and two motorcycles have slipped in it this week. The resident is warning that it is a hazard.\",\n  \"location_text\": \"سوسائٹی کے گیٹ پر\",\n  \"language\": \"ur\",\n  \"confidence\": 0.85\n}"
+ },
+ "1b8976971f84f93825c48dd82507e5420d6d8239c9d83985187ac9741ab91ac5": {
+  "input_tokens": 741,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 66,
+  "text": "{\"category\": \"water\", \"summary\": \"The tap water is coming out brown and smells bad, and children have developed stomach illness.\", \"location_text\": null, \"language\": \"ur\", \"confidence\": 0.93}"
+ },
+ "1f03584b00e81c94f7616fa35193f3e5e0f8a4b7b68c50f72c125a357643fcae": {
+  "input_tokens": 714,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 82,
+  "text": "{\"category\": \"electricity\", \"summary\": \"A live electrical wire is hanging low near the park entrance after last night's storm, posing a danger to children who play there.\", \"location_text\": \"near the park entrance\", \"language\": \"en\", \"confidence\": 0.97}"
+ },
+ "22eb55662b5771024ba0d699f6c825a78db612257990eb52dde525d9d3e9eb9d": {
+  "input_tokens": 707,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 81,
+  "text": "{\"category\": \"noise\", \"summary\": \"A generator in the commercial plot next to the resident's house runs loudly all night. No other cause is stated.\", \"location_text\": \"commercial plot next to my house\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "28d48fec18a046a0aaf85de84523b0f10c03c8a2e04e2feac09498b0945f4a68": {
+  "input_tokens": 739,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 163,
+  "text": "{\"category\": \"security\", \"summary\": \"The guard at Gate No. 2 allows guests to enter without being registered. The resident is concerned about lax access control at the gate.\", \"location_text\": \"گیٹ نمبر 2\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "296e9e727e891955bed463eaa02d532c47641475e0b81728e6df4c69f6751e63": {
+  "input_tokens": 719,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 215,
+  "text": "{\"category\": \"electricity\", \"summary\": \"Whenever the lift operates, the electricity supply to the resident's flat trips and goes off. The complaint suggests a power fault linked to the lift circuit.\", \"location_text\": \"our flat\", \"language\": \"roman_ur\", \"confidence\": 0.8}"
+ },
+ "29b8732e5136c6720667fa1937e26a0231d2771f251b96bec24dcaeea2a38b07": {
+  "input_tokens": 718,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 85,
+  "text": "{\"category\": \"security\", \"summary\": \"The guard at Gate 2 lets visitors enter without recording their entry. The resident is complaining about lax gate control.\", \"location_text\": \"Gate 2\", \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "29e7128150ccc66c66537d692dc14017d18c1f4d6b9c6f7029a7b91d222f3af3": {
+  "input_tokens": 693,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 133,
+  "text": "{\"category\": \"electricity\", \"summary\": \"The resident reports that the electricity is off. No location or duration is given.\", \"location_text\": null, \"language\": \"ur\", \"confidence\": 0.8}"
+ },
+ "2c37ffa7972bb042e93c1f6bf894c0811a9a675891413753469b9c254baf615b": {
+  "input_tokens": 713,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 75,
+  "text": "{\"category\": \"water\", \"summary\": \"The resident reports that there has been no water supply in their street since yesterday morning and asks for a water tanker to be sent.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.97}"
+ },
+ "2d7d63229b171441fba58009c7f20e698065d442b4bc604cfc8551f39e4550c4": {
+  "input_tokens": 701,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 151,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident says there is a problem but does not describe it, and feels that nobody is listening to them. The specific issue is not stated.\", \"location_text\": null, \"language\": \"roman_ur\", \"confidence\": 0.2}"
+ },
+ "2f37f5a516c3c2b8412a358d476dcd3a75583e4bee56e2abc789cc25cdc312be": {
+  "input_tokens": 739,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 151,
+  "text": "{\"category\": \"roads\", \"summary\": \"The speed breaker in front of the school has worn down, and vehicles are driving fast past it.\", \"location_text\": \"اسکول کے سامنے\", \"language\": \"ur\", \"confidence\": 0.9}"
+ },
+ "309d56bcd0a3dda6f9aa63d8c6b328dfd00d84d54706e902b8a3d89cf5314841": {
+  "input_tokens": 748,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 102,
+  "text": "{\"category\": \"electricity\", \"summary\": \"A transformer near Block A is making a loud noise, and sparks came out of it yesterday. The resident is reporting a potentially dangerous electrical fault.\", \"location_text\": \"بلاک اے کے پاس\", \"language\": \"ur\", \"confidence\": 0.9}"
+ },
+ "3297580fcb0952bca2ede8bdb43f47d3f427eeb8d526261d7f6144cda79b5977": {
+  "input_tokens": 714,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 83,
+  "text": "{\"category\": \"water\", \"summary\": \"The tap water is brown and has a bad smell, and the resident's children have developed a stomach infection. The resident is reporting a water quality problem.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "3c3a17f24c80d4a1a8f40e429c2d37e6c42f496ccbf12c89e3003e3427ebda4b": {
+  "input_tokens": 708,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 83,
+  "text": "{\"category\": \"garbage\", \"summary\": \"Construction rubble has been dumped on the green belt behind block D. The resident is reporting the illegal dumping.\", \"location_text\": \"green belt behind block D\", \"language\": \"en\", \"confidence\": 0.85}"
+ },
+ "3cdff054fcf081ae6cc002d435240aa42751dc8404d9085eb69d53fd668cd3b7": {
+  "input_tokens": 738,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 77,
+  "text": "{\"category\": \"water\", \"summary\": \"Water pressure is very low in Block C, and the rooftop water tank is not filling.\", \"location_text\": \"بلاک سی (Block C)\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "3d2d9f07c4206af0bb4db45cb96e0b870f1d677b5a22abd56881f9cfc5ecb3af": {
+  "input_tokens": 735,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 185,
+  "text": "{\n  \"category\": \"garbage\",\n  \"summary\": \"Someone has dumped construction debris on the green belt behind Block D. The resident is asking for it to be cleared.\",\n  \"location_text\": \"گرین بیلٹ، بلاک ڈی کے پیچھے\",\n  \"language\": \"ur\",\n  \"confidence\": 0.9\n}"
+ },
+ "41c46a1fcf47586f78b6dd5cc54273b95d5de17ae72f7f2e549fcc713b701477": {
+  "input_tokens": 725,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 87,
+  "text": "{\"category\": \"water\", \"summary\": \"There has been no water supply in the street since yesterday morning, and the resident asks for a water tanker to be sent.\", \"location_text\": \"Hamari gali (our street)\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "4adc4d9ccbb71e7c052bce2e42563e4efffbf68804db03a6dd3947f916304a10": {
+  "input_tokens": 709,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 69,
+  "text": "{\"category\": \"noise\", \"summary\": \"A marriage hall plays loud music past midnight almost every weekend, disturbing residents. \", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "50fcdc839ea994f1e995c5170002b097857b349a9cb1c5659207c1f7a423ddc4": {
+  "input_tokens": 714,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 173,
+  "text": "{\"category\": \"garbage\", \"summary\": \"Someone has dumped construction debris (malba) on the green belt behind Block D.\", \"location_text\": \"Block D ke peeche green belt\", \"language\": \"roman_ur\", \"confidence\": 0.85}"
+ },
+ "51e77c402721e0672e278d5f1580717b8e8c39599854f1a306380cb8e5c0b772": {
+  "input_tokens": 744,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 234,
+  "text": "{\n  \"category\": \"sewage_drainage\",\n  \"summary\": \"Rainwater does not drain away from the road near the mosque, so the street floods every time it rains.\",\n  \"location_text\": \"سڑک مسجد کے قریب\",\n  \"language\": \"ur\",\n  \"confidence\": 0.9\n}"
+ },
+ "55b916ff111068eb03693dc17f1354a9fc72579c4a91f237a00cede940ec0d64": {
+  "input_tokens": 709,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 77,
+  "text": "{\"category\": \"roads\", \"summary\": \"The speed breaker near the school has worn away, so cars are driving too fast. A repair or replacement is needed.\", \"location_text\": \"near the school\", \"language\": \"en\", \"confidence\": 0.9}"
+ },
+ "57f94436170aabfb507aeed3b74c045fa3ecf57285d56fd5b288d6f75b1a8281": {
+  "input_tokens": 710,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 168,
+  "text": "{\"category\": \"garbage\", \"summary\": \"Garbage has not been collected for several days, and the resulting smell is spreading. The resident is asking for it to be lifted.\", \"location_text\": null, \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "5aedb615b5fc6870bfbffb49c875d8414c645031059dcff25f142c39ab3acc24": {
+  "input_tokens": 740,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 162,
+  "text": "{\n  \"category\": \"noise\",\n  \"summary\": \"A wedding hall plays loud music every weekend until after midnight. The resident is complaining about the disturbance.\",\n  \"location_text\": \"شادی ہال\",\n  \"language\": \"ur\",\n  \"confidence\": 0.95\n}"
+ },
+ "5ed4e7df7ee6ddc92bc61b9c67d0b29896cf1857a5a505fb3a539d005537097a": {
+  "input_tokens": 724,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 83,
+  "text": "{\"category\": \"electricity\", \"summary\": \"The street light outside House 14 has been out for a week, leaving the lane dark at night.\", \"location_text\": \"House 14, outside (street/gali)\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "619542e9d464b548759c40cabe718e494e6d85241a42e64569bf645bbf1843e3": {
+  "input_tokens": 700,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 72,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident reports an unspecified problem near the park and asks the office to check it, without describing the issue.\", \"location_text\": \"near the park\", \"language\": \"en\", \"confidence\": 0.2}"
+ },
+ "6b17db49c039036a8321094643322b9124e585a0164aa8ec923b299e55cf17ea": {
+  "input_tokens": 723,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 85,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"The manhole cover in the lane outside House 22 is missing, so someone could fall into it.\", \"location_text\": \"House 22 ki gali\", \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "72dea649ca58ca549078db251102148f03dab0cce8cabf1a878eff0d2b886081": {
+  "input_tokens": 720,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 76,
+  "text": "{\"category\": \"noise\", \"summary\": \"A marriage hall plays loud music every weekend until after midnight, disturbing residents.\", \"location_text\": \"marriage hall\", \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "791321b1a46b81e55dc6ffe6ddd9bc7f32b7448cfbdcdda9b78ddc2c36830935": {
+  "input_tokens": 726,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 214,
+  "text": "{\"category\": \"roads\", \"summary\": \"A very large pothole is at the society gate, and two motorcycles have slipped in it this week. The resident is reporting it as a hazard.\", \"location_text\": \"Society gate\", \"language\": \"roman_ur\", \"confidence\": 0.85}"
+ },
+ "7d00851eb578cd50fd726de4b086e7b640ba80a2b34db19e6bfb45982cc04ea4": {
+  "input_tokens": 696,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 77,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident is asking for their club membership card to be renewed. This is an administrative request rather than a service problem in the listed categories.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.85}"
+ },
+ "7dcc9e3105d7d006b1f314463a805872b6f2811059d06ac4356c61dd5e5923e8": {
+  "input_tokens": 729,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 98,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"Sewage lines are overflowing at the corner of Street 5, and the smell is unbearable.\", \"location_text\": \"Street 5 ke mod par (corner of Street 5)\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "7e63262998c861104461b41c5e7728c428ca604ddd6659e0ffc28460289699b3": {
+  "input_tokens": 717,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 82,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"The main sewer line is overflowing at the corner of street 5, and the smell from it is unbearable.\", \"location_text\": \"corner of street 5\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "7ebb32107bc967d2c9b29326e6daaed28c8a76c9dac9db08542e6265dfb6442b": {
+  "input_tokens": 710,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 79,
+  "text": "{\"category\": \"security\", \"summary\": \"The guard at gate 2 admits visitors without any entry recording or checking. The resident is concerned about lax access control.\", \"location_text\": \"gate 2\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "857429d0bb9f346ca8aac6fc3fae19c9daa507d9471bdcb4f7c6ba5c105cf30b": {
+  "input_tokens": 689,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 64,
+  "text": "{\"category\": \"electricity\", \"summary\": \"The resident reports that there is no power. The complaint does not say where or for how long.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.7}"
+ },
+ "888bb4aaeba05c3758c24d87507b3b846388299b619a7b3deccd6b16885b738f": {
+  "input_tokens": 715,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 71,
+  "text": "{\"category\": \"garbage\", \"summary\": \"Garbage has not been collected from the block for four days, and dogs are tearing open the bags.\", \"location_text\": \"our block\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "8ec0ae172a79e530dc693012b3b913feb12cb4f8f4266e8f59a1c6446480e7dd": {
+  "input_tokens": 715,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 74,
+  "text": "{\"category\": \"electricity\", \"summary\": \"The street light outside house 14 has been off for a week, leaving the lane completely dark at night.\", \"location_text\": \"outside house 14\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "93c29333c3ce51d68bd640cb08a25f82a15b25a527055f2e5177554d951dd799": {
+  "input_tokens": 732,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 89,
+  "text": "{\"category\": \"noise\", \"summary\": \"A neighbouring house runs a generator all night, and the noise prevents the resident from sleeping.\", \"location_text\": \"ساتھ والا گھر (neighbouring house)\", \"language\": \"ur\", \"confidence\": 0.93}"
+ },
+ "98c5360685002ed1fcd98dc3872442e72ccea30d27b9f1c462616553138eefc7": {
+  "input_tokens": 738,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 87,
+  "text": "{\"category\": \"water\", \"summary\": \"There has been no water supply in the resident's street since yesterday morning, and they are asking for a water tanker to be sent.\", \"location_text\": \"ہماری گلی (our street)\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "9a8f93707c1dc9abd3c3218a8d35cc707852e1d4781928d9da6254a04036a046": {
+  "input_tokens": 713,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 80,
+  "text": "{\"category\": \"electricity\", \"summary\": \"The transformer near block A is humming loudly and sparks came out of it yesterday. This is a potential safety hazard.\", \"location_text\": \"near block A\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "9dafee9ca326b22844a87d04863b9ed52d5afe606615f7cf42e8d936882b509a": {
+  "input_tokens": 730,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 100,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"Rainwater does not drain away from the road near the mosque, so every time it rains the street floods.\", \"location_text\": \"sarak par, masjid ke qareeb (road near the mosque)\", \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "9dc8a1d439eaa2a156ac509dc3877c168256109021c80271dbc6b49b1a73b6f0": {
+  "input_tokens": 713,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 66,
+  "text": "{\"category\": \"electricity\", \"summary\": \"The transformer has blown out and the whole neighbourhood is without power.\", \"location_text\": null, \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "9f2a7985172fad876719032a7eaa3bef5bbcde883ef210be9259e10e01da6645": {
+  "input_tokens": 748,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 84,
+  "text": "{\"category\": \"noise\", \"summary\": \"A generator on the neighbouring commercial plot runs all night and is very loud, disturbing the resident's home.\", \"location_text\": \"commercial plot next to my house\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "a9e777ab97817dd794fa5fdf603e1e5e9fd6afa2495bd107ac99c9d2ffdb2d72": {
+  "input_tokens": 743,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 93,
+  "text": "{\"category\": \"security\", \"summary\": \"Two strangers were seen at around 3 am trying the door handles in the resident's street, and the CCTV camera in that area is not working.\", \"location_text\": \"hamari gali (our street)\", \"language\": \"roman_ur\", \"confidence\": 0.93}"
+ },
+ "aaee1b1a326d56565419fd5e7a509244616505b05eaa9cae67bfddd760d00e67": {
+  "input_tokens": 729,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 85,
+  "text": "{\"category\": \"noise\", \"summary\": \"A commercial plot next to the resident's house runs a generator through the entire night, creating a lot of noise.\", \"location_text\": \"commercial plot next to my house\", \"language\": \"roman_ur\", \"confidence\": 0.95}"
+ },
+ "acd6db53d3c33bea3790cf443486c586785e1c1643e8ab283ffb69b084468029": {
+  "input_tokens": 711,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 79,
+  "text": "{\"category\": \"roads\", \"summary\": \"A large pothole at the society gate has caused two motorbikes to slip this week. It is a safety hazard for riders.\", \"location_text\": \"society gate\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "adda7e9f59582d68668e10de217cba9e7ed84878d28b77f1614dedb0df5f175b": {
+  "input_tokens": 733,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 72,
+  "text": "{\"category\": \"roads\", \"summary\": \"A large pothole has formed in the street, and vehicles are getting stuck in it.\", \"location_text\": \"گلی (street)\", \"language\": \"ur\", \"confidence\": 0.93}"
+ },
+ "b58d4509631b81b9a1f84a5cb870243d36e1e50671586eeb04e94122ae699d5f": {
+  "input_tokens": 692,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 55,
+  "text": "{\"category\": \"water\", \"summary\": \"The resident reports that there is no water supply.\", \"location_text\": null, \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "b77388523c8aca99ba982cec759f1294d39201774e42367e2cef0533b12ef2cb": {
+  "input_tokens": 735,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 182,
+  "text": "{\n  \"category\": \"sewage_drainage\",\n  \"summary\": \"The manhole cover in the street near house 22 is missing, creating a risk that someone could fall into it.\",\n  \"location_text\": \"مکان 22 کی گلی میں\",\n  \"language\": \"ur\",\n  \"confidence\": 0.95\n}"
+ },
+ "b96bd087261adcadb258a4c4109b85d0d814938977aa324e15c19d6508291429": {
+  "input_tokens": 727,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 92,
+  "text": "{\"category\": \"electricity\", \"summary\": \"A transformer near Block A is making a loud noise, and sparks came out of it yesterday. The resident is describing a possible electrical hazard.\", \"location_text\": \"Block A\", \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "bf4c3aebe9b2b4ab1b53457a30c48424351ef2e0c9ff96ab3d4160d12b916f49": {
+  "input_tokens": 715,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 206,
+  "text": "{\n  \"category\": \"other\",\n  \"summary\": \"The resident asks the society office to update the details of their household members in the society records. This is an administrative record request, not a service complaint.\",\n  \"location_text\": null,\n  \"language\": \"roman_ur\",\n  \"confidence\": 0.85\n}"
+ },
+ "c3c1cafe7fdba2200572b7ef255f93d0f965aaa7ae27fff27ccdbba583ee91ca": {
+  "input_tokens": 713,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 85,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"A manhole cover is missing on the lane outside house 22, creating a risk that someone could fall into it.\", \"location_text\": \"the lane outside house 22\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "c3f9c6ff0cd80d4d2bad45c97bcc88c2f2173a44538eb6aa946c907e011a93f6": {
+  "input_tokens": 744,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 93,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"A sewage line is overflowing at the corner of Street 5, and the smell is unbearable.\", \"location_text\": \"گلی نمبر 5 کے موڑ پر\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "c6955733f8514f4925543067f00a98a2e6bae6f0f3f12ce5bbfe6fdcecb9eaa5": {
+  "input_tokens": 745,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 86,
+  "text": "{\"category\": \"garbage\", \"summary\": \"Garbage has not been collected from the resident's block for four days, and dogs are tearing open the bags.\", \"location_text\": \"ہمارا بلاک (our block)\", \"language\": \"ur\", \"confidence\": 0.95}"
+ },
+ "c823a88cf9b1752cd681cd62686be2aba43c81802780183276a528230d0a4351": {
+  "input_tokens": 734,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 162,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident is asking for the time of the next general body meeting. This is an information request, not a complaint about a service problem.\", \"location_text\": null, \"language\": \"ur\", \"confidence\": 0.9}"
+ },
+ "cae1d78709c19768968105cbcbf69d4ccad0cd6a5d42d899c390b40fc5f05edc": {
+  "input_tokens": 719,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 80,
+  "text": "{\"category\": \"security\", \"summary\": \"Two unknown people were seen trying door handles in the lane around 3am, and the CCTV camera covering that area is not working.\", \"location_text\": \"our lane\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "cb6c26e372a88ccbc53044d3cfc6917e080c1d60a8d955c40f64a88ad8463f3f": {
+  "input_tokens": 706,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 77,
+  "text": "{\"category\": \"water\", \"summary\": \"Water has been leaking from a pipe near house 12 for two days. The resident is reporting a water supply leak.\", \"location_text\": \"near house 12\", \"language\": \"en\", \"confidence\": 0.9}"
+ },
+ "d2486cdcce08d46707c9e436fb873c95833700db2143f931a1262b4c5bdc8d99": {
+  "input_tokens": 731,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 77,
+  "text": "{\"category\": \"water\", \"summary\": \"The resident reports that the tap water is brown and smells bad, and that children have fallen ill with stomach illness.\", \"location_text\": null, \"language\": \"roman_ur\", \"confidence\": 0.9}"
+ },
+ "d30d65dd23f265ed1e432ae63e5fd48550f3aed0fe39ac0746a76e774d7d0d92": {
+  "input_tokens": 738,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 396,
+  "text": "{\n  \"category\": \"electricity\",\n  \"summary\": \"Whenever the lift runs, the electricity supply to the resident's flat trips and cuts out. The complaint does not say what causes the trip.\",\n  \"location_text\": \"ہمارے فلیٹ\",\n  \"language\": \"ur\",\n  \"confidence\": 0.85\n}"
+ },
+ "d6712ed54307410a8d973be4df5672dd28dab7cd95809b74a6a14f41e92b115a": {
+  "input_tokens": 743,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 157,
+  "text": "{\n  \"category\": \"other\",\n  \"summary\": \"The resident asks the society office to update their family's details in the society records. This is an administrative request, not a service complaint about any of the listed categories.\",\n  \"location_text\": null,\n  \"language\": \"ur\",\n  \"confidence\": 0.3\n}"
+ },
+ "dc404aaf023647f3acf4a9045de1a88ae059f29f35bb2b85cec87f657c30215f": {
+  "input_tokens": 756,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 197,
+  "text": "{\n  \"category\": \"electricity\",\n  \"summary\": \"The street light outside house number 14 has been off for a week, leaving the lane dark at night.\",\n  \"location_text\": \"مکان نمبر 14 کے باہر\",\n  \"language\": \"ur\",\n  \"confidence\": 0.95\n}"
+ },
+ "e20279e27c18321a01b3cf5c5421b72965a9510a8b5ec324528bab3d4f337a5b": {
+  "input_tokens": 761,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 90,
+  "text": "{\"category\": \"security\", \"summary\": \"Two unknown people were trying door handles in the street at 3 am, and the CCTV camera there is not working. The resident is concerned about security.\", \"location_text\": \"ہماری گلی\", \"language\": \"ur\", \"confidence\": 0.9}"
+ },
+ "e45b45181816760f366c58ac72f3a22bcdcb8fcadc80d11acd24d93eaba8a8d0": {
+  "input_tokens": 724,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 190,
+  "text": "{\"category\": \"security\", \"summary\": \"At night there was no guard posted at the gate, and a theft took place. The resident is complaining about inadequate gate security.\", \"location_text\": \"گیٹ\", \"language\": \"ur\", \"confidence\": 0.93}"
+ },
+ "e46504ea6746a78da76810f13953f4308cdcdb8657a0ddf66c88d64e20820bf3": {
+  "input_tokens": 712,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 66,
+  "text": "{\"category\": \"water\", \"summary\": \"Water pressure in block C is extremely low, and the rooftop tank never fills.\", \"location_text\": \"block C\", \"language\": \"en\", \"confidence\": 0.95}"
+ },
+ "ef885b819674eada02ffe635d2dc2a60c6f79040e837e99f04a3a4d252fa4e72": {
+  "input_tokens": 714,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 79,
+  "text": "{\"category\": \"sewage_drainage\", \"summary\": \"Rainwater does not drain from the road near the mosque, so the road floods every time it rains.\", \"location_text\": \"road near the mosque\", \"language\": \"en\", \"confidence\": 0.9}"
+ },
+ "f29fc8721b59aae2f4f8727c4c6af6d48cc67bf32845f8b5042ca382bdb548b3": {
+  "input_tokens": 707,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 85,
+  "text": "{\"category\": \"electricity\", \"summary\": \"Power in the flat repeatedly trips whenever the lift is running. The resident is reporting a recurring electrical fault linked to the lift.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.8}"
+ },
+ "fba804dde69e9fac3a018f731cd8cdd3c7d23f8c7900ddbdb652b91549829219": {
+  "input_tokens": 699,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 84,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident is asking the office to update a family member's details in the society records. This is an administrative request rather than a service complaint about a neighbourhood problem.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.85}"
+ },
+ "fc7f92b8a90477e9c498800084b46a4fdb8d010a8f8c77ad0dde1d3fa75d71c7": {
+  "input_tokens": 704,
+  "model": "anthropic/claude-haiku-5.5",
+  "output_tokens": 72,
+  "text": "{\"category\": \"other\", \"summary\": \"The resident is asking for the date and time of the next general body meeting. This is an information request rather than a service complaint.\", \"location_text\": null, \"language\": \"en\", \"confidence\": 0.9}"
+ }
+}

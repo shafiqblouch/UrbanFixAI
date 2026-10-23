@@ -5,6 +5,10 @@
     <ProjectReference Include="..\UrbanFix.Identity\UrbanFix.Identity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\contracts\safety-terms.json" LogicalName="safety-terms.json" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -6,6 +6,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using UrbanFix.Api.Endpoints;
+using UrbanFix.Api.Reports;
 using UrbanFix.Api.Security;
 using UrbanFix.Identity;
 using UrbanFix.Infrastructure;
@@ -35,9 +36,17 @@ builder.Services.AddOpenTelemetry()
     });
 
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
 builder.Services.AddUrbanFixInfrastructure(builder.Configuration, runBackgroundServers: !builder.Configuration.GetValue("Background:Disabled", false));
 builder.Services.AddUrbanFixAuthorization();
+// After the infrastructure default, so live pushes go through SignalR.
+builder.Services.AddSingleton<UrbanFix.Infrastructure.Notifications.INotificationPusher, SignalRNotificationPusher>();
 builder.Services.AddHealthChecks();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<UrbanFix.Api.Reports.MonthlySummaryService>();
+builder.Services.AddSingleton<UrbanFix.Api.Reports.MonthlySummaryJob>();
+builder.Services.AddScoped<UrbanFix.SharedKernel.IEventHandler<UrbanFix.Infrastructure.Reports.MonthlySummaryReady>, UrbanFix.Api.Reports.MonthlySummaryNotifications>();
+builder.Services.AddUrbanFixRateLimiting(builder.Configuration);
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 
 if (!builder.Environment.IsDevelopment() && builder.Configuration["Database:AppRolePassword"] == "urbanfix_app_dev")
@@ -62,7 +71,9 @@ app.Use(async (ctx, next) =>
     using (Serilog.Context.LogContext.PushProperty("traceId", System.Diagnostics.Activity.Current?.TraceId.ToString()))
         await next();
 });
+app.UseRateLimiter();
 app.UseAuthentication();
+app.UseSupportSessionGuard();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing")) app.MapOpenApi().AllowAnonymous();
@@ -75,7 +86,33 @@ app.MapAuthEndpoints();
 app.MapAdminEndpoints();
 app.MapSetupEndpoints();
 app.MapComplaintEndpoints();
+app.MapJobEndpoints();
+app.MapRoutingEndpoints();
+app.MapDashboardEndpoints();
 app.MapPricingEndpoints();
+app.MapNotificationEndpoints();
+app.MapWhatsAppEndpoints();
+app.MapApprovalEndpoints();
+app.MapRegistryEndpoints();
+app.MapStockEndpoints();
+app.MapCostReportEndpoints();
+app.MapIncidentEndpoints();
+app.MapDirectoryEndpoints();
+app.MapNoticeEndpoints();
+app.MapExportEndpoints();
+app.MapPushEndpoints();
+app.MapPlatformEndpoints();
+app.MapMonthlySummaryEndpoints();
+if (!builder.Configuration.GetValue("Background:Disabled", false))
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<UrbanFix.Infrastructure.Complaints.EscalationScanner>("escalation-scan", x => x.RunAsync(CancellationToken.None), "*/5 * * * *");
+if (!builder.Configuration.GetValue("Background:Disabled", false))
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<UrbanFix.Infrastructure.Complaints.ConfirmationSweeper>("confirmation-sweep", x => x.RunAsync(CancellationToken.None), "0 * * * *");
+if (!builder.Configuration.GetValue("Background:Disabled", false))
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<UrbanFix.Infrastructure.Complaints.ApprovalSweeper>("approval-sweep", x => x.RunAsync(CancellationToken.None), "15 * * * *");
+if (!builder.Configuration.GetValue("Background:Disabled", false))
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<UrbanFix.Api.Reports.MonthlySummaryJob>("monthly-summary", x => x.RunAsync(CancellationToken.None), "30 1 * * *");
+if (!builder.Configuration.GetValue("Background:Disabled", false))
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<UrbanFix.Infrastructure.Notifications.NoticeSweeper>("notice-sweep", x => x.RunAsync(CancellationToken.None), "* * * * *");
 app.MapHangfireDashboard("/admin/jobs", new DashboardOptions { Authorization = [] })
     .RequireAuthorization(AuthPolicies.For(Permissions.JobsDashboard));
 

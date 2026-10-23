@@ -23,6 +23,35 @@ jobs:
         with: { node-version: 22 }
       # Same one command developers run locally: build, lint, unit tests for core, ai, web.
       - run: pwsh ./scripts/build.ps1
+      - name: Keep the AI evaluation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: ai-eval-report, path: ai/eval/reports/, if-no-files-found: ignore }
+
+  e2e:
+    # QA-05: complaint to closure in English and Urdu, through the real portal, API, PostgreSQL and MinIO.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 9.0.x }
+      - uses: pnpm/action-setup@v4
+        with: { version: 10, package_json_file: web/package.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Start PostgreSQL and MinIO
+        run: docker compose -f infra/docker-compose.yml up -d --build --wait postgres minio
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: web/e2e
+      - run: pnpm e2e
+        working-directory: web/e2e
+        env: { PW_CHANNEL: chromium, CI: "true" }
+      - name: Keep the Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: playwright-report, path: web/e2e/playwright-report/, if-no-files-found: ignore }
 
   dependency-scan:
     runs-on: ubuntu-latest

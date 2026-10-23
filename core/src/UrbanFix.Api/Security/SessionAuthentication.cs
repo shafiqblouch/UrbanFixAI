@@ -33,9 +33,13 @@ public sealed class SessionAuthHandler(
         request.Device = Request.Headers.UserAgent.ToString() is { Length: > 0 } ua ? ua[..Math.Min(ua.Length, 300)] : null;
 
         var header = Request.Headers.Authorization.ToString();
-        if (!header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return AuthenticateResult.NoResult();
+        string token;
+        if (header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) token = header["Bearer ".Length..].Trim();
+        // Browsers cannot set headers on a WebSocket / SignalR connection, so the hub accepts the token as a query value (NT-05).
+        else if (Request.Path.StartsWithSegments("/hubs") && Request.Query["access_token"].ToString() is { Length: > 0 } fromQuery) token = fromQuery;
+        else return AuthenticateResult.NoResult();
 
-        var principal = await auth.AuthenticateAsync(header["Bearer ".Length..].Trim(), Context.RequestAborted);
+        var principal = await auth.AuthenticateAsync(token, Context.RequestAborted);
         if (principal is null) return AuthenticateResult.Fail("Invalid or revoked session");
 
         var claims = new List<Claim>
@@ -45,6 +49,11 @@ public sealed class SessionAuthHandler(
             new("totp", principal.TotpVerified ? "true" : "false"),
         };
         if (principal.OrganizationId is { } org) claims.Add(new Claim("org", org.ToString()));
+        if (principal.SupportSessionId is { } support)
+        {
+            claims.Add(new Claim("support", support.ToString()));
+            if (principal.ExpiresAt is { } until) claims.Add(new Claim("support_exp", until.ToUnixTimeSeconds().ToString()));
+        }
 
         var identity = new ClaimsIdentity(claims, Scheme, "sub", ClaimTypes.Role);
         return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), Scheme));
@@ -54,7 +63,7 @@ public sealed class SessionAuthHandler(
 public sealed record PermissionRequirement(string Permission) : IAuthorizationRequirement;
 
 /// <summary>The caller's active memberships in the current organization (row-level security already scopes the query).</summary>
-public sealed class CurrentMemberships(AppDbContext db, ITenantContext tenant)
+public sealed class CurrentMemberships(AppDbContext db, ITenantContext tenant, IHttpContextAccessor http)
 {
     private IReadOnlyList<Membership>? _cache;
 
@@ -62,6 +71,9 @@ public sealed class CurrentMemberships(AppDbContext db, ITenantContext tenant)
     {
         if (_cache is not null) return _cache;
         if (tenant.OrganizationId is not { } org || tenant.UserId is not { } user) return _cache = [];
+        // A support session (PA-05) acts as the read-only Support role inside the society it was opened for, and holds no membership there.
+        if (http.HttpContext?.User.HasClaim(c => c.Type == "support") == true)
+            return _cache = [new Membership { OrganizationId = org, UserId = user, Role = Role.Support, IsActive = true }];
         return _cache = await db.Memberships.AsNoTracking()
             .Where(m => m.OrganizationId == org && m.UserId == user && m.IsActive).ToListAsync(ct);
     }

@@ -195,3 +195,21 @@ def test_provider_failure_is_a_502(fake):
     c = TestClient(create_app(Settings(service_token=TOKEN), Providers(llm=d, vision=d, speech=d, embedding=d)))
     r = post(c, jpeg())
     assert r.status_code == 502 and r.json()["error"] == "provider_unavailable"
+
+
+@pytest.mark.parametrize("label", ["open_manhole", "exposed_wire", "sewage_overflow", "fallen_tree"])
+def test_hazard_labels_raise_the_safety_flag(client, fake, label):
+    fake.vision_replies.append(reply((label,), "A possible hazard is visible near the footpath.", 0.7))
+    assert post(client, jpeg()).json()["safety_flag"] is True
+
+
+@pytest.mark.parametrize("label", ["pothole", "garbage_pile", "graffiti", "no_visible_issue", "unclear_image"])
+def test_ordinary_labels_do_not_raise_it(client, fake, label):
+    fake.vision_replies.append(reply((label,), "Nothing dangerous appears to be visible here.", 0.7))
+    assert post(client, jpeg()).json()["safety_flag"] is False
+
+
+def test_a_degraded_result_never_claims_a_hazard(client, fake):
+    fake.vision_replies += ["not json"] * 5
+    body = post(client, jpeg()).json()
+    assert (body["degraded"], body["safety_flag"]) == (True, False)

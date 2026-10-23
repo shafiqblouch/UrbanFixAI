@@ -23,11 +23,31 @@ public class User
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Email { get; set; } = "";
     public string DisplayName { get; set; } = "";
+    /// <summary>International form, e.g. +923001234567; used for OTP login and for matching WhatsApp senders.</summary>
+    public string? Phone { get; set; }
     public string PasswordHash { get; set; } = "";
     public string? TotpSecretProtected { get; set; }
     public bool TotpEnabled { get; set; }
     public bool IsActive { get; set; } = true;
+    /// <summary>"en" or "ur"; null follows the organization's default language.</summary>
+    public string? PreferredLocale { get; set; }
+    /// <summary>Extra notification channels the user opted into; the in-app inbox is always on.</summary>
+    public string[] NotifyChannels { get; set; } = [];
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>One code sent to a phone (ID-05). Only a hash is kept.</summary>
+public class OtpChallenge
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Phone { get; set; } = "";
+    public string CodeHash { get; set; } = "";
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset ExpiresAt { get; set; }
+    public int Attempts { get; set; }
+    public DateTimeOffset? ConsumedAt { get; set; }
+    public bool Sent { get; set; } = true;
+    public string? Ip { get; set; }
 }
 
 public class Membership : IAudited
@@ -55,6 +75,8 @@ public class Session
     public DateTimeOffset? RevokedAt { get; set; }
     public string? Ip { get; set; }
     public string? Device { get; set; }
+    /// <summary>Set when this session is a support session: a platform person looking into one society, read-only (PA-05).</summary>
+    public Guid? SupportSessionId { get; set; }
 }
 
 public class AuditEntry

@@ -13,7 +13,9 @@ public class TenantIsolationTests(TestApp app)
         ["users"] = "global identity; visibility enforced by RLS through memberships",
         ["sessions"] = "per-user; RLS by user id",
         ["outbox_messages"] = "infrastructure queue; each message carries its organization",
+        ["otp_challenges"] = "read before anyone is signed in; short-lived, keyed by phone, holds only a hash of the code",
         ["schema_migrations"] = "infrastructure",
+        ["support_sessions"] = "platform-only: the application role has no privileges on it at all (PlatformTests proves it); only the platform service on the owner connection reads it",
     };
 
     private async Task<(Guid OrgA, Guid OrgB)> TwoOrgsWithMembers()

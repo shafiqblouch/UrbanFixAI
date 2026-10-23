@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using UrbanFix.Complaints;
 using UrbanFix.Identity;
+using UrbanFix.Infrastructure.Notifications;
+using UrbanFix.Infrastructure.WhatsApp;
 using UrbanFix.OrgSetup;
 using UrbanFix.SharedKernel;
 
@@ -11,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Membership> Memberships => Set<Membership>();
+    public DbSet<OtpChallenge> OtpChallenges => Set<OtpChallenge>();
     public DbSet<Session> Sessions => Set<Session>();
     public DbSet<AuditEntry> AuditLog => Set<AuditEntry>();
     public DbSet<OutboxMessage> Outbox => Set<OutboxMessage>();
@@ -24,6 +27,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
     public DbSet<House> Houses => Set<House>();
     public DbSet<Landmark> Landmarks => Set<Landmark>();
     public DbSet<ResidentLink> ResidentLinks => Set<ResidentLink>();
+    public DbSet<Incident> Incidents => Set<Incident>();
+    public DbSet<DuplicateSuggestion> DuplicateSuggestions => Set<DuplicateSuggestion>();
+    public DbSet<JobCharge> JobCharges => Set<JobCharge>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<StockSetting> StockSettings => Set<StockSetting>();
+    public DbSet<StockCount> StockCounts => Set<StockCount>();
+    public DbSet<StockCountLine> StockCountLines => Set<StockCountLine>();
+    public DbSet<StockRequest> StockRequests => Set<StockRequest>();
+    public DbSet<StockRequestLine> StockRequestLines => Set<StockRequestLine>();
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<DailyHelp> DailyHelp => Set<DailyHelp>();
+    public DbSet<DailyHelpHouse> DailyHelpHouses => Set<DailyHelpHouse>();
+    public DbSet<DirectoryDismissal> DirectoryDismissals => Set<DirectoryDismissal>();
+    public DbSet<SlaPolicy> SlaPolicies => Set<SlaPolicy>();
     public DbSet<PriceItem> PriceItems => Set<PriceItem>();
     public DbSet<PriceRate> PriceRates => Set<PriceRate>();
 
@@ -31,6 +48,30 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
     public DbSet<ComplaintStatusHistory> ComplaintHistory => Set<ComplaintStatusHistory>();
     public DbSet<ComplaintMedia> ComplaintMedia => Set<ComplaintMedia>();
     public DbSet<Job> Jobs => Set<Job>();
+    public DbSet<Approval> Approvals => Set<Approval>();
+    public DbSet<ApprovalDecision> ApprovalDecisions => Set<ApprovalDecision>();
+    public DbSet<ComplaintFeedback> Feedback => Set<ComplaintFeedback>();
+    public DbSet<AiUsageEntry> AiUsage => Set<AiUsageEntry>();
+    public DbSet<JobComparison> JobComparisons => Set<JobComparison>();
+    public DbSet<JobUpdate> JobUpdates => Set<JobUpdate>();
+    public DbSet<Estimate> Estimates => Set<Estimate>();
+    public DbSet<EstimateLine> EstimateLines => Set<EstimateLine>();
+    public DbSet<JobCost> JobCosts => Set<JobCost>();
+    public DbSet<RoutingRule> RoutingRules => Set<RoutingRule>();
+    public DbSet<AiSuggestion> AiSuggestions => Set<AiSuggestion>();
+    public DbSet<WhatsAppChannel> WhatsAppChannels => Set<WhatsAppChannel>();
+    public DbSet<WhatsAppMessage> WhatsAppMessages => Set<WhatsAppMessage>();
+    public DbSet<WhatsAppConversation> WhatsAppConversations => Set<WhatsAppConversation>();
+    public DbSet<Escalation> Escalations => Set<Escalation>();
+    public DbSet<EscalationLevel> EscalationLevels => Set<EscalationLevel>();
+    public DbSet<AiFeedback> AiFeedback => Set<AiFeedback>();
+    public DbSet<UrbanFix.Infrastructure.Reports.SummarySchedule> SummarySchedules => Set<UrbanFix.Infrastructure.Reports.SummarySchedule>();
+    public DbSet<UrbanFix.Infrastructure.Reports.SummaryReport> SummaryReports => Set<UrbanFix.Infrastructure.Reports.SummaryReport>();
+    public DbSet<UrbanFix.Infrastructure.Platform.OrganizationFeature> OrganizationFeatures => Set<UrbanFix.Infrastructure.Platform.OrganizationFeature>();
+    public DbSet<UrbanFix.Infrastructure.Push.PushDevice> PushDevices => Set<UrbanFix.Infrastructure.Push.PushDevice>();
+    public DbSet<Notice> Notices => Set<Notice>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<NotificationDelivery> NotificationDeliveries => Set<NotificationDelivery>();
     public DbSet<NumberSequence> NumberSequences => Set<NumberSequence>();
     public DbSet<UploadSession> Uploads => Set<UploadSession>();
 
@@ -44,6 +85,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
             e.Property(x => x.Role).HasConversion<string>();
         });
         b.Entity<Session>().ToTable("sessions");
+        b.Entity<OtpChallenge>().ToTable("otp_challenges");
         b.Entity<AuditEntry>(e =>
         {
             e.ToTable("audit_log");
@@ -73,6 +115,24 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
         });
         b.Entity<ResidentLink>().ToTable("resident_links");
         b.Entity<Landmark>().ToTable("landmarks");
+        b.Entity<SlaPolicy>().ToTable("sla_policies");
+        b.Entity<Vehicle>().ToTable("vehicles");
+        b.Entity<Incident>().ToTable("incidents");
+        b.Entity<DuplicateSuggestion>().ToTable("duplicate_suggestions");
+        b.Entity<JobCharge>().ToTable("job_charges");
+        b.Entity<StockMovement>().ToTable("stock_movements");
+        b.Entity<StockSetting>().ToTable("stock_settings");
+        b.Entity<StockCount>().ToTable("stock_counts");
+        b.Entity<StockCountLine>(e => { e.ToTable("stock_count_lines"); e.HasOne<StockCount>().WithMany().HasForeignKey(x => x.CountId); });
+        b.Entity<StockRequest>().ToTable("stock_requests");
+        b.Entity<StockRequestLine>(e => { e.ToTable("stock_request_lines"); e.HasOne<StockRequest>().WithMany().HasForeignKey(x => x.RequestId); });
+        b.Entity<DailyHelp>(e =>
+        {
+            e.ToTable("daily_help");
+            e.Property(x => x.AllowedDays).HasColumnType("text[]");
+        });
+        b.Entity<DailyHelpHouse>().ToTable("daily_help_houses");
+        b.Entity<DirectoryDismissal>().ToTable("directory_dismissals");
         b.Entity<PriceItem>().ToTable("price_items");
         b.Entity<PriceRate>().ToTable("price_rates");
 
@@ -93,12 +153,98 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
         {
             e.ToTable("complaint_media");
             e.HasOne<Complaint>().WithMany().HasForeignKey(x => x.ComplaintId);
+            e.HasOne<Job>().WithMany().HasForeignKey(x => x.JobId);
         });
         b.Entity<Job>(e =>
         {
             e.ToTable("jobs");
             e.HasOne<Complaint>().WithMany().HasForeignKey(x => x.ComplaintId);
+            e.Property(x => x.Checklist).HasColumnType("jsonb");
         });
+        b.Entity<Approval>().ToTable("approvals");
+        b.Entity<ApprovalDecision>(e =>
+        {
+            e.ToTable("approval_decisions");
+            e.HasOne<Approval>().WithMany().HasForeignKey(x => x.ApprovalId);
+        });
+        b.Entity<ComplaintFeedback>(e =>
+        {
+            e.ToTable("complaint_feedback");
+            e.HasOne<Complaint>().WithMany().HasForeignKey(x => x.ComplaintId);
+        });
+        b.Entity<AiUsageEntry>().ToTable("ai_usage");
+        b.Entity<JobComparison>(e =>
+        {
+            e.ToTable("job_comparisons");
+            e.HasOne<Job>().WithMany().HasForeignKey(x => x.JobId);
+        });
+        b.Entity<JobUpdate>(e =>
+        {
+            e.ToTable("job_updates");
+            e.HasOne<Job>().WithMany().HasForeignKey(x => x.JobId);
+        });
+        b.Entity<Estimate>(e =>
+        {
+            e.ToTable("estimates");
+            e.HasOne<Job>().WithMany().HasForeignKey(x => x.JobId);
+        });
+        b.Entity<EstimateLine>(e =>
+        {
+            e.ToTable("estimate_lines");
+            e.HasOne<Estimate>().WithMany().HasForeignKey(x => x.EstimateId);
+        });
+        b.Entity<JobCost>(e =>
+        {
+            e.ToTable("job_costs");
+            e.HasOne<Job>().WithMany().HasForeignKey(x => x.JobId);
+        });
+        b.Entity<RoutingRule>().ToTable("routing_rules");
+        b.Entity<WhatsAppChannel>().ToTable("whatsapp_channels");
+        b.Entity<WhatsAppMessage>(e =>
+        {
+            e.ToTable("whatsapp_messages");
+            e.Property(x => x.Raw).HasColumnType("jsonb");
+        });
+        b.Entity<WhatsAppConversation>(e =>
+        {
+            e.ToTable("whatsapp_conversations");
+            e.Property(x => x.StateData).HasColumnType("jsonb");
+        });
+        b.Entity<Escalation>(e =>
+        {
+            e.ToTable("escalations");
+            e.HasOne<Complaint>().WithMany().HasForeignKey(x => x.ComplaintId);
+        });
+        b.Entity<EscalationLevel>(e =>
+        {
+            e.ToTable("escalation_levels");
+            e.Property(x => x.Role).HasConversion<string>();
+        });
+        b.Entity<AiSuggestion>(e =>
+        {
+            e.ToTable("ai_suggestions");
+            e.HasOne<Complaint>().WithMany().HasForeignKey(x => x.ComplaintId);
+        });
+        b.Entity<AiFeedback>(e =>
+        {
+            e.ToTable("ai_feedback");
+            e.HasOne<Complaint>().WithMany().HasForeignKey(x => x.ComplaintId);
+        });
+        b.Entity<Notification>(e =>
+        {
+            e.ToTable("notifications");
+            e.Property(x => x.TemplateValues).HasColumnType("jsonb");
+        });
+        b.Entity<NotificationDelivery>(e =>
+        {
+            e.ToTable("notification_deliveries");
+            e.HasOne<Notification>().WithMany().HasForeignKey(x => x.NotificationId);
+        });
+        b.Entity<Notice>().ToTable("notices");
+        b.Entity<UrbanFix.Infrastructure.Push.PushDevice>().ToTable("push_devices");
+        b.Entity<UrbanFix.Infrastructure.Platform.OrganizationFeature>(e => { e.ToTable("organization_features"); e.HasKey(x => new { x.OrganizationId, x.Feature }); });
+        b.Entity<UrbanFix.Infrastructure.Reports.SummarySchedule>(e => { e.ToTable("summary_schedules"); e.HasKey(x => x.OrganizationId); e.Ignore(x => x.Id); });
+        b.Entity<UrbanFix.Infrastructure.Reports.SummaryReport>().ToTable("summary_reports");
         b.Entity<UploadSession>().ToTable("upload_sessions");
         b.Entity<NumberSequence>(e =>
         {

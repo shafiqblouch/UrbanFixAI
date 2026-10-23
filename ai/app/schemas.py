@@ -9,6 +9,13 @@ from pydantic import BaseModel, ConfigDict, Field
 Language = Literal["en", "ur", "roman_ur", "mixed"]
 
 
+class UsageBody(BaseModel):
+    """What a call used, summed over every attempt it needed, so CORE can meter cost per organization (AI-13)."""
+
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
 class CategoryDef(BaseModel):
     key: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_\-]+$")
     label: str = Field(min_length=1, max_length=120)
@@ -49,6 +56,7 @@ class UnderstandResponse(BaseModel):
     pii_redactions: int
     # Complaint text looked like an instruction aimed at the model; a person should review the result.
     injection_suspected: bool = False
+    usage: UsageBody = Field(default_factory=UsageBody)
 
 
 class ProviderStatus(BaseModel):

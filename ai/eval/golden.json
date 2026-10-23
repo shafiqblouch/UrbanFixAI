@@ -1,0 +1,668 @@
+[
+ {
+  "id": "en01",
+  "language": "en",
+  "category": "water",
+  "text": "There has been no water supply in our street since yesterday morning. Please send a tanker.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en02",
+  "language": "en",
+  "category": "water",
+  "text": "Water pressure in block C is extremely low, the tank on the roof never fills.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en03",
+  "language": "en",
+  "category": "electricity",
+  "text": "The street light outside house 14 has been off for a week and the lane is pitch dark at night.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en04",
+  "language": "en",
+  "category": "electricity",
+  "text": "A live wire is hanging low near the park entrance after last night's storm. Children play there!",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en05",
+  "language": "en",
+  "category": "electricity",
+  "text": "Power keeps tripping in our flat every time the lift runs.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en06",
+  "language": "en",
+  "category": "sewage_drainage",
+  "text": "The main sewer line is overflowing at the corner of street 5 and the smell is unbearable.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en07",
+  "language": "en",
+  "category": "sewage_drainage",
+  "text": "Rainwater is not draining from the road near the mosque, it floods every time it rains.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en08",
+  "language": "en",
+  "category": "roads",
+  "text": "Big pothole at the society gate, two motorbikes slipped there this week.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en09",
+  "language": "en",
+  "category": "roads",
+  "text": "The speed breaker near the school has worn away and cars drive too fast.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en10",
+  "language": "en",
+  "category": "garbage",
+  "text": "Garbage has not been collected from our block for four days and dogs are tearing the bags open.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en11",
+  "language": "en",
+  "category": "garbage",
+  "text": "Someone dumped construction rubble on the green belt behind block D.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en12",
+  "language": "en",
+  "category": "security",
+  "text": "The guard at gate 2 lets visitors in without any entry or checking.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en13",
+  "language": "en",
+  "category": "security",
+  "text": "Two strangers were trying door handles in our lane around 3am. The CCTV camera there is not working.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en14",
+  "language": "en",
+  "category": "noise",
+  "text": "Loud generator running all night in the commercial plot next to my house.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en15",
+  "language": "en",
+  "category": "noise",
+  "text": "A marriage hall plays loud music past midnight almost every weekend.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en16",
+  "language": "en",
+  "category": "other",
+  "text": "I would like to know the timing of the next general body meeting.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en17",
+  "language": "en",
+  "category": "other",
+  "text": "Please update my family member details in the society records.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en18",
+  "language": "en",
+  "category": "water",
+  "text": "The water coming from the tap is brown and smells bad, my kids got stomach infection.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en19",
+  "language": "en",
+  "category": "sewage_drainage",
+  "text": "Manhole cover is missing on the lane outside house 22, someone could fall in.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "en20",
+  "language": "en",
+  "category": "electricity",
+  "text": "Transformer near block A is humming loudly and sparks came out of it yesterday.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru01",
+  "language": "roman_ur",
+  "category": "water",
+  "text": "Hamari gali mein kal subah se pani nahi aa raha, meherbani karke tanker bhej dein.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru02",
+  "language": "roman_ur",
+  "category": "water",
+  "text": "Block C mein pani ka pressure bohat kam hai, chhat ki tanki bharti hi nahi.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru03",
+  "language": "roman_ur",
+  "category": "electricity",
+  "text": "House 14 ke bahar street light ek hafte se band hai, raat ko gali mein andhera hota hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru04",
+  "language": "roman_ur",
+  "category": "electricity",
+  "text": "Park ke darwaze ke paas bijli ka taar neeche latak raha hai, bachay wahan khelte hain, bohat khatarnak hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru05",
+  "language": "roman_ur",
+  "category": "electricity",
+  "text": "Jab bhi lift chalti hai hamare flat ki bijli trip kar jati hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru06",
+  "language": "roman_ur",
+  "category": "sewage_drainage",
+  "text": "Street 5 ke mod par sewerage ki lines ubal rahi hain aur badbu bardasht se bahar hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru07",
+  "language": "roman_ur",
+  "category": "sewage_drainage",
+  "text": "Masjid ke qareeb sarak par barish ka pani nikalta nahi, har barish mein sailab aa jata hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru08",
+  "language": "roman_ur",
+  "category": "roads",
+  "text": "Society gate par bohat bada gaddha hai, is hafte do motorcycle wahan phisal chuki hain.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru09",
+  "language": "roman_ur",
+  "category": "roads",
+  "text": "School ke samne speed breaker ghis gaya hai aur gariyan tez chalti hain.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru10",
+  "language": "roman_ur",
+  "category": "garbage",
+  "text": "Hamare block se chaar din se kachra nahi uthaya gaya, kutte thaile phaad rahe hain.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru11",
+  "language": "roman_ur",
+  "category": "garbage",
+  "text": "Block D ke peeche green belt par kisi ne malba phaink diya hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru12",
+  "language": "roman_ur",
+  "category": "security",
+  "text": "Gate 2 ka guard mehmano ko bina entry ke andar aane deta hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru13",
+  "language": "roman_ur",
+  "category": "security",
+  "text": "Raat 3 baje do ajnabi log hamari gali mein darwazon ke handle hila rahe thay, wahan ka CCTV bhi kharab hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru14",
+  "language": "roman_ur",
+  "category": "noise",
+  "text": "Mere ghar ke saath wale commercial plot mein poori raat generator chalta rehta hai, shor bohat hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru15",
+  "language": "roman_ur",
+  "category": "noise",
+  "text": "Marriage hall mein har weekend aadhi raat ke baad tak tez music bajta hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru16",
+  "language": "roman_ur",
+  "category": "other",
+  "text": "Agli general body meeting ka waqt kya hai, mujhe maloom karna tha.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru17",
+  "language": "roman_ur",
+  "category": "other",
+  "text": "Mehrbani karke society record mein mere ghar walon ki details update kar dein.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru18",
+  "language": "roman_ur",
+  "category": "water",
+  "text": "Nalke ka pani bhoora aa raha hai aur badbu hai, bachon ko pait ki bimari ho gayi.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru19",
+  "language": "roman_ur",
+  "category": "sewage_drainage",
+  "text": "House 22 ki gali mein manhole ka dhakkan gayab hai, koi gir sakta hai.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ru20",
+  "language": "roman_ur",
+  "category": "electricity",
+  "text": "Block A ke paas transformer zor se awaaz kar raha hai aur kal us se chingariyan nikli thin.",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur01",
+  "language": "ur",
+  "category": "water",
+  "text": "ہماری گلی میں کل صبح سے پانی نہیں آ رہا، براہ کرم ٹینکر بھجوا دیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur02",
+  "language": "ur",
+  "category": "water",
+  "text": "بلاک سی میں پانی کا پریشر بہت کم ہے، چھت کی ٹنکی بھرتی ہی نہیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur03",
+  "language": "ur",
+  "category": "electricity",
+  "text": "مکان نمبر 14 کے باہر اسٹریٹ لائٹ ایک ہفتے سے بند ہے اور رات کو گلی میں اندھیرا رہتا ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur04",
+  "language": "ur",
+  "category": "electricity",
+  "text": "پارک کے دروازے کے پاس بجلی کی تار نیچے لٹک رہی ہے، بچے وہاں کھیلتے ہیں، بہت خطرناک ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur05",
+  "language": "ur",
+  "category": "electricity",
+  "text": "جب بھی لفٹ چلتی ہے ہمارے فلیٹ کی بجلی ٹرپ کر جاتی ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur06",
+  "language": "ur",
+  "category": "sewage_drainage",
+  "text": "گلی نمبر 5 کے موڑ پر سیوریج کی لائن ابل رہی ہے اور بدبو برداشت سے باہر ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur07",
+  "language": "ur",
+  "category": "sewage_drainage",
+  "text": "مسجد کے قریب سڑک پر بارش کا پانی نکلتا نہیں، ہر بارش میں سیلاب آ جاتا ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur08",
+  "language": "ur",
+  "category": "roads",
+  "text": "سوسائٹی کے گیٹ پر بہت بڑا گڑھا ہے، اس ہفتے دو موٹر سائیکلیں وہاں پھسل چکی ہیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur09",
+  "language": "ur",
+  "category": "roads",
+  "text": "اسکول کے سامنے اسپیڈ بریکر گھس گیا ہے اور گاڑیاں تیز چلتی ہیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur10",
+  "language": "ur",
+  "category": "garbage",
+  "text": "ہمارے بلاک سے چار دن سے کچرا نہیں اٹھایا گیا، کتے تھیلے پھاڑ رہے ہیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur11",
+  "language": "ur",
+  "category": "garbage",
+  "text": "بلاک ڈی کے پیچھے گرین بیلٹ پر کسی نے ملبہ پھینک دیا ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur12",
+  "language": "ur",
+  "category": "security",
+  "text": "گیٹ نمبر 2 کا گارڈ مہمانوں کو بغیر اندراج کے اندر آنے دیتا ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur13",
+  "language": "ur",
+  "category": "security",
+  "text": "رات تین بجے دو اجنبی ہماری گلی میں دروازوں کے ہینڈل ہلا رہے تھے، وہاں کا سی سی ٹی وی بھی خراب ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur14",
+  "language": "ur",
+  "category": "noise",
+  "text": "میرے گھر کے ساتھ والے کمرشل پلاٹ میں ساری رات جنریٹر چلتا رہتا ہے، شور بہت ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur15",
+  "language": "ur",
+  "category": "noise",
+  "text": "شادی ہال میں ہر ہفتے کے آخر میں آدھی رات کے بعد تک تیز موسیقی بجتی ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur16",
+  "language": "ur",
+  "category": "other",
+  "text": "اگلی جنرل باڈی میٹنگ کا وقت کیا ہے، مجھے معلوم کرنا تھا۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur17",
+  "language": "ur",
+  "category": "other",
+  "text": "براہ کرم سوسائٹی ریکارڈ میں میرے گھر والوں کی تفصیلات اپ ڈیٹ کر دیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur18",
+  "language": "ur",
+  "category": "water",
+  "text": "نل کا پانی بھورا آ رہا ہے اور بدبو ہے، بچوں کو پیٹ کی بیماری ہو گئی۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur19",
+  "language": "ur",
+  "category": "sewage_drainage",
+  "text": "مکان 22 کی گلی میں مین ہول کا ڈھکن غائب ہے، کوئی گر سکتا ہے۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "ur20",
+  "language": "ur",
+  "category": "electricity",
+  "text": "بلاک اے کے پاس ٹرانسفارمر زور سے آواز کر رہا ہے اور کل اس سے چنگاریاں نکلی تھیں۔",
+  "tags": [
+   "clean"
+  ]
+ },
+ {
+  "id": "h01",
+  "language": "en",
+  "text": "Something is wrong near the park, please check.",
+  "category": "other",
+  "tags": [
+   "vague"
+  ]
+ },
+ {
+  "id": "h02",
+  "language": "en",
+  "text": "No power",
+  "category": "electricity",
+  "tags": [
+   "short"
+  ]
+ },
+ {
+  "id": "h03",
+  "language": "en",
+  "text": "watr leakng from pipe near house 12 since 2 days",
+  "category": "water",
+  "tags": [
+   "typo"
+  ]
+ },
+ {
+  "id": "h04",
+  "language": "en",
+  "text": "The sewer is overflowing onto the road and now the road is flooded and damaged",
+  "category": "sewage_drainage",
+  "tags": [
+   "mixed_topic"
+  ]
+ },
+ {
+  "id": "h05",
+  "language": "roman_ur",
+  "text": "bijli ka transformer phat gaya aur poora mohalla andhera hai",
+  "category": "electricity",
+  "tags": [
+   "hard"
+  ]
+ },
+ {
+  "id": "h06",
+  "language": "roman_ur",
+  "text": "paani nahi",
+  "category": "water",
+  "tags": [
+   "short"
+  ]
+ },
+ {
+  "id": "h07",
+  "language": "roman_ur",
+  "text": "kuda kai din se nahi utha, badbu phail rahi hai",
+  "category": "garbage",
+  "tags": [
+   "hard"
+  ]
+ },
+ {
+  "id": "h08",
+  "language": "roman_ur",
+  "text": "masla hai, koi sun nahi raha",
+  "category": "other",
+  "tags": [
+   "vague"
+  ]
+ },
+ {
+  "id": "h09",
+  "language": "ur",
+  "text": "گلی میں بڑا گڑھا پڑ گیا ہے جس سے گاڑیاں پھنس رہی ہیں",
+  "category": "roads",
+  "tags": [
+   "hard"
+  ]
+ },
+ {
+  "id": "h10",
+  "language": "ur",
+  "text": "بجلی بند",
+  "category": "electricity",
+  "tags": [
+   "short"
+  ]
+ },
+ {
+  "id": "h11",
+  "language": "ur",
+  "text": "رات کو گیٹ پر گارڈ موجود نہیں تھا اور چوری ہو گئی",
+  "category": "security",
+  "tags": [
+   "hard"
+  ]
+ },
+ {
+  "id": "h12",
+  "language": "ur",
+  "text": "ساتھ والے گھر میں رات بھر جنریٹر چلتا ہے، شور سے سو نہیں سکتے",
+  "category": "noise",
+  "tags": [
+   "hard"
+  ]
+ },
+ {
+  "id": "h13",
+  "language": "en",
+  "text": "Please renew my club membership card",
+  "category": "other",
+  "tags": [
+   "unlisted"
+  ]
+ },
+ {
+  "id": "h14",
+  "language": "ur",
+  "text": "میرے بچے کے اسکول کی فیس کی رسید چاہیے",
+  "category": "other",
+  "tags": [
+   "unlisted"
+  ]
+ }
+]

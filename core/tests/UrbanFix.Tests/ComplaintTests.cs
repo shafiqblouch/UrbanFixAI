@@ -10,6 +10,7 @@ using UrbanFix.Infrastructure.Persistence;
 using UrbanFix.SharedKernel;
 using UrbanFix.Tests.Support;
 using static UrbanFix.Api.Endpoints.ComplaintEndpoints;
+using static UrbanFix.Api.Endpoints.JobEndpoints;
 using static UrbanFix.Api.Endpoints.SetupEndpoints;
 
 namespace UrbanFix.Tests;
@@ -19,7 +20,7 @@ public sealed class Society
 {
     public Guid Org;
     public ApiSession Manager = null!, Office = null!, Supervisor = null!, Technician = null!, Resident = null!, Neighbour = null!;
-    public Guid ResidentId, NeighbourId, CategoryId, HouseId, LocationId;
+    public Guid ResidentId, NeighbourId, TechnicianId, CategoryId, HouseId, LocationId;
 
     public static async Task<Society> CreateAsync(TestApp app, bool linkResidentToHouse = true)
     {
@@ -31,9 +32,13 @@ public sealed class Society
         s.Resident = await app.AddMemberAsync(m, org, Role.Resident);
         s.Neighbour = await app.AddMemberAsync(m, org, Role.Resident);
         s.ResidentId = (await s.Resident.Client.GetFromJsonAsync<AuthEndpoints.MeResponse>("/me"))!.UserId;
+        s.TechnicianId = (await s.Technician.Client.GetFromJsonAsync<AuthEndpoints.MeResponse>("/me"))!.UserId;
         s.NeighbourId = (await s.Neighbour.Client.GetFromJsonAsync<AuthEndpoints.MeResponse>("/me"))!.UserId;
 
-        s.CategoryId = (await m.Client.GetFromJsonAsync<List<CategoryDto>>("/categories"))!.Single(c => c.Key == "water").Id;
+        var water = (await m.Client.GetFromJsonAsync<List<CategoryDto>>("/categories"))!.Single(c => c.Key == "water");
+        s.CategoryId = water.Id;
+        // Most tests are about the complaint lifecycle, not evidence; JobWorkflowTests turn the rules back on.
+        await s.SetEvidenceAsync("none");
         var block = await (await m.Client.PostAsJsonAsync("/locations", new CreateLocation(null, "block", "Block A", null, null, null))).Content.ReadFromJsonAsync<LocationDto>();
         var loc = await (await m.Client.PostAsJsonAsync("/locations", new CreateLocation(block!.Id, "house", "House 1", null, null, null))).Content.ReadFromJsonAsync<LocationDto>();
         var house = await (await m.Client.PostAsJsonAsync("/houses", new CreateHouse(loc!.Id, null, null, null))).Content.ReadFromJsonAsync<HouseDto>();
@@ -41,6 +46,32 @@ public sealed class Society
         if (linkResidentToHouse)
             (await m.Client.PostAsJsonAsync($"/houses/{house.Id}/residents", new CreateResidentLink(s.ResidentId, "owner", null))).EnsureSuccessStatusCode();
         return s;
+    }
+
+    public async Task SetEvidenceAsync(string rule, bool requiresCosts = false, string[]? checklist = null)
+    {
+        var current = (await Manager.Client.GetFromJsonAsync<List<CategoryDto>>("/categories"))!.Single(c => c.Id == CategoryId);
+        var items = checklist ?? current.Checklist.EnumerateArray().Select(e => e.GetString()!).ToArray();
+        var res = await Manager.Client.PutAsJsonAsync($"/categories/{CategoryId}",
+            new SaveCategory(current.Key, current.NameEn, current.NameUr, current.DepartmentId, current.DefaultPriority, rule, items, null, requiresCosts));
+        res.EnsureSuccessStatusCode();
+    }
+
+    /// <summary>Takes a job through assign, accept, start, complete and sign-off (the complaint ends Resolved). Needs the "none" evidence rule.</summary>
+    public async Task FinishWorkAsync(JobDto job)
+    {
+        (await Supervisor.Client.PostAsJsonAsync($"/jobs/{job.Id}/assign", new AssignJob(null, TechnicianId))).EnsureSuccessStatusCode();
+        (await Technician.Client.PostAsync($"/jobs/{job.Id}/accept", null)).EnsureSuccessStatusCode();
+        (await Technician.Client.PostAsJsonAsync($"/jobs/{job.Id}/start", new StartWork(null, null, null))).EnsureSuccessStatusCode();
+        (await Technician.Client.PostAsJsonAsync($"/jobs/{job.Id}/complete", new CompleteJob("done"))).EnsureSuccessStatusCode();
+        (await Supervisor.Client.PostAsync($"/jobs/{job.Id}/sign-off", null)).EnsureSuccessStatusCode();
+    }
+
+    public async Task StartWorkAsync(JobDto job)
+    {
+        (await Supervisor.Client.PostAsJsonAsync($"/jobs/{job.Id}/assign", new AssignJob(null, TechnicianId))).EnsureSuccessStatusCode();
+        (await Technician.Client.PostAsync($"/jobs/{job.Id}/accept", null)).EnsureSuccessStatusCode();
+        (await Technician.Client.PostAsJsonAsync($"/jobs/{job.Id}/start", new StartWork(null, null, null))).EnsureSuccessStatusCode();
     }
 }
 
@@ -166,8 +197,7 @@ public class ComplaintTests(TestApp app)
         Assert.Equal(HttpStatusCode.OK, (await Move(s.Office, c.Id, ComplaintStatus.UnderReview)).StatusCode);
         var job = await s.Supervisor.Client.PostAsJsonAsync($"/complaints/{c.Id}/jobs", new CreateJob("Check the main valve", null));
         Assert.Equal(HttpStatusCode.Created, job.StatusCode);
-        Assert.Equal(HttpStatusCode.OK, (await Move(s.Technician, c.Id, ComplaintStatus.InProgress)).StatusCode);
-        Assert.Equal(HttpStatusCode.OK, (await Move(s.Technician, c.Id, ComplaintStatus.Resolved)).StatusCode);
+        await s.FinishWorkAsync((await job.Content.ReadFromJsonAsync<JobDto>())!);
         Assert.Equal(HttpStatusCode.OK, (await Move(s.Resident, c.Id, ComplaintStatus.Closed)).StatusCode);
 
         var detail = await Detail(s.Manager, c.Id);
@@ -257,7 +287,9 @@ public class ComplaintTests(TestApp app)
             var lastTry = scope.ServiceProvider.GetRequiredService<ComplaintEnrichmentJob>();
             var retries = scope.ServiceProvider.GetRequiredService<UrbanFix.Infrastructure.Jobs.JobOptions>().Attempts;
             await lastTry.RunCoreAsync(s.Org, created.Id, retries, default); // out of retries: gives up quietly
-            Assert.Equal("failed", (await Detail(s.Manager, created.Id)).Complaint.AiStatus);
+            // "No water since morning" is recognisable, so the rules-only guess (AI-14) is offered; it stays a suggestion.
+            var final = (await Detail(s.Manager, created.Id)).Complaint;
+            Assert.Equal(("rules_only", "water", ComplaintStatus.New), (final.AiStatus, final.AiCategoryKey, final.Status));
         }
         finally { ai.Down = false; }
     }
@@ -411,17 +443,17 @@ public class ComplaintTests(TestApp app)
         var c = await Create(s.Resident, categoryId: s.CategoryId);
         await Move(s.Office, c.Id, ComplaintStatus.UnderReview);
         var first = await (await s.Supervisor.Client.PostAsJsonAsync($"/complaints/{c.Id}/jobs", new CreateJob("Fix leak", null))).Content.ReadFromJsonAsync<JobDto>();
-        await Move(s.Technician, c.Id, ComplaintStatus.InProgress);
+        await s.StartWorkAsync(first!);
 
-        Assert.Equal(HttpStatusCode.BadRequest, (await Move(s.Technician, c.Id, ComplaintStatus.UnderReview)).StatusCode);
-        Assert.Equal(HttpStatusCode.OK, (await Move(s.Technician, c.Id, ComplaintStatus.UnderReview, "Needs a 4-inch valve we do not stock")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await s.Technician.Client.PostAsJsonAsync($"/jobs/{first!.Id}/cannot-complete", new ReasonRequest(null))).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await s.Technician.Client.PostAsJsonAsync($"/jobs/{first.Id}/cannot-complete", new ReasonRequest("Needs a 4-inch valve we do not stock"))).StatusCode);
 
         var mid = await Detail(s.Resident, c.Id);
         Assert.Equal("Needs a 4-inch valve we do not stock", mid.Complaint.StatusReason);
-        Assert.Equal("Cancelled", Assert.Single((await Detail(s.Manager, c.Id)).Jobs).Status);
+        Assert.Equal("Returned", Assert.Single((await Detail(s.Manager, c.Id)).Jobs).Status);
 
         var rework = await (await s.Supervisor.Client.PostAsJsonAsync($"/complaints/{c.Id}/jobs", new CreateJob("Fit new valve", null))).Content.ReadFromJsonAsync<JobDto>();
-        Assert.Equal((1, 2), (first!.SequenceNo, rework!.SequenceNo));
+        Assert.Equal((1, 2), (first.SequenceNo, rework!.SequenceNo));
         Assert.NotEqual(first.Number, rework.Number);
         Assert.Equal(2, (await Detail(s.Manager, c.Id)).Jobs.Count);
     }
@@ -432,9 +464,8 @@ public class ComplaintTests(TestApp app)
         var s = await Society.CreateAsync(app);
         var c = await Create(s.Resident, categoryId: s.CategoryId);
         await Move(s.Office, c.Id, ComplaintStatus.UnderReview);
-        await s.Supervisor.Client.PostAsJsonAsync($"/complaints/{c.Id}/jobs", new CreateJob(null, null));
-        await Move(s.Technician, c.Id, ComplaintStatus.InProgress);
-        await Move(s.Technician, c.Id, ComplaintStatus.Resolved);
+        var job = await (await s.Supervisor.Client.PostAsJsonAsync($"/complaints/{c.Id}/jobs", new CreateJob(null, null))).Content.ReadFromJsonAsync<JobDto>();
+        await s.FinishWorkAsync(job!);
 
         Assert.Equal(HttpStatusCode.BadRequest, (await Move(s.Resident, c.Id, ComplaintStatus.UnderReview)).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await Move(s.Resident, c.Id, ComplaintStatus.UnderReview, "Still leaking")).StatusCode);

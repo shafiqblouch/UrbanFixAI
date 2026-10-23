@@ -23,8 +23,8 @@ public static class SetupEndpoints
     public sealed record TeamMemberDto(Guid Id, Guid UserId, bool IsSupervisor);
     public sealed record CreateTeam(Guid DepartmentId, string Name);
     public sealed record AddTeamMember(Guid UserId, bool IsSupervisor);
-    public sealed record CategoryDto(Guid Id, string Key, string NameEn, string? NameUr, Guid? DepartmentId, string DefaultPriority, string EvidenceRule, JsonElement Checklist, bool IsActive);
-    public sealed record SaveCategory(string Key, string NameEn, string? NameUr, Guid? DepartmentId, string? DefaultPriority, string? EvidenceRule, string[]? Checklist, bool? IsActive);
+    public sealed record CategoryDto(Guid Id, string Key, string NameEn, string? NameUr, Guid? DepartmentId, string DefaultPriority, string EvidenceRule, JsonElement Checklist, bool IsActive, bool RequiresCosts);
+    public sealed record SaveCategory(string Key, string NameEn, string? NameUr, Guid? DepartmentId, string? DefaultPriority, string? EvidenceRule, string[]? Checklist, bool? IsActive, bool? RequiresCosts = null);
     public sealed record HouseDto(Guid Id, Guid LocationId, string LocationPath, decimal? PlotSizeSqYd, string? HouseCategory, string Status);
     public sealed record CreateHouse(Guid LocationId, decimal? PlotSizeSqYd, string? HouseCategory, string? Status);
     public sealed record ResidentLinkDto(Guid Id, Guid HouseId, Guid UserId, string Relation, DateOnly FromDate, DateOnly? ToDate);
@@ -46,7 +46,7 @@ public static class SetupEndpoints
         // OR-01 ------------------------------------------------------------------------------------------
         app.MapGet("/organization/settings", async (AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
             Results.Ok(ToDto(await GetOrCreateSettings(db, tenant.OrganizationId!.Value, ct))))
-            .WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+            .WithTags("Setup").Produces<SettingsDto>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapPut("/organization/settings", async (SettingsDto req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -64,7 +64,7 @@ public static class SetupEndpoints
             s.UpdatedAt = DateTimeOffset.UtcNow;
             await db.SaveChangesAsync(ct);
             return Results.Ok(ToDto(s));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.For(Permissions.OrganizationSettings));
+        }).WithTags("Setup").Produces<SettingsDto>(200).RequireAuthorization(AuthPolicies.For(Permissions.OrganizationSettings));
 
         // OR-02 ------------------------------------------------------------------------------------------
         app.MapGet("/locations", async (Guid? parentId, bool? includeInactive, AppDbContext db, CancellationToken ct) =>
@@ -72,11 +72,11 @@ public static class SetupEndpoints
             var q = db.Locations.AsNoTracking().Where(l => l.ParentId == parentId);
             if (includeInactive != true) q = q.Where(l => l.IsActive);
             return Results.Ok((await q.OrderBy(l => l.SortOrder).ThenBy(l => l.Name).ToListAsync(ct)).Select(ToDto));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+        }).WithTags("Setup").Produces<List<LocationDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapGet("/locations/tree", async (AppDbContext db, CancellationToken ct) =>
             Results.Ok((await db.Locations.AsNoTracking().Where(l => l.IsActive).OrderBy(l => l.Path).ToListAsync(ct)).Select(ToDto)))
-            .WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+            .WithTags("Setup").Produces<List<LocationDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapGet("/locations/{id:guid}/descendants", async (Guid id, AppDbContext db, CancellationToken ct) =>
         {
@@ -84,7 +84,7 @@ public static class SetupEndpoints
             if (root is null) return Results.NotFound();
             var rows = await db.Locations.AsNoTracking().Where(l => l.Path.StartsWith(root.Path) && l.Id != id && l.IsActive).OrderBy(l => l.Path).ToListAsync(ct);
             return Results.Ok(rows.Select(ToDto));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+        }).WithTags("Setup").Produces<List<LocationDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapPost("/locations", async (CreateLocation req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -108,7 +108,7 @@ public static class SetupEndpoints
             loc.Depth = (parent?.Depth ?? -1) + 1;
             db.Locations.Add(loc);
             return await SaveOrConflict(db, ct, () => Results.Created($"/locations/{loc.Id}", ToDto(loc)), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<LocationDto>(201).RequireAuthorization(manage);
 
         app.MapPut("/locations/{id:guid}", async (Guid id, UpdateLocation req, AppDbContext db, CancellationToken ct) =>
         {
@@ -120,7 +120,7 @@ public static class SetupEndpoints
             if (req.Longitude is not null) loc.Longitude = req.Longitude;
             if (req.IsActive is { } active) loc.IsActive = active;
             return await SaveOrConflict(db, ct, () => Results.Ok(ToDto(loc)), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<LocationDto>(200).RequireAuthorization(manage);
 
         // OR-03 ------------------------------------------------------------------------------------------
         app.MapGet("/landmarks", async (string? q, Guid? locationId, AppDbContext db, CancellationToken ct) =>
@@ -137,7 +137,7 @@ public static class SetupEndpoints
                     || l.Aliases.Any(a => a.Contains(needle, StringComparison.CurrentCultureIgnoreCase))).ToList();
             }
             return Results.Ok(rows.Select(ToDto));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+        }).WithTags("Setup").Produces<List<LandmarkDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapPost("/landmarks", async (SaveLandmark req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -147,7 +147,7 @@ public static class SetupEndpoints
             ApplyLandmark(l, req);
             db.Landmarks.Add(l);
             return await SaveOrConflict(db, ct, () => Results.Created($"/landmarks/{l.Id}", ToDto(l)), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<LandmarkDto>(201).RequireAuthorization(manage);
 
         app.MapPut("/landmarks/{id:guid}", async (Guid id, SaveLandmark req, AppDbContext db, CancellationToken ct) =>
         {
@@ -157,12 +157,12 @@ public static class SetupEndpoints
             if (req.LocationId is { } lid && !await db.Locations.AnyAsync(x => x.Id == lid, ct)) return Results.BadRequest(new { error = "location_not_found" });
             ApplyLandmark(l, req);
             return await SaveOrConflict(db, ct, () => Results.Ok(ToDto(l)), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<LandmarkDto>(200).RequireAuthorization(manage);
 
         // OR-04 ------------------------------------------------------------------------------------------
         app.MapGet("/departments", async (AppDbContext db, CancellationToken ct) =>
             Results.Ok((await db.Departments.AsNoTracking().OrderBy(d => d.Name).ToListAsync(ct)).Select(d => new DepartmentDto(d.Id, d.Name, d.NameUr, d.IsActive))))
-            .WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+            .WithTags("Setup").Produces<List<DepartmentDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapPost("/departments", async (SaveDepartment req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -170,7 +170,7 @@ public static class SetupEndpoints
             var d = new Department { OrganizationId = tenant.OrganizationId!.Value, Name = req.Name.Trim(), NameUr = req.NameUr };
             db.Departments.Add(d);
             return await SaveOrConflict(db, ct, () => Results.Created($"/departments/{d.Id}", new DepartmentDto(d.Id, d.Name, d.NameUr, d.IsActive)), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<DepartmentDto>(201).RequireAuthorization(manage);
 
         app.MapPut("/departments/{id:guid}", async (Guid id, SaveDepartment req, AppDbContext db, CancellationToken ct) =>
         {
@@ -178,7 +178,7 @@ public static class SetupEndpoints
             if (d is null) return Results.NotFound();
             d.Name = req.Name.Trim(); d.NameUr = req.NameUr; if (req.IsActive is { } a) d.IsActive = a;
             return await SaveOrConflict(db, ct, () => Results.Ok(new DepartmentDto(d.Id, d.Name, d.NameUr, d.IsActive)), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<DepartmentDto>(200).RequireAuthorization(manage);
 
         app.MapGet("/teams", async (AppDbContext db, CancellationToken ct) =>
         {
@@ -186,7 +186,7 @@ public static class SetupEndpoints
             var members = await db.TeamMembers.AsNoTracking().ToListAsync(ct);
             return Results.Ok(teams.Select(t => new TeamDto(t.Id, t.DepartmentId, t.Name, t.IsActive,
                 members.Where(m => m.TeamId == t.Id).Select(m => new TeamMemberDto(m.Id, m.UserId, m.IsSupervisor)).ToList())));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+        }).WithTags("Setup").Produces<List<TeamDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapPost("/teams", async (CreateTeam req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -194,7 +194,7 @@ public static class SetupEndpoints
             var t = new Team { OrganizationId = tenant.OrganizationId!.Value, DepartmentId = req.DepartmentId, Name = req.Name.Trim() };
             db.Teams.Add(t);
             return await SaveOrConflict(db, ct, () => Results.Created($"/teams/{t.Id}", new TeamDto(t.Id, t.DepartmentId, t.Name, t.IsActive, [])), "duplicate_name");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<TeamDto>(201).RequireAuthorization(manage);
 
         app.MapPost("/teams/{teamId:guid}/members", async (Guid teamId, AddTeamMember req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -203,7 +203,7 @@ public static class SetupEndpoints
             var m = new TeamMember { OrganizationId = tenant.OrganizationId!.Value, TeamId = teamId, UserId = req.UserId, IsSupervisor = req.IsSupervisor };
             db.TeamMembers.Add(m);
             return await SaveOrConflict(db, ct, () => Results.Created($"/teams/{teamId}/members/{m.Id}", new TeamMemberDto(m.Id, m.UserId, m.IsSupervisor)), "already_member");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<TeamMemberDto>(201).RequireAuthorization(manage);
 
         app.MapDelete("/teams/{teamId:guid}/members/{memberId:guid}", async (Guid teamId, Guid memberId, AppDbContext db, CancellationToken ct) =>
         {
@@ -220,7 +220,7 @@ public static class SetupEndpoints
             var q = db.Categories.AsNoTracking().AsQueryable();
             if (includeInactive != true) q = q.Where(c => c.IsActive);
             return Results.Ok((await q.OrderBy(c => c.SortOrder).ThenBy(c => c.NameEn).ToListAsync(ct)).Select(ToDto));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.Verified);
+        }).WithTags("Setup").Produces<List<CategoryDto>>(200).RequireAuthorization(AuthPolicies.Verified);
 
         app.MapPost("/categories", async (SaveCategory req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -229,7 +229,7 @@ public static class SetupEndpoints
             Apply(c, req);
             db.Categories.Add(c);
             return await SaveOrConflict(db, ct, () => Results.Created($"/categories/{c.Id}", ToDto(c)), "duplicate_key");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<CategoryDto>(201).RequireAuthorization(manage);
 
         app.MapPut("/categories/{id:guid}", async (Guid id, SaveCategory req, AppDbContext db, CancellationToken ct) =>
         {
@@ -238,7 +238,7 @@ public static class SetupEndpoints
             if (c is null) return Results.NotFound();
             Apply(c, req);
             return await SaveOrConflict(db, ct, () => Results.Ok(ToDto(c)), "duplicate_key");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<CategoryDto>(200).RequireAuthorization(manage);
 
         app.MapPost("/categories/seed-templates", async (AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
             Results.Ok(new { added = await SeedCategoriesAsync(db, tenant.OrganizationId!.Value, ct) }))
@@ -255,7 +255,7 @@ public static class SetupEndpoints
                 q = q.Where(x => x.Path.StartsWith(prefix));
             }
             return Results.Ok((await q.OrderBy(x => x.Path).ToListAsync(ct)).Select(x => ToDto(x.h, x.Path)));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
+        }).WithTags("Setup").Produces<List<HouseDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
 
         app.MapPost("/houses", async (CreateHouse req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -270,11 +270,11 @@ public static class SetupEndpoints
             var h = new House { OrganizationId = tenant.OrganizationId!.Value, LocationId = loc.Id, PlotSizeSqYd = req.PlotSizeSqYd, HouseCategory = req.HouseCategory, Status = req.Status ?? "occupied" };
             db.Houses.Add(h);
             return await SaveOrConflict(db, ct, () => Results.Created($"/houses/{h.Id}", ToDto(h, loc.Path)), "location_already_has_house");
-        }).WithTags("Setup").RequireAuthorization(manage);
+        }).WithTags("Setup").Produces<HouseDto>(201).RequireAuthorization(manage);
 
         app.MapGet("/houses/{houseId:guid}/residents", async (Guid houseId, AppDbContext db, CancellationToken ct) =>
             Results.Ok((await db.ResidentLinks.AsNoTracking().Where(r => r.HouseId == houseId).OrderByDescending(r => r.FromDate).ToListAsync(ct)).Select(ToDto)))
-            .WithTags("Setup").RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
+            .WithTags("Setup").Produces<List<ResidentLinkDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
 
         app.MapPost("/houses/{houseId:guid}/residents", async (Guid houseId, CreateResidentLink req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
         {
@@ -291,7 +291,7 @@ public static class SetupEndpoints
             var link = new ResidentLink { OrganizationId = org, HouseId = houseId, UserId = req.UserId, Relation = req.Relation, FromDate = req.FromDate ?? DateOnly.FromDateTime(DateTime.UtcNow) };
             db.ResidentLinks.Add(link);
             return await SaveOrConflict(db, ct, () => Results.Created($"/resident-links/{link.Id}", ToDto(link)), "house_already_has_current_" + req.Relation);
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.For(Permissions.HouseLink));
+        }).WithTags("Setup").Produces<ResidentLinkDto>(201).RequireAuthorization(AuthPolicies.For(Permissions.HouseLink));
 
         // Moving out ends the link; the row stays as history.
         app.MapPost("/resident-links/{id:guid}/end", async (Guid id, EndResidentLink req, AppDbContext db, CancellationToken ct) =>
@@ -304,7 +304,7 @@ public static class SetupEndpoints
             link.ToDate = end;
             await db.SaveChangesAsync(ct);
             return Results.Ok(ToDto(link));
-        }).WithTags("Setup").RequireAuthorization(AuthPolicies.For(Permissions.HouseLink));
+        }).WithTags("Setup").Produces<ResidentLinkDto>(200).RequireAuthorization(AuthPolicies.For(Permissions.HouseLink));
     }
 
     // Shared helpers ---------------------------------------------------------------------------------------
@@ -364,6 +364,7 @@ public static class SetupEndpoints
         c.Key = r.Key; c.NameEn = r.NameEn.Trim(); c.NameUr = r.NameUr; c.DepartmentId = r.DepartmentId;
         c.DefaultPriority = r.DefaultPriority ?? "Normal"; c.EvidenceRule = r.EvidenceRule ?? "photo";
         c.Checklist = JsonSerializer.Serialize(r.Checklist ?? []);
+        if (r.RequiresCosts is { } rc) c.RequiresCosts = rc;
         if (r.IsActive is { } a) c.IsActive = a;
     }
 
@@ -377,7 +378,7 @@ public static class SetupEndpoints
     private static LandmarkDto ToDto(Landmark l) => new(l.Id, l.Name, l.NameUr, l.Aliases, l.LocationId, l.Latitude, l.Longitude, l.IsActive);
     private static SettingsDto ToDto(OrganizationSettings s) => new(s.DisplayName, s.Timezone, s.Locale, s.LocationTemplate, s.PrimaryColor, s.LogoKey);
     private static LocationDto ToDto(Location l) => new(l.Id, l.ParentId, l.Kind, l.Name, l.NameUr, l.Path, l.Depth, l.Latitude, l.Longitude, l.IsActive);
-    private static CategoryDto ToDto(Category c) => new(c.Id, c.Key, c.NameEn, c.NameUr, c.DepartmentId, c.DefaultPriority, c.EvidenceRule, JsonDocument.Parse(c.Checklist).RootElement.Clone(), c.IsActive);
+    private static CategoryDto ToDto(Category c) => new(c.Id, c.Key, c.NameEn, c.NameUr, c.DepartmentId, c.DefaultPriority, c.EvidenceRule, JsonDocument.Parse(c.Checklist).RootElement.Clone(), c.IsActive, c.RequiresCosts);
     private static HouseDto ToDto(House h, string path) => new(h.Id, h.LocationId, path, h.PlotSizeSqYd, h.HouseCategory, h.Status);
     private static ResidentLinkDto ToDto(ResidentLink r) => new(r.Id, r.HouseId, r.UserId, r.Relation, r.FromDate, r.ToDate);
 }

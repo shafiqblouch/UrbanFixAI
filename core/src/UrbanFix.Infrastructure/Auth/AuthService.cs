@@ -16,7 +16,7 @@ public enum LoginOutcome { Success, InvalidCredentials, TotpRequired, TotpEnroll
 
 public sealed record LoginResult(LoginOutcome Outcome, string? Token = null, Guid? OrganizationId = null);
 
-public sealed record SessionPrincipal(Guid SessionId, Guid UserId, Guid? OrganizationId, bool TotpVerified);
+public sealed record SessionPrincipal(Guid SessionId, Guid UserId, Guid? OrganizationId, bool TotpVerified, Guid? SupportSessionId = null, DateTimeOffset? ExpiresAt = null);
 
 public sealed class AuthService(
     AppDbContext db, PasswordService passwords, IDataProtectionProvider protection, AuthOptions options, RequestInfo request)
@@ -57,6 +57,9 @@ public sealed class AuthService(
         return new LoginResult(user.TotpEnabled ? LoginOutcome.Success : LoginOutcome.TotpEnrollmentRequired, token, chosenOrg);
     }
 
+    /// <summary>A session for someone already proven by other means (phone OTP). No second factor applies to residents.</summary>
+    public Task<string> StartSessionAsync(Guid userId, Guid? organizationId, CancellationToken ct) => CreateSessionAsync(userId, organizationId, true, ct);
+
     private async Task<string> CreateSessionAsync(Guid userId, Guid? orgId, bool totpVerified, CancellationToken ct)
     {
         var token = SessionTokens.NewToken();
@@ -83,7 +86,7 @@ public sealed class AuthService(
 
         await db.ChangeTenantAsync(session.OrganizationId, session.UserId, ct);
         var active = await db.Users.AsNoTracking().AnyAsync(u => u.Id == session.UserId && u.IsActive, ct);
-        return active ? new SessionPrincipal(session.Id, session.UserId, session.OrganizationId, session.TotpVerified) : null;
+        return active ? new SessionPrincipal(session.Id, session.UserId, session.OrganizationId, session.TotpVerified, session.SupportSessionId, session.ExpiresAt) : null;
     }
 
     public async Task RevokeAsync(Guid sessionId, CancellationToken ct)

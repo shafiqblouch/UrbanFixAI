@@ -1,0 +1,10 @@
+{
+  "_comment": "Release gate (QA-04). Provisional: set from the AI-01 spike results on a synthetic set; tighten after QA-03 supplies the real golden set.",
+  "min_accuracy": 0.95,
+  "min_accuracy_per_language": 0.9,
+  "min_accuracy_per_category": 0.8,
+  "category_min_cases": 3,
+  "min_valid_rate": 0.98,
+  "min_other_flagged": 0.9,
+  "max_regression": 0.02
+}

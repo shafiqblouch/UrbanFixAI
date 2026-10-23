@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UrbanFix.Api.Security;
 using UrbanFix.Complaints;
+using UrbanFix.Identity;
 using UrbanFix.Infrastructure.Complaints;
 using UrbanFix.Infrastructure.Persistence;
 using UrbanFix.Infrastructure.Storage;
@@ -14,7 +15,7 @@ namespace UrbanFix.Api.Endpoints;
 /// <summary>Complaint core (CP-01 to CP-07) and jobs (JB-01).</summary>
 public static class ComplaintEndpoints
 {
-    public sealed record CreateComplaint(string Description, string? Channel, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText, Guid? ReportedByUserId);
+    public sealed record CreateComplaint(string Description, string? Channel, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText, Guid? ReportedByUserId, string? ReporterPhone = null, string? AssetRef = null);
     public sealed record CompleteLocation(Guid? HouseId, Guid? LocationId, string? LocationText);
     public sealed record Transition(ComplaintStatus To, string? Reason, Guid? MergedIntoId);
     public sealed record CreateJob(string? Instructions, Guid? AssignedTeamId);
@@ -25,11 +26,21 @@ public static class ComplaintEndpoints
         Guid Id, string Reference, ComplaintStatus Status, string Channel, string Description, Guid? CategoryId, string Priority,
         Guid? HouseId, Guid? LocationId, string? LocationText, string? Language, string AiStatus, string? AiCategoryKey, string? AiSummary,
         float? AiConfidence, string? HoldReason, string? StatusReason, Guid? ReportedByUserId, Guid? EnteredByUserId, Guid? MergedIntoId,
-        DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt);
+        DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt, bool SafetyFlag = false, DateTimeOffset? DueAt = null, DateTimeOffset? RespondBy = null, bool AutoRouted = false,
+        string? ReporterPhone = null, bool ReporterVerified = true, string? AssetRef = null, bool AutoConfirmed = false, string? AiModel = null, Guid? IncidentId = null);
+    public sealed record VerifyReporter(Guid? UserId);
+    public sealed record SaveFeedback(int Rating, bool ConfirmedFixed, string? Comment);
+    public sealed record FeedbackDto(int Rating, bool ConfirmedFixed, string? Comment, DateTimeOffset UpdatedAt);
+    public sealed record TranscriptDto(string Transcript, float Confidence, string Language, bool LowConfidence);
+    public sealed record SimilarDto(Guid ComplaintId, string Reference, double Similarity);
     public sealed record HistoryDto(ComplaintStatus? From, ComplaintStatus To, Guid? ActorUserId, string? Reason, DateTimeOffset OccurredAt);
-    public sealed record MediaDto(Guid Id, string Kind, string MimeType, long SizeBytes, int? Width, int? Height, string[] QualityFlags, string Url, string? ThumbUrl);
-    public sealed record JobDto(Guid Id, string Number, int SequenceNo, string Status, string? Instructions, Guid? AssignedTeamId, DateTimeOffset CreatedAt);
-    public sealed record ComplaintDetailDto(ComplaintDto Complaint, IReadOnlyList<HistoryDto> History, IReadOnlyList<MediaDto> Media, IReadOnlyList<JobDto> Jobs, IReadOnlyList<ComplaintStatus> AllowedNext);
+    public sealed record MediaDto(Guid Id, string Kind, string MimeType, long SizeBytes, int? Width, int? Height, string[] QualityFlags, string Url, string? ThumbUrl,
+        string? Transcript = null, float? TranscriptConfidence = null, string? TranscriptLanguage = null, string? TranscriptStatus = null,
+        string[]? AiLabels = null, string? AiDescription = null, bool? AiNeedsMoreInfo = null);
+    public sealed record JobDto(
+        Guid Id, string Number, int SequenceNo, string Status, string? Instructions, Guid? AssignedTeamId, DateTimeOffset CreatedAt,
+        Guid ComplaintId, Guid? AssignedUserId, string EvidenceRule, bool RequiresCosts, bool Chargeable = false, Guid? ChargeHouseId = null);
+    public sealed record ComplaintDetailDto(ComplaintDto Complaint, IReadOnlyList<HistoryDto> History, IReadOnlyList<MediaDto> Media, IReadOnlyList<JobDto> Jobs, IReadOnlyList<ComplaintStatus> AllowedNext, FeedbackDto? Feedback = null);
     public sealed record UploadDto(Guid Id, long ReceivedBytes, long TotalBytes);
 
     private static readonly string[] ResidentChannels = ["app", "web", "whatsapp"];
@@ -38,34 +49,60 @@ public static class ComplaintEndpoints
     {
         var g = app.MapGroup("").WithTags("Complaints");
 
-        g.MapPost("/complaints", CreateAsync).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintCreate));
-        g.MapGet("/complaints", ListAsync).RequireAuthorization(AuthPolicies.Verified);
-        g.MapGet("/complaints/{id:guid}", GetAsync).RequireAuthorization(AuthPolicies.Verified);
-        g.MapPost("/complaints/{id:guid}/transition", TransitionAsync).RequireAuthorization(AuthPolicies.Verified);
-        g.MapPost("/complaints/{id:guid}/location", CompleteLocationAsync).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/complaints", CreateAsync).Produces<CreatedDto>(201).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintCreate));
+        g.MapGet("/complaints", ListAsync).Produces<List<ComplaintDto>>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapGet("/complaints/{id:guid}", GetAsync).Produces<ComplaintDetailDto>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/complaints/{id:guid}/feedback", FeedbackAsync).Produces<FeedbackDto>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/voice/transcribe", TranscribeAsync).DisableAntiforgery().Produces<TranscriptDto>(200)
+            .RequireAuthorization(AuthPolicies.For(Permissions.ComplaintWork));
+        g.MapGet("/complaints/{id:guid}/similar", SimilarAsync).Produces<List<SimilarDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
+        g.MapGet("/complaints/by-reference/{reference}", ByReferenceAsync).Produces<ComplaintDto>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/complaints/{id:guid}/verify-reporter", VerifyReporterAsync).Produces<ComplaintDto>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintTriage));
+        g.MapGet("/organization/policies", async (AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
+            Results.Ok(OrgPolicy.From((await SetupEndpoints.GetOrCreateSettings(db, tenant.OrganizationId!.Value, ct)).Settings)))
+            .Produces<OrgPolicy>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintAssign));
+        g.MapPut("/organization/policies", async (OrgPolicy req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
+        {
+            if (req.Validate() is { } bad) return Results.BadRequest(new { error = bad });
+            var settings = await SetupEndpoints.GetOrCreateSettings(db, tenant.OrganizationId!.Value, ct);
+            settings.Settings = req.WriteInto(settings.Settings);
+            settings.UpdatedAt = DateTimeOffset.UtcNow;
+            await db.SaveChangesAsync(ct);
+            return Results.Ok(req);
+        }).Produces<OrgPolicy>(200).RequireAuthorization(AuthPolicies.For(Permissions.OrganizationSettings));
+        g.MapPost("/complaints/{id:guid}/transition", TransitionAsync).Produces<ComplaintDto>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/complaints/{id:guid}/location", CompleteLocationAsync).Produces<ComplaintDto>(200).RequireAuthorization(AuthPolicies.Verified);
 
-        g.MapPost("/complaints/{id:guid}/jobs", CreateJobAsync).RequireAuthorization(AuthPolicies.For(Permissions.JobCreate));
-        g.MapGet("/complaints/{id:guid}/jobs", async (Guid id, AppDbContext db, CancellationToken ct) =>
-            Results.Ok((await db.Jobs.AsNoTracking().Where(j => j.ComplaintId == id).OrderBy(j => j.SequenceNo).ToListAsync(ct)).Select(ToDto)))
-            .RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
+        g.MapPost("/complaints/{id:guid}/jobs", CreateJobAsync).Produces<JobDto>(201).RequireAuthorization(AuthPolicies.For(Permissions.JobCreate));
+        g.MapGet("/complaints/{id:guid}/jobs", async (Guid id, ClaimsPrincipal user, AppDbContext db, CurrentMemberships memberships, CancellationToken ct) =>
+            {
+                var actor = await ActorAsync(user, memberships, ct);
+                var jobs = await db.Jobs.AsNoTracking().Where(j => j.ComplaintId == id).OrderBy(j => j.SequenceNo).ToListAsync(ct);
+                return Results.Ok(jobs.Where(actor.CanSeeJob).Select(ToDto));
+            })
+            .Produces<List<JobDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
 
-        g.MapPost("/complaints/{id:guid}/media", AddMediaAsync).DisableAntiforgery().RequireAuthorization(AuthPolicies.Verified);
-        g.MapPost("/uploads", StartUploadAsync).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/complaints/{id:guid}/media", AddMediaAsync).DisableAntiforgery().Produces<MediaDto>(201).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/uploads", StartUploadAsync).Produces<UploadDto>(201).RequireAuthorization(AuthPolicies.Verified);
         g.MapGet("/uploads/{uploadId:guid}", async (Guid uploadId, AppDbContext db, CancellationToken ct) =>
             await db.Uploads.AsNoTracking().SingleOrDefaultAsync(u => u.Id == uploadId, ct) is { } u ? Results.Ok(new UploadDto(u.Id, u.ReceivedBytes, u.TotalBytes)) : Results.NotFound())
-            .RequireAuthorization(AuthPolicies.Verified);
-        g.MapPut("/uploads/{uploadId:guid}", AppendChunkAsync).RequireAuthorization(AuthPolicies.Verified);
-        g.MapPost("/complaints/{id:guid}/media/from-upload/{uploadId:guid}", FinishUploadAsync).RequireAuthorization(AuthPolicies.Verified);
+            .Produces<UploadDto>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPut("/uploads/{uploadId:guid}", AppendChunkAsync).Produces<UploadDto>(200).RequireAuthorization(AuthPolicies.Verified);
+        g.MapPost("/complaints/{id:guid}/media/from-upload/{uploadId:guid}", FinishUploadAsync).Produces<MediaDto>(201).RequireAuthorization(AuthPolicies.Verified);
     }
 
     // Access ---------------------------------------------------------------------------------------------------
 
-    private sealed record Actor(Guid UserId, Guid OrgId, IReadOnlySet<string> Permissions)
+    internal sealed record Actor(Guid UserId, Guid OrgId, IReadOnlySet<string> Permissions)
     {
         public bool Has(string p) => Permissions.Contains(p);
+
+        /// <summary>Supervisors, managers and office staff see every job; a technician sees only the ones assigned to them (JB-02).</summary>
+        public bool SeesAllJobs => Has(SharedKernel.Permissions.ComplaintRead) && (!Has(SharedKernel.Permissions.ComplaintWork) || Has(SharedKernel.Permissions.ComplaintAssign));
+        public bool CanSeeJob(Job j) => SeesAllJobs || j.AssignedUserId == UserId;
     }
 
-    private static async Task<Actor> ActorAsync(ClaimsPrincipal user, CurrentMemberships memberships, CancellationToken ct)
+    internal static async Task<Actor> ActorAsync(ClaimsPrincipal user, CurrentMemberships memberships, CancellationToken ct)
     {
         var perms = (await memberships.GetAsync(ct)).SelectMany(m => RolePermissions.For(m.Role)).ToHashSet();
         return new Actor(Guid.Parse(user.FindFirstValue("sub")!), Guid.Parse(user.FindFirstValue("org")!), perms);
@@ -79,7 +116,7 @@ public static class ComplaintEndpoints
 
     private static async Task<IResult> CreateAsync(
         CreateComplaint req, ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships,
-        NumberGenerator numbers, IEventBus bus, CancellationToken ct)
+        ComplaintIntake intake, CancellationToken ct)
     {
         var actor = await ActorAsync(principal, memberships, ct);
         if (string.IsNullOrWhiteSpace(req.Description) || req.Description.Length > 4000) return Results.BadRequest(new { error = "invalid_description" });
@@ -100,84 +137,93 @@ public static class ComplaintEndpoints
             if (reporter is { } r && !await db.Users.AnyAsync(u => u.Id == r, ct)) return Results.BadRequest(new { error = "reporter_not_found" });
         }
 
-        Category? category = null;
-        if (req.CategoryId is { } cid)
-        {
-            category = await db.Categories.AsNoTracking().SingleOrDefaultAsync(c => c.Id == cid && c.IsActive, ct);
-            if (category is null) return Results.BadRequest(new { error = "category_not_found" });
-        }
+        var assetRef = string.IsNullOrWhiteSpace(req.AssetRef) ? null : req.AssetRef.Trim();
+        if (assetRef is { Length: > 100 }) return Results.BadRequest(new { error = "invalid_asset_ref" });
 
-        var houseId = req.HouseId;
-        var locationId = req.LocationId;
-        if (houseId is { } hid)
+        // CP-08: a phone-in complaint from a number we do not know follows the organization's policy.
+        string? reporterPhone = null;
+        var reporterVerified = true;
+        var holdForSender = false;
+        if (!string.IsNullOrWhiteSpace(req.ReporterPhone))
         {
-            var house = await db.Houses.AsNoTracking().SingleOrDefaultAsync(h => h.Id == hid, ct);
-            if (house is null) return Results.BadRequest(new { error = "house_not_found" });
-            locationId ??= house.LocationId;
-        }
-        if (locationId is { } lid && !await db.Locations.AnyAsync(l => l.Id == lid, ct)) return Results.BadRequest(new { error = "location_not_found" });
-
-        // A resident linked to exactly one current house does not have to say where they live.
-        if (houseId is null && locationId is null && reporter is { } who)
-        {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            var links = await db.ResidentLinks.AsNoTracking().Where(l => l.UserId == who && (l.ToDate == null || l.ToDate >= today)).Select(l => l.HouseId).Distinct().ToListAsync(ct);
-            if (links.Count == 1)
+            if (!Channels.IsStaffEntry(channel)) return Results.BadRequest(new { error = "reporter_phone_not_allowed" });
+            reporterPhone = PhoneNumber.Normalize(req.ReporterPhone);
+            if (reporterPhone is null) return Results.BadRequest(new { error = "invalid_phone" });
+            if (reporter is null)
             {
-                houseId = links[0];
-                locationId = await db.Houses.AsNoTracking().Where(h => h.Id == houseId).Select(h => (Guid?)h.LocationId).SingleOrDefaultAsync(ct);
+                var policy = OrgPolicy.From((await SetupEndpoints.GetOrCreateSettings(db, actor.OrgId, ct)).Settings);
+                var decision = await SenderResolver.ResolveAsync(db, reporterPhone, policy, ct);
+                switch (decision.Kind)
+                {
+                    case SenderKind.Matched: reporter = decision.UserId; break;
+                    case SenderKind.RegistrationRequired: return Results.Conflict(new { error = "registration_required", phone = reporterPhone });
+                    case SenderKind.Guest: reporterVerified = false; break;
+                    default: reporterVerified = false; holdForSender = true; break;
+                }
             }
         }
 
-        var complaint = new Complaint
-        {
-            OrganizationId = actor.OrgId,
-            Reference = await numbers.NextAsync(NumberGenerator.ComplaintScope, "UF", ct),
-            Channel = channel,
-            Description = req.Description.Trim(),
-            CategoryId = category?.Id,
-            Priority = category?.DefaultPriority ?? "Normal",
-            HouseId = houseId,
-            LocationId = locationId,
-            LocationText = string.IsNullOrWhiteSpace(req.LocationText) ? null : req.LocationText.Trim(),
-            ReportedByUserId = reporter,
-            EnteredByUserId = enteredBy,
-        };
+        var (made, error) = await intake.CreateAsync(new IntakeRequest(
+            actor.OrgId, channel, req.Description, req.CategoryId, req.HouseId, req.LocationId, req.LocationText, reporter, enteredBy,
+            reporterPhone, reporterVerified, holdForSender, assetRef, actor.UserId), ct);
+        if (error is not null) return Results.BadRequest(new { error });
 
-        // CP-05: without a house or map location the complaint is held and the resident is asked for it.
-        var needsLocation = complaint.HouseId is null && complaint.LocationId is null;
-        if (needsLocation)
-        {
-            complaint.Status = ComplaintStatus.OnHold;
-            complaint.HoldReason = "location_missing";
-        }
-
-        db.Complaints.Add(complaint);
-        db.ComplaintHistory.Add(new ComplaintStatusHistory
-        {
-            OrganizationId = actor.OrgId, ComplaintId = complaint.Id, ToStatus = complaint.Status, ActorUserId = actor.UserId,
-            Reason = needsLocation ? "Location missing: street number or map pin requested" : null,
-        });
-        bus.Publish(new ComplaintCreated(actor.OrgId, complaint.Id, complaint.Reference));
-        await db.SaveChangesAsync(ct);
-
-        return Results.Created($"/complaints/{complaint.Id}", new CreatedDto(complaint.Id, complaint.Reference, complaint.Status, needsLocation));
+        var complaint = made!.Complaint;
+        return Results.Created($"/complaints/{complaint.Id}", new CreatedDto(complaint.Id, complaint.Reference, complaint.Status, made.NeedsLocation));
     }
 
     // Read -------------------------------------------------------------------------------------------------------
 
-    private static async Task<IResult> ListAsync(
-        ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships, ComplaintStatus? status, int? limit, int? offset, CancellationToken ct)
+    /// <summary>
+    /// Filtered, paged list (WP-02). The total number of matches comes back in <c>X-Total-Count</c>.
+    /// <c>locationId</c> matches that location and everything beneath it (a sector, a street...).
+    /// </summary>
+    /// <summary>
+    /// The complaints a person may see, narrowed by the list filters. Shared by the list and the exports, so an export can never show
+    /// more than the screen does (DB-04).
+    /// </summary>
+    internal static async Task<(IQueryable<Complaint>? Query, IResult? Error)> FilteredAsync(
+        Actor actor, AppDbContext db, ComplaintStatus? status, string? q, Guid? categoryId, Guid? departmentId, Guid? locationId, string? priority,
+        DateTimeOffset? from, DateTimeOffset? to, CancellationToken ct)
     {
-        var actor = await ActorAsync(principal, memberships, ct);
-        var q = db.Complaints.AsNoTracking().AsQueryable();
+        var query = db.Complaints.AsNoTracking().AsQueryable();
         if (!actor.Has(Permissions.ComplaintRead))
         {
-            if (!actor.Has(Permissions.ComplaintReadOwn)) return Results.Forbid();
-            q = q.Where(c => c.ReportedByUserId == actor.UserId);
+            if (!actor.Has(Permissions.ComplaintReadOwn)) return (null, Results.Forbid());
+            query = query.Where(c => c.ReportedByUserId == actor.UserId);
         }
-        if (status is { } s) q = q.Where(c => c.Status == s);
-        var rows = await q.OrderByDescending(c => c.CreatedAt).Skip(Math.Max(offset ?? 0, 0)).Take(Math.Clamp(limit ?? 50, 1, 200)).ToListAsync(ct);
+        if (status is { } s) query = query.Where(c => c.Status == s);
+        if (categoryId is { } cat) query = query.Where(c => c.CategoryId == cat);
+        if (priority is not null) query = query.Where(c => c.Priority == priority);
+        if (from is { } f) query = query.Where(c => c.CreatedAt >= f);
+        if (to is { } t) query = query.Where(c => c.CreatedAt <= t);
+        if (departmentId is { } dep) query = query.Where(c => db.Categories.Any(k => k.Id == c.CategoryId && k.DepartmentId == dep));
+        if (locationId is { } loc)
+        {
+            var path = await db.Locations.AsNoTracking().Where(l => l.Id == loc).Select(l => l.Path).SingleOrDefaultAsync(ct);
+            if (path is null) return (null, Results.BadRequest(new { error = "location_not_found" }));
+            query = query.Where(c => db.Locations.Any(l => l.Id == c.LocationId && l.Path.StartsWith(path)));
+        }
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var pattern = "%" + q.Trim().Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%";
+            query = query.Where(c => EF.Functions.ILike(c.Reference, pattern, "\\") || EF.Functions.ILike(c.Description, pattern, "\\") || (c.LocationText != null && EF.Functions.ILike(c.LocationText, pattern, "\\")) || (c.AssetRef != null && EF.Functions.ILike(c.AssetRef, pattern, "\\")));
+        }
+        return (query, null);
+    }
+
+    private static async Task<IResult> ListAsync(
+        HttpContext http, ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships, ComplaintStatus? status, string? q,
+        Guid? categoryId, Guid? departmentId, Guid? locationId, string? priority, DateTimeOffset? from, DateTimeOffset? to,
+        int? limit, int? offset, CancellationToken ct)
+    {
+        var actor = await ActorAsync(principal, memberships, ct);
+        var (query, error) = await FilteredAsync(actor, db, status, q, categoryId, departmentId, locationId, priority, from, to, ct);
+        if (error is not null) return error;
+        query = query!;
+
+        http.Response.Headers["X-Total-Count"] = (await query.CountAsync(ct)).ToString();
+        var rows = await query.OrderByDescending(c => c.CreatedAt).Skip(Math.Max(offset ?? 0, 0)).Take(Math.Clamp(limit ?? 50, 1, 200)).ToListAsync(ct);
         return Results.Ok(rows.Select(ToDto));
     }
 
@@ -190,7 +236,9 @@ public static class ComplaintEndpoints
 
         var history = await db.ComplaintHistory.AsNoTracking().Where(h => h.ComplaintId == id).OrderBy(h => h.OccurredAt).ToListAsync(ct);
         var media = await db.ComplaintMedia.AsNoTracking().Where(m => m.ComplaintId == id).OrderBy(m => m.CreatedAt).ToListAsync(ct);
-        var jobs = actor.Has(Permissions.ComplaintRead) ? await db.Jobs.AsNoTracking().Where(j => j.ComplaintId == id).OrderBy(j => j.SequenceNo).ToListAsync(ct) : [];
+        var jobs = actor.Has(Permissions.ComplaintRead)
+            ? (await db.Jobs.AsNoTracking().Where(j => j.ComplaintId == id).OrderBy(j => j.SequenceNo).ToListAsync(ct)).Where(actor.CanSeeJob).ToList()
+            : [];
 
         var isReporter = c.ReportedByUserId == actor.UserId;
         var next = ComplaintStateMachine.NextStatuses(c.Status).Where(to => ComplaintStateMachine.Check(c.Status, to, actor.Permissions, isReporter, "x") is null).ToList();
@@ -199,8 +247,10 @@ public static class ComplaintEndpoints
             ToDto(c),
             history.Select(h => new HistoryDto(h.FromStatus, h.ToStatus, h.ActorUserId, h.Reason, h.OccurredAt)).ToList(),
             media.Select(m => new MediaDto(m.Id, m.Kind, m.MimeType, m.SizeBytes, m.Width, m.Height, m.QualityFlags,
-                storage.CreateDownloadUrl(m.StorageKey), m.ThumbKey is null ? null : storage.CreateDownloadUrl(m.ThumbKey))).ToList(),
-            jobs.Select(ToDto).ToList(), next));
+                storage.CreateDownloadUrl(m.StorageKey), m.ThumbKey is null ? null : storage.CreateDownloadUrl(m.ThumbKey),
+                m.Transcript, m.TranscriptConfidence, m.TranscriptLanguage, m.TranscriptStatus, m.AiLabels, m.AiDescription, m.AiNeedsMoreInfo)).ToList(),
+            jobs.Select(ToDto).ToList(), next,
+            await db.Feedback.AsNoTracking().Where(f => f.ComplaintId == id).Select(f => new FeedbackDto(f.Rating, f.ConfirmedFixed, f.Comment, f.UpdatedAt)).SingleOrDefaultAsync(ct)));
     }
 
     // Transitions (CP-02, CP-07) -----------------------------------------------------------------------------------
@@ -223,6 +273,19 @@ public static class ComplaintEndpoints
             };
         }
 
+        // CP-10: unless the organization says otherwise, only the resident closes a complaint that has a resident to ask.
+        if (c.Status == ComplaintStatus.Resolved && req.To == ComplaintStatus.Closed && c.ReportedByUserId is { } owner && owner != actor.UserId
+            && OrgPolicy.From((await SetupEndpoints.GetOrCreateSettings(db, c.OrganizationId, ct)).Settings).ClosureNeedsResident)
+            return Results.Json(new { error = "resident_confirmation_required" }, statusCode: 403);
+
+        // Work on a job moves the complaint through the job workflow, which enforces evidence and sign-off (JB-05, JB-06).
+        if (req.To is ComplaintStatus.InProgress or ComplaintStatus.Resolved
+            || (c.Status == ComplaintStatus.InProgress && req.To == ComplaintStatus.UnderReview))
+        {
+            if (await db.Jobs.AnyAsync(j => j.ComplaintId == c.Id && JobStatus.Active.Contains(j.Status), ct))
+                return Results.Conflict(new { error = "use_job_workflow" });
+        }
+
         if (req.To == ComplaintStatus.Merged)
         {
             if (req.MergedIntoId is not { } target || target == c.Id) return Results.BadRequest(new { error = "merge_target_required" });
@@ -240,17 +303,16 @@ public static class ComplaintEndpoints
         if (req.To == ComplaintStatus.Closed) c.ClosedAt = DateTimeOffset.UtcNow;
         if (from is ComplaintStatus.Closed or ComplaintStatus.Rejected) { c.ClosedAt = null; c.ResolvedAt = null; }
 
-        // Jobs follow the complaint: starting work starts the job, finishing completes it, handing back cancels it.
-        var openJobs = await db.Jobs.Where(j => j.ComplaintId == c.Id && (j.Status == "Open" || j.Status == "InProgress")).ToListAsync(ct);
-        foreach (var job in openJobs)
+        // Sending the complaint back to review, rejecting or merging it cancels whatever job was still open.
+        if (req.To is ComplaintStatus.UnderReview or ComplaintStatus.Rejected or ComplaintStatus.Merged)
         {
-            job.Status = req.To switch
+            var activeJobs = await db.Jobs.Where(j => j.ComplaintId == c.Id && JobStatus.Active.Contains(j.Status)).ToListAsync(ct);
+            foreach (var job in activeJobs)
             {
-                ComplaintStatus.InProgress => "InProgress",
-                ComplaintStatus.Resolved => "Completed",
-                ComplaintStatus.UnderReview or ComplaintStatus.Rejected or ComplaintStatus.Merged => "Cancelled",
-                _ => job.Status,
-            };
+                var jobFrom = job.Status;
+                job.Status = JobStatus.Cancelled;
+                db.JobUpdates.Add(new JobUpdate { OrganizationId = c.OrganizationId, JobId = job.Id, AuthorId = actor.UserId, Kind = "status", FromStatus = jobFrom, ToStatus = JobStatus.Cancelled, Note = c.StatusReason });
+            }
         }
 
         Record(db, bus, c, from, actor.UserId, c.StatusReason);
@@ -258,13 +320,102 @@ public static class ComplaintEndpoints
         return Results.Ok(ToDto(c));
     }
 
-    private static void Record(AppDbContext db, IEventBus bus, Complaint c, ComplaintStatus from, Guid? actor, string? reason)
+    internal static void Record(AppDbContext db, IEventBus bus, Complaint c, ComplaintStatus from, Guid? actor, string? reason)
     {
         db.ComplaintHistory.Add(new ComplaintStatusHistory
         {
             OrganizationId = c.OrganizationId, ComplaintId = c.Id, FromStatus = from, ToStatus = c.Status, ActorUserId = actor, Reason = reason,
         });
         bus.Publish(new ComplaintStatusChanged(c.OrganizationId, c.Id, c.Reference, from, c.Status, actor, reason));
+    }
+
+    // Feedback (JB-08) --------------------------------------------------------------------------------------------
+
+    /// <summary>The reporter rates finished work. One answer per complaint; sending again replaces it.</summary>
+    private static async Task<IResult> FeedbackAsync(Guid id, SaveFeedback req, ClaimsPrincipal principal, AppDbContext db, CancellationToken ct)
+    {
+        var user = Guid.Parse(principal.FindFirstValue("sub")!);
+        var c = await db.Complaints.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, ct);
+        if (c is null || c.ReportedByUserId != user) return Results.NotFound();
+        if (c.Status is not (ComplaintStatus.Resolved or ComplaintStatus.Closed)) return Results.Conflict(new { error = "not_finished", status = c.Status });
+        if (req.Rating is < 1 or > 5) return Results.BadRequest(new { error = "invalid_rating" });
+        if (req.Comment is { Length: > 1000 }) return Results.BadRequest(new { error = "comment_too_long" });
+
+        var row = await db.Feedback.SingleOrDefaultAsync(f => f.ComplaintId == id, ct);
+        if (row is null)
+        {
+            row = new ComplaintFeedback { OrganizationId = c.OrganizationId, ComplaintId = id, UserId = user };
+            db.Feedback.Add(row);
+        }
+        row.Rating = req.Rating; row.ConfirmedFixed = req.ConfirmedFixed;
+        row.Comment = string.IsNullOrWhiteSpace(req.Comment) ? null : req.Comment.Trim();
+        row.UpdatedAt = DateTimeOffset.UtcNow;
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(new FeedbackDto(row.Rating, row.ConfirmedFixed, row.Comment, row.UpdatedAt));
+    }
+
+    // Voice input for notes (TA-08) -------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Turns a short recording into text the technician can correct before saving. Nothing is stored: the recording is not
+    /// kept and the text is only a draft until the technician saves it as a note.
+    /// </summary>
+    private static async Task<IResult> TranscribeAsync([FromForm] IFormFile file, string? language, IAiClient ai, AiUsageContext usage, CancellationToken ct)
+    {
+        if (file.Length == 0) return Results.BadRequest(new { error = "empty_file" });
+        if (file.Length > 5 * 1024 * 1024) return Results.Json(new { error = "file_too_large" }, statusCode: 413);
+        await using var ms = new MemoryStream();
+        await file.CopyToAsync(ms, ct);
+        var bytes = ms.ToArray();
+        var kind = FileSniffer.Identify(bytes);
+        if (kind is not { Kind: "audio" }) return Results.Json(new { error = "unsupported_file_type" }, statusCode: 415);
+
+        usage.ComplaintId = null;
+        try
+        {
+            var r = await ai.TranscribeAsync(bytes, kind.Mime, language is "en" or "ur" or "roman_ur" ? language : null, ct);
+            return Results.Ok(new TranscriptDto(r.Transcript, r.Confidence, r.Language, r.LowConfidence));
+        }
+        catch (AiUnavailableException off) { return Results.Json(new { error = "ai_not_available", reason = off.Reason }, statusCode: 503); }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException or InvalidOperationException)
+        {
+            return Results.Json(new { error = "ai_unavailable" }, statusCode: 502);
+        }
+    }
+
+    // Similar complaints (AI-11) ---------------------------------------------------------------------------------
+
+    private static async Task<IResult> SimilarAsync(Guid id, int? days, int? limit, double? minSimilarity, AppDbContext db, CancellationToken ct)
+    {
+        if (!await db.Complaints.AnyAsync(c => c.Id == id, ct)) return Results.NotFound();
+        var found = await EmbeddingStore.FindSimilarAsync(db, id, Math.Clamp(days ?? 30, 1, 365), Math.Clamp(limit ?? 5, 1, 20), Math.Clamp(minSimilarity ?? 0.8, 0, 1), ct);
+        return Results.Ok(found.Select(f => new SimilarDto(f.ComplaintId, f.Reference, f.Similarity)));
+    }
+
+    // Lookup and sender checks (CP-08, CP-09) --------------------------------------------------------------------
+
+    /// <summary>A resident finds their complaint by reference. Someone else's reference looks exactly like one that does not exist.</summary>
+    private static async Task<IResult> ByReferenceAsync(string reference, ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships, CancellationToken ct)
+    {
+        var actor = await ActorAsync(principal, memberships, ct);
+        var ref_ = reference.Trim().ToUpperInvariant();
+        var c = await db.Complaints.AsNoTracking().SingleOrDefaultAsync(x => x.Reference == ref_, ct);
+        return c is null || !CanSee(actor, c) ? Results.NotFound() : Results.Ok(ToDto(c));
+    }
+
+    private static async Task<IResult> VerifyReporterAsync(Guid id, VerifyReporter req, AppDbContext db, CancellationToken ct)
+    {
+        var c = await db.Complaints.SingleOrDefaultAsync(x => x.Id == id, ct);
+        if (c is null) return Results.NotFound();
+        if (req.UserId is { } uid)
+        {
+            if (!await db.Memberships.AnyAsync(m => m.UserId == uid && m.IsActive && m.Role == Role.Resident, ct)) return Results.BadRequest(new { error = "not_a_resident" });
+            c.ReportedByUserId = uid;
+        }
+        c.ReporterVerified = true;
+        c.UpdatedAt = DateTimeOffset.UtcNow;
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(ToDto(c));
     }
 
     // Missing location (CP-05) -------------------------------------------------------------------------------------
@@ -312,17 +463,26 @@ public static class ComplaintEndpoints
         var c = await db.Complaints.SingleOrDefaultAsync(x => x.Id == id, ct);
         if (c is null) return Results.NotFound();
         if (c.Status != ComplaintStatus.UnderReview) return Results.Conflict(new { error = "complaint_not_under_review", status = c.Status });
-        if (await db.Jobs.AnyAsync(j => j.ComplaintId == id && (j.Status == "Open" || j.Status == "InProgress"), ct)) return Results.Conflict(new { error = "open_job_exists" });
+        if (await db.Jobs.AnyAsync(j => j.ComplaintId == id && JobStatus.Active.Contains(j.Status), ct)) return Results.Conflict(new { error = "open_job_exists" });
         if (req.AssignedTeamId is { } team && !await db.Teams.AnyAsync(t => t.Id == team && t.IsActive, ct)) return Results.BadRequest(new { error = "team_not_found" });
+
+        // No team named: the routing rules pick one for this category and location (RT-01).
+        var teamId = req.AssignedTeamId ?? await RoutingEndpoints.SuggestTeamAsync(db, c.CategoryId, c.LocationId, ct);
 
         // Rework: a further job under the same complaint, numbered separately, sequence 2, 3, ...
         var sequence = (await db.Jobs.Where(j => j.ComplaintId == id).MaxAsync(j => (int?)j.SequenceNo, ct) ?? 0) + 1;
+        // The category's evidence rule and checklist are copied onto the job (JB-05).
+        var category = c.CategoryId is { } cid ? await db.Categories.AsNoTracking().SingleOrDefaultAsync(x => x.Id == cid, ct) : null;
+        var checklist = category is null ? [] : System.Text.Json.JsonSerializer.Deserialize<string[]>(category.Checklist) ?? [];
         var job = new Job
         {
             OrganizationId = actor.OrgId, Number = await numbers.NextAsync(NumberGenerator.JobScope, "J", ct), ComplaintId = id,
-            SequenceNo = sequence, Instructions = req.Instructions?.Trim(), AssignedTeamId = req.AssignedTeamId, CreatedBy = actor.UserId,
+            SequenceNo = sequence, Instructions = req.Instructions?.Trim(), AssignedTeamId = teamId, CreatedBy = actor.UserId,
+            EvidenceRule = category?.EvidenceRule ?? "photo", RequiresCosts = category?.RequiresCosts ?? false,
+            Checklist = JobEvidence.ToJson(checklist.Select(label => new ChecklistItem(label, false))),
         };
         db.Jobs.Add(job);
+        db.JobUpdates.Add(new JobUpdate { OrganizationId = actor.OrgId, JobId = job.Id, AuthorId = actor.UserId, Kind = "created", ToStatus = JobStatus.Open, Note = job.Instructions });
 
         var from = c.Status;
         c.Status = ComplaintStatus.Assigned;
@@ -338,7 +498,7 @@ public static class ComplaintEndpoints
 
     private static async Task<IResult> AddMediaAsync(
         Guid id, [FromForm] IFormFile file, ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships,
-        IMediaProcessor processor, IObjectStorage storage, CancellationToken ct)
+        IMediaProcessor processor, IObjectStorage storage, IEventBus bus, CancellationToken ct)
     {
         var actor = await ActorAsync(principal, memberships, ct);
         var c = await db.Complaints.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, ct);
@@ -347,10 +507,12 @@ public static class ComplaintEndpoints
 
         await using var ms = new MemoryStream();
         await file.CopyToAsync(ms, ct);
-        return await SaveMediaAsync(ms.ToArray(), c, actor, db, processor, storage, ct);
+        return await SaveMediaAsync(ms.ToArray(), c, actor, db, processor, storage, ct, bus: bus);
     }
 
-    private static async Task<IResult> SaveMediaAsync(byte[] bytes, Complaint c, Actor actor, AppDbContext db, IMediaProcessor processor, IObjectStorage storage, CancellationToken ct)
+    internal static async Task<IResult> SaveMediaAsync(
+        byte[] bytes, Complaint c, Actor actor, AppDbContext db, IMediaProcessor processor, IObjectStorage storage, CancellationToken ct,
+        Guid? jobId = null, string? stage = null, IEventBus? bus = null)
     {
         var (media, error) = await processor.ProcessAsync(bytes, actor.OrgId, c.Id, actor.UserId,
             async sha => await db.ComplaintMedia.AsNoTracking().SingleOrDefaultAsync(m => m.ComplaintId == c.Id && m.Sha256 == sha, ct), ct);
@@ -361,9 +523,13 @@ public static class ComplaintEndpoints
                  : error == "unsupported_file_type" ? Results.Json(new { error }, statusCode: 415)
                  : Results.BadRequest(new { error });
 
-        db.ComplaintMedia.Add(media!);
+        media!.JobId = jobId;
+        media.Stage = stage;
+        db.ComplaintMedia.Add(media);
+        // Voice notes are transcribed in the background (AI-09).
+        if (media.Kind == "audio" && bus is not null) bus.Publish(new MediaAdded(actor.OrgId, media.Id, c.Id, media.Kind));
         await db.SaveChangesAsync(ct);
-        return Results.Created($"/complaints/{c.Id}", ToMediaDto(media!, storage));
+        return Results.Created($"/complaints/{c.Id}", ToMediaDto(media, storage));
     }
 
     private static async Task<IResult> StartUploadAsync(StartUpload req, ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships, CancellationToken ct)
@@ -403,7 +569,7 @@ public static class ComplaintEndpoints
 
     private static async Task<IResult> FinishUploadAsync(
         Guid id, Guid uploadId, ClaimsPrincipal principal, AppDbContext db, CurrentMemberships memberships,
-        IMediaProcessor processor, IObjectStorage storage, CancellationToken ct)
+        IMediaProcessor processor, IObjectStorage storage, IEventBus bus, CancellationToken ct)
     {
         var actor = await ActorAsync(principal, memberships, ct);
         var c = await db.Complaints.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, ct);
@@ -418,7 +584,7 @@ public static class ComplaintEndpoints
             await using var part = await storage.OpenReadAsync(key, ct);
             await part.CopyToAsync(all, ct);
         }
-        var result = await SaveMediaAsync(all.ToArray(), c, actor, db, processor, storage, ct);
+        var result = await SaveMediaAsync(all.ToArray(), c, actor, db, processor, storage, ct, bus: bus);
 
         u.CompletedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ct);
@@ -428,14 +594,15 @@ public static class ComplaintEndpoints
 
     // Mapping ---------------------------------------------------------------------------------------------------------
 
-    private static ComplaintDto ToDto(Complaint c) => new(
+    internal static ComplaintDto ToDto(Complaint c) => new(
         c.Id, c.Reference, c.Status, c.Channel, c.Description, c.CategoryId, c.Priority, c.HouseId, c.LocationId, c.LocationText, c.Language,
         c.AiStatus, c.AiCategoryKey, c.AiSummary, c.AiConfidence, c.HoldReason, c.StatusReason, c.ReportedByUserId, c.EnteredByUserId, c.MergedIntoId,
-        c.CreatedAt, c.UpdatedAt);
+        c.CreatedAt, c.UpdatedAt, c.SafetyFlag, c.DueAt, c.RespondBy, c.AutoRouted, c.ReporterPhone, c.ReporterVerified, c.AssetRef, c.AutoConfirmed, c.AiModel, c.IncidentId);
 
-    private static JobDto ToDto(Job j) => new(j.Id, j.Number, j.SequenceNo, j.Status, j.Instructions, j.AssignedTeamId, j.CreatedAt);
+    internal static JobDto ToDto(Job j) => new(j.Id, j.Number, j.SequenceNo, j.Status, j.Instructions, j.AssignedTeamId, j.CreatedAt, j.ComplaintId, j.AssignedUserId, j.EvidenceRule, j.RequiresCosts, j.Chargeable, j.ChargeHouseId);
 
-    private static MediaDto ToMediaDto(ComplaintMedia m, IObjectStorage storage) => new(
+    internal static MediaDto ToMediaDto(ComplaintMedia m, IObjectStorage storage) => new(
         m.Id, m.Kind, m.MimeType, m.SizeBytes, m.Width, m.Height, m.QualityFlags,
-        storage.CreateDownloadUrl(m.StorageKey), m.ThumbKey is null ? null : storage.CreateDownloadUrl(m.ThumbKey));
+        storage.CreateDownloadUrl(m.StorageKey), m.ThumbKey is null ? null : storage.CreateDownloadUrl(m.ThumbKey),
+        m.Transcript, m.TranscriptConfidence, m.TranscriptLanguage, m.TranscriptStatus, m.AiLabels, m.AiDescription, m.AiNeedsMoreInfo);
 }

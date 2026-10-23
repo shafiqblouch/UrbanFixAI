@@ -23,7 +23,8 @@ class Settings:
     llm_provider: str = "fake"
     vision_provider: str = "fake"
     speech_provider: str = "fake"
-    embedding_provider: str = "fake"
+    # No default choice yet: AI-01 has not compared embedding models. Set AI_EMBEDDING_PROVIDER and AI_EMBEDDING_MODEL.
+    embedding_provider: str = "unconfigured"
 
     # Pinned model identifiers: a model change is a reviewed config change, never a silent default.
     llm_model: str = "fake-llm-1"
@@ -32,7 +33,7 @@ class Settings:
     embedding_model: str = "fake-embed-1"
 
     # Pinned prompt versions (files under app/prompts/<name>/<version>.txt).
-    prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v3", "photo_interpretation": "v1"})
+    prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v3", "photo_interpretation": "v1", "speech_transcription": "v1", "photo_comparison": "v1"})
 
     # Used once if the primary model's provider call fails (AI-01 picked a second vendor on purpose).
     llm_fallback_model: str = ""

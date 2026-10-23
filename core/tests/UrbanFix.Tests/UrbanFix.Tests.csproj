@@ -14,6 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Testcontainers" Version="3.10.0" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="3.10.0" />
@@ -24,6 +25,11 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="System.Net.Http.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Webhook bodies in the shapes the WhatsApp Cloud API documents. Written by hand, not captured from a live account. -->
+    <None Include="Fixtures\**\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

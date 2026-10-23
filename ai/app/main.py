@@ -3,12 +3,15 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, FastAPI, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 
+from app.comparison import ComparisonResult, compare
 from app.config import Settings
+from app.embeddings import EmbedRequest, EmbedResponse, embed_texts
 from app.photos import PhotoError, PhotoResult, interpret
 from app.providers import Providers, build_providers
 from app.providers.base import ProviderError
 from app.schemas import ErrorBody, ProviderStatus, UnderstandRequest, UnderstandResponse
 from app.security import require_service_token
+from app.speech import SpeechError, TranscribeResponse, transcribe
 from app.telemetry import setup_telemetry
 from app.understanding import InvalidModelOutput, understand
 
@@ -58,6 +61,39 @@ def create_app(settings: Settings | None = None, providers: Providers | None = N
         except PhotoError as exc:
             status = {"file_too_large": 413, "unsupported_file_type": 415}.get(exc.code, 400)
             return JSONResponse(ErrorBody(error=exc.code).model_dump(), status_code=status)
+        except ProviderError as exc:
+            return JSONResponse(ErrorBody(error="provider_unavailable", detail=str(exc)).model_dump(), status_code=502)
+
+    @v1.post(
+        "/speech/transcribe",
+        response_model=TranscribeResponse,
+        responses={413: {"model": ErrorBody}, 415: {"model": ErrorBody}, 502: {"model": ErrorBody}},
+    )
+    async def transcribe_voice(request: Request, file: UploadFile = File(...), language_hint: str | None = None):  # noqa: B008
+        try:
+            return await transcribe(
+                await file.read(), file.content_type or "", language_hint, request.app.state.providers, request.app.state.settings
+            )
+        except SpeechError as exc:
+            status = {"file_too_large": 413, "unsupported_file_type": 415}.get(exc.code, 400)
+            return JSONResponse(ErrorBody(error=exc.code).model_dump(), status_code=status)
+        except ProviderError as exc:
+            return JSONResponse(ErrorBody(error="provider_unavailable", detail=str(exc)).model_dump(), status_code=502)
+
+    @v1.post("/photos/compare", response_model=ComparisonResult, responses={413: {"model": ErrorBody}, 415: {"model": ErrorBody}, 502: {"model": ErrorBody}})
+    async def compare_photos(request: Request, before: UploadFile = File(...), after: UploadFile = File(...)):  # noqa: B008
+        try:
+            return await compare(await before.read(), await after.read(), request.app.state.providers, request.app.state.settings)
+        except PhotoError as exc:
+            status = {"file_too_large": 413, "unsupported_file_type": 415}.get(exc.code, 400)
+            return JSONResponse(ErrorBody(error=exc.code).model_dump(), status_code=status)
+        except ProviderError as exc:
+            return JSONResponse(ErrorBody(error="provider_unavailable", detail=str(exc)).model_dump(), status_code=502)
+
+    @v1.post("/embeddings", response_model=EmbedResponse, responses={502: {"model": ErrorBody}})
+    async def embeddings(body: EmbedRequest, request: Request):
+        try:
+            return await embed_texts(body, request.app.state.providers, request.app.state.settings)
         except ProviderError as exc:
             return JSONResponse(ErrorBody(error="provider_unavailable", detail=str(exc)).model_dump(), status_code=502)
 

@@ -1,0 +1,42 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "WABA_ID",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "923001110000",
+              "phone_number_id": "{{PHONE_NUMBER_ID}}"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Ayesha"
+                },
+                "wa_id": "{{FROM}}"
+              }
+            ],
+            "messages": [
+              {
+                "from": "{{FROM}}",
+                "id": "{{WAMID}}",
+                "timestamp": "1760000002",
+                "type": "audio",
+                "audio": {
+                  "mime_type": "audio/ogg; codecs=opus",
+                  "sha256": "def",
+                  "id": "{{MEDIA_ID}}",
+                  "voice": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

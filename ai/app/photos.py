@@ -16,6 +16,7 @@ from app.config import Settings
 from app.pii import ScrubbedText
 from app.prompts import load_prompt
 from app.providers import Providers
+from app.schemas import UsageBody
 
 MAX_BYTES = 10 * 1024 * 1024
 MAX_SIDE = 1280
@@ -28,6 +29,8 @@ ALLOWED_LABELS = (
     "damaged_fence", "graffiti", "parking_obstruction", "no_visible_issue", "unclear_image",
 )
 NON_ISSUE = {"no_visible_issue", "unclear_image"}
+# Things that can hurt someone if left alone. A photo showing one is flagged for a person to look at straight away (AI-10).
+HAZARD_LABELS = {"open_manhole", "exposed_wire", "sewage_overflow", "fallen_tree"}
 
 # Claims about what cannot be seen from a photograph, or certainty about causes and futures.
 _HIDDEN_FAULT = [re.compile(p, re.IGNORECASE) for p in [
@@ -65,6 +68,9 @@ class PhotoResult(BaseModel):
     model: str
     prompt_version: str
     degraded: bool = False
+    # A hazard label was seen: a person must look at this complaint now. Advisory; it only ever raises attention.
+    safety_flag: bool = False
+    usage: UsageBody = Field(default_factory=UsageBody)
 
 
 @dataclass(frozen=True)
@@ -128,11 +134,14 @@ async def interpret(data: bytes, providers: Providers, settings: Settings) -> Ph
 
     feedback = ""
     last_model = settings.vision_model
+    used_in = used_out = 0
     for _ in range(settings.max_output_retries + 1):
         result = await providers.vision.describe(
             model=settings.vision_model, prompt=ScrubbedText(prompt + feedback), image=prepared.jpeg, mime_type="image/jpeg"
         )
         last_model = result.model
+        used_in += result.usage.input_tokens
+        used_out += result.usage.output_tokens
         try:
             out = ModelPhotoOutput.model_validate(_extract_json(result.text))
             unknown = [label for label in out.labels if label not in ALLOWED_LABELS]
@@ -152,6 +161,10 @@ async def interpret(data: bytes, providers: Providers, settings: Settings) -> Ph
             description=out.description.strip(),
             needs_more_info=out.confidence < LOW_CONFIDENCE or bool(set(out.labels) & NON_ISSUE) or small,
             confidence=out.confidence, model=last_model, prompt_version=version,
+            safety_flag=bool(set(out.labels) & HAZARD_LABELS),
+            usage=UsageBody(input_tokens=used_in, output_tokens=used_out),
         )
 
-    return _safe_fallback(last_model, version)
+    fallback = _safe_fallback(last_model, version)
+    fallback.usage = UsageBody(input_tokens=used_in, output_tokens=used_out)  # failed attempts still cost money
+    return fallback

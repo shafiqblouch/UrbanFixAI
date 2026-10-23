@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "note": "Words and phrases that mean someone may be in danger (RT-05, AI-10, RA-08). Matched anywhere in lower-cased text. Over-eager on purpose: a false flag costs a glance, a miss costs more. The server and the mobile app both read this one file.",
+  "terms": {
+    "en": [
+      "live wire", "exposed wire", "electric shock", "electrocut", "sparking", "short circuit", "transformer fire", "fire", "smoke",
+      "gas leak", "gas smell", "sewage overflow", "sewage flooding", "open manhole", "manhole open", "collapsed", "collapse", "sinkhole",
+      "flooding", "drowning", "fallen pole", "fallen tree", "injured", "injury", "someone is hurt", "unconscious"
+    ],
+    "ur": [
+      "ننگی تار", "کھلی تار", "کرنٹ", "بجلی کا جھٹکا", "چنگاری", "شارٹ سرکٹ", "آگ", "دھواں", "گیس لیک", "گیس کی بو",
+      "سیوریج ابل", "سیوریج کا پانی", "کھلا مین ہول", "مین ہول کھلا", "گر گیا", "گر گئی", "منہدم", "سیلاب", "زخمی", "بے ہوش", "کھمبا گر"
+    ],
+    "roman_ur": [
+      "nangi taar", "nangi tar", "khuli taar", "karant", "bijli ka jhatka", "chingari", "aag lag", "dhuan", "gas leak", "gas ki boo",
+      "khula manhole", "manhole khula", "diwar gir", "deewar gir", "chhat gir", "zakhmi", "behosh", "sailab", "khamba gir"
+    ]
+  }
+}

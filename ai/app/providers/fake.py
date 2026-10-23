@@ -17,6 +17,9 @@ class FakeProvider:
         self.llm_replies: list[str] = []  # queued raw replies; used before the default
         self.vision_replies: list[str] = []
         self.images_seen: list[bytes] = []
+        self.vision_usage = Usage(0, 0)
+        self.speech_replies: list[SpeechResult] = []
+        self.audio_seen: list[tuple[bytes, str]] = []
 
     async def complete(self, *, model: str, system: ScrubbedText, user: ScrubbedText, json_mode: bool) -> LlmResult:
         self.sent_text += [system, user]
@@ -35,10 +38,20 @@ class FakeProvider:
         self.sent_text.append(prompt)
         self.images_seen.append(image)
         if self.vision_replies:
-            return VisionResult(self.vision_replies.pop(0), model)
-        return VisionResult("possible visible issue", model)
+            return VisionResult(self.vision_replies.pop(0), model, self.vision_usage)
+        return VisionResult("possible visible issue", model, self.vision_usage)
+
+    async def describe_images(self, *, model: str, prompt: ScrubbedText, images: list[bytes], mime_type: str) -> VisionResult:
+        self.sent_text.append(prompt)
+        self.images_seen.extend(images)
+        if self.vision_replies:
+            return VisionResult(self.vision_replies.pop(0), model, self.vision_usage)
+        return VisionResult('{"same_location_likelihood": 0.7, "change_note": "The area appears to look different.", "confidence": 0.6}', model, self.vision_usage)
 
     async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None) -> SpeechResult:
+        self.audio_seen.append((audio, mime_type))
+        if self.speech_replies:
+            return self.speech_replies.pop(0)
         return SpeechResult("fake transcript", 0.9, language_hint or "en", model)
 
     async def embed(self, *, model: str, texts: list[ScrubbedText]) -> EmbeddingResult:

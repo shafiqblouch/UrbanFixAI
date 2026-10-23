@@ -1,12 +1,11 @@
-﻿import { StrictMode } from "react";
+import "@urbanfix/ui/styles.css";
+import "./portal.css";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createApiClient } from "@urbanfix/api-client";
-
-// Compiles only while the portal matches the API contract (FD-07).
-export const api = createApiClient(import.meta.env.VITE_API_URL ?? "http://localhost:5000");
+import { App } from "./App";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <h1>UrbanFix</h1>
+    <App />
   </StrictMode>,
 );

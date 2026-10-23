@@ -28,6 +28,8 @@ public class Location : IAudited
     /// <summary>Materialised path of ancestor ids, e.g. "/a/b/c/". Subtree = prefix match, so it is one index scan.</summary>
     public string Path { get; set; } = "";
     public int Depth { get; set; }
+    /// <summary>0 normal, 1 raised, 2 high; lifts the priority of complaints here (RT-04).</summary>
+    public int RiskLevel { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public int SortOrder { get; set; }
@@ -73,8 +75,26 @@ public class Category : IAudited
     public string DefaultPriority { get; set; } = "Normal";
     public string EvidenceRule { get; set; } = "photo";
     public string Checklist { get; set; } = "[]";
+    /// <summary>Jobs in this category cannot be completed without actual cost lines (JC-04).</summary>
+    public bool RequiresCosts { get; set; }
+    /// <summary>The system may assign complaints in this category without a supervisor when confidence is high enough (RT-02).</summary>
+    public bool AutoRoute { get; set; }
+    public float AutoRouteThreshold { get; set; } = 0.9f;
     public bool IsActive { get; set; } = true;
     public int SortOrder { get; set; }
+}
+
+/// <summary>Response and resolution targets for a priority, optionally for one category (RT-06).</summary>
+public class SlaPolicy : IAudited
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid OrganizationId { get; set; }
+    public Guid? CategoryId { get; set; }
+    public string Priority { get; set; } = "Normal";
+    public int RespondHours { get; set; }
+    public int ResolveHours { get; set; }
+    public bool BusinessHoursOnly { get; set; }
+    public bool IsActive { get; set; } = true;
 }
 
 public class House : IAudited
@@ -164,14 +184,14 @@ public static class CategoryTemplates
 
     public static readonly IReadOnlyList<Seed> All =
     [
-        new("water", "Water supply", "Ù¾Ø§Ù†ÛŒ Ú©ÛŒ ÙØ±Ø§ÛÙ…ÛŒ", "High", "photo", ["Check main valve", "Check pipe joints", "Test pressure"]),
-        new("roads", "Roads and potholes", "Ø³Ú‘Ú©ÛŒÚº Ø§ÙˆØ± Ú¯Ú‘Ú¾Û’", "Normal", "photo", ["Measure damaged area", "Barricade if unsafe"]),
-        new("streetlights", "Street lights", "Ø§Ø³Ù¹Ø±ÛŒÙ¹ Ù„Ø§Ø¦Ù¹Ø³", "Normal", "photo", ["Check bulb", "Check fuse and wiring"]),
-        new("sewerage", "Sewerage and drainage", "Ø³ÛŒÙˆØ±ÛŒØ¬ Ø§ÙˆØ± Ù†Ú©Ø§Ø³ÛŒ", "High", "photo", ["Locate blockage", "Clear line", "Flush and check flow"]),
-        new("sanitation", "Sanitation and garbage", "ØµÙØ§Ø¦ÛŒ Ø§ÙˆØ± Ú©Ú†Ø±Ø§", "Normal", "photo", ["Clear waste", "Disinfect area"]),
-        new("parks", "Parks and green belts", "Ù¾Ø§Ø±Ú© Ø§ÙˆØ± Ø³Ø¨Ø²Û Ø²Ø§Ø±", "Low", "photo", ["Inspect equipment", "Trim or repair"]),
-        new("building-maintenance", "Building maintenance", "Ø¹Ù…Ø§Ø±Øª Ú©ÛŒ Ø¯ÛŒÚ©Ú¾ Ø¨Ú¾Ø§Ù„", "Normal", "checklist", ["Inspect issue", "Repair", "Clean up"]),
-        new("parking", "Parking", "Ù¾Ø§Ø±Ú©Ù†Ú¯", "Low", "note", []),
+        new("water", "Water supply", "پانی کی فراہمی", "High", "photo", ["Check main valve", "Check pipe joints", "Test pressure"]),
+        new("roads", "Roads and potholes", "سڑکیں اور گڑھے", "Normal", "photo", ["Measure damaged area", "Barricade if unsafe"]),
+        new("streetlights", "Street lights", "اسٹریٹ لائٹس", "Normal", "photo", ["Check bulb", "Check fuse and wiring"]),
+        new("sewerage", "Sewerage and drainage", "سیوریج اور نکاسی", "High", "photo", ["Locate blockage", "Clear line", "Flush and check flow"]),
+        new("sanitation", "Sanitation and garbage", "صفائی اور کچرا", "Normal", "photo", ["Clear waste", "Disinfect area"]),
+        new("parks", "Parks and green belts", "پارک اور سبزہ زار", "Low", "photo", ["Inspect equipment", "Trim or repair"]),
+        new("building-maintenance", "Building maintenance", "عمارت کی دیکھ بھال", "Normal", "checklist", ["Inspect issue", "Repair", "Clean up"]),
+        new("parking", "Parking", "پارکنگ", "Low", "note", []),
     ];
 }
 

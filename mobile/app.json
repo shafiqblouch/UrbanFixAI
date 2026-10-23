@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "UrbanFix",
+    "slug": "urbanfix",
+    "version": "0.1.0",
+    "scheme": "urbanfix",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "pk.urbanfix.app",
+      "permissions": ["CAMERA", "RECORD_AUDIO", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "usesCleartextTraffic": true
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      ["expo-image-picker", { "cameraPermission": "UrbanFix uses the camera to take photos of problems and of finished work." }],
+      ["expo-audio", { "microphonePermission": "UrbanFix records a voice note when you choose to describe a problem by voice." }],
+      ["expo-location", { "locationWhenInUsePermission": "UrbanFix adds your location to a complaint or a job note when you ask it to." }]
+    ]
+  }
+}
