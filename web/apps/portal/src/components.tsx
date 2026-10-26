@@ -5,10 +5,13 @@ import { useLoad } from "./hooks";
 import { useT, type Key } from "./i18n";
 import { useSession } from "./session";
 
-export function PageHeader({ title, actions }: { title: string; actions?: ReactNode }) {
+export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
   return (
     <div className="page-header">
-      <h1>{title}</h1>
+      <div className="page-header__text">
+        <h1>{title}</h1>
+        {subtitle && <p className="page-header__sub">{subtitle}</p>}
+      </div>
       {actions && <div className="page-header__actions">{actions}</div>}
     </div>
   );
@@ -19,7 +22,12 @@ export function Async<T>({ state, children }: { state: { data: T | undefined; er
   const t = useT();
   if (state.data !== undefined) return <>{children(state.data)}</>;
   if (state.error) return <ErrorState onRetry={state.reload} body={errorText(t, state.error.code)} />;
-  return <p className="muted" role="status">{t("loading")}</p>;
+  return (
+    <div className="skeleton" role="status">
+      <span className="uf-sr-only">{t("loading")}</span>
+      <span className="skeleton__bar skeleton__bar--wide" /><span className="skeleton__bar" /><span className="skeleton__bar skeleton__bar--short" />
+    </div>
+  );
 }
 
 export function errorText(t: ReturnType<typeof useT>, code: string): string {

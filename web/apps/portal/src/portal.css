@@ -127,3 +127,65 @@ a:hover { color: var(--uf-primary-strong); }
 
 /* Support session banner (PA-05) */
 .support-banner { display: flex; align-items: center; justify-content: space-between; gap: var(--uf-space-3); flex-wrap: wrap; padding: var(--uf-space-2) var(--uf-space-4); background: var(--uf-warning-bg, #fff4d6); color: var(--uf-warning-text, #5c4400); border-block-end: 3px solid var(--uf-warning, #c98500); font-weight: 600; }
+
+/* Header tools, avatar, user card */
+.icon-btn { position: relative; display: inline-grid; place-items: center; inline-size: 42px; block-size: 42px; border: 0; border-radius: var(--uf-radius-md); background: transparent; color: var(--uf-text-muted); cursor: pointer; transition: background-color 0.12s ease, color 0.12s ease; }
+.icon-btn:hover { background: var(--uf-primary-soft); color: var(--uf-on-primary-soft); }
+.icon-btn__badge { position: absolute; inset-block-start: -2px; inset-inline-end: -2px; min-inline-size: 20px; line-height: 20px; font-size: 11px; box-shadow: 0 0 0 2px var(--uf-surface-raised); }
+.icon-btn--on-dark { color: var(--uf-sidebar-muted); }
+.icon-btn--on-dark:hover { background: rgba(255, 255, 255, 0.1); color: var(--uf-on-sidebar); }
+.pill-btn { min-block-size: 38px; padding-inline: var(--uf-space-4); border: 1.5px solid var(--uf-border-soft); border-radius: var(--uf-radius-pill); background: var(--uf-surface-raised); color: var(--uf-text); font: inherit; font-weight: 600; cursor: pointer; transition: border-color 0.12s ease; }
+.pill-btn:hover { border-color: var(--uf-primary); color: var(--uf-primary); }
+.shell__tools { gap: var(--uf-space-1); }
+.shell__search { position: relative; }
+.shell__search .uf-field__input { padding-inline-start: 40px; min-block-size: 42px; border-radius: var(--uf-radius-pill); border-color: var(--uf-border-soft); background: var(--uf-surface); }
+.shell__search-icon { position: absolute; inset-block: 0; inset-inline-start: 13px; display: grid; place-items: center; color: var(--uf-text-muted); pointer-events: none; }
+.shell__burger { display: none; }
+.avatar { display: inline-grid; place-items: center; flex: none; inline-size: 38px; block-size: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--uf-sidebar-accent), var(--uf-primary)); color: #04202A; font-weight: 800; font-size: 14px; }
+.shell__nav { display: flex; flex-direction: column; flex: none; inline-size: 248px; background: linear-gradient(180deg, var(--uf-sidebar), color-mix(in srgb, var(--uf-sidebar) 82%, var(--uf-primary))); position: sticky; inset-block-start: 65px; align-self: flex-start; block-size: calc(100vh - 65px); overflow-y: auto; }
+.shell__nav .uf-sidebar { flex: 1; background: transparent; min-inline-size: 0; }
+.shell__user { display: flex; align-items: center; gap: var(--uf-space-3); margin: var(--uf-space-3); padding: var(--uf-space-3); border-radius: var(--uf-radius-md); background: rgba(255, 255, 255, 0.07); color: var(--uf-on-sidebar); }
+.shell__user-text { display: flex; flex-direction: column; min-inline-size: 0; flex: 1; line-height: 1.25; }
+.shell__user-text strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--uf-font-size-sm); }
+.shell__user-text small { color: var(--uf-sidebar-muted); font-size: var(--uf-font-size-xs); }
+.shell__scrim { display: none; }
+.uf-nav__icon { display: inline-grid; place-items: center; flex: none; }
+
+/* Phones: the menu slides in from the side */
+@media (max-width: 820px) {
+  .shell__burger { display: inline-grid; }
+  .shell__header { padding-inline: var(--uf-space-3); gap: var(--uf-space-2); }
+  .shell__org { display: none; }
+  .shell__search { order: 10; flex-basis: 100%; max-inline-size: none; }
+  .shell__nav { position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 40; block-size: 100vh; inline-size: min(86vw, 300px); transform: translateX(-100%); transition: transform 0.2s ease; }
+  [dir="rtl"] .shell__nav { transform: translateX(100%); }
+  .shell__nav[data-open="true"] { transform: none; box-shadow: var(--uf-shadow-lg); }
+  .shell__scrim { display: block; position: fixed; inset: 0; z-index: 39; background: rgba(8, 20, 34, 0.55); }
+  .shell .uf-sidebar { flex-direction: column; flex-wrap: nowrap; padding: var(--uf-space-4) var(--uf-space-3); }
+  .shell__main { padding: var(--uf-space-4); }
+}
+@media (prefers-reduced-motion: reduce) { .shell__nav { transition: none; } }
+
+/* Page header */
+.page-header__text { display: flex; flex-direction: column; gap: 2px; }
+.page-header__sub { margin: 0; color: var(--uf-text-muted); font-size: var(--uf-font-size-md); }
+
+/* Loading placeholders */
+.skeleton { display: flex; flex-direction: column; gap: var(--uf-space-3); padding: var(--uf-space-4); }
+.skeleton__bar { display: block; block-size: 16px; inline-size: 70%; border-radius: var(--uf-radius-pill); background: linear-gradient(90deg, var(--uf-surface) 25%, var(--uf-border-soft) 50%, var(--uf-surface) 75%); background-size: 200% 100%; animation: uf-shimmer 1.4s ease-in-out infinite; }
+.skeleton__bar--wide { inline-size: 100%; block-size: 22px; }
+.skeleton__bar--short { inline-size: 40%; }
+@keyframes uf-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton__bar { animation: none; } }
+
+/* Priority as a pill with a dot */
+.priority { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: var(--uf-radius-pill); background: var(--uf-neutral-bg); color: var(--uf-neutral); font-size: var(--uf-font-size-sm); }
+.priority::before { content: ""; inline-size: 8px; block-size: 8px; border-radius: 50%; background: currentColor; }
+.priority--urgent { background: var(--uf-danger-bg); color: var(--uf-danger); }
+.priority--high { background: var(--uf-warning-bg); color: var(--uf-warning); }
+.priority--low { background: var(--uf-info-bg); color: var(--uf-info); }
+
+/* Lists of cards: a gentle accent on the side and room to breathe */
+.queue > li > .uf-card { border-inline-start: 4px solid var(--uf-primary); }
+.queue__head strong, .queue__head a { font-weight: 700; }
+.kpis { gap: var(--uf-space-5); }

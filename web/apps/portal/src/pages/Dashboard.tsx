@@ -5,6 +5,7 @@ import { Async, ComplaintStatusChip, PageHeader } from "../components";
 import { useLoad, type Loaded } from "../hooks";
 import { useFormat, useT, type Key } from "../i18n";
 import { Overruns } from "./JobExtras";
+import { useSession } from "../session";
 import { Trends } from "./Trends";
 
 const OPEN = ["New", "OnHold", "UnderReview"];
@@ -19,10 +20,15 @@ const NEEDS_SUMMARY = ["kpis", "workload", "overdue", "satisfaction"];
  */
 export function DashboardPage() {
   const t = useT();
+  const f = useFormat();
+  const { me } = useSession();
   const layout = useLoad(() => ok(api.GET("/dashboard/layout")), []);
+  const hour = new Date().getHours();
+  const first = (me?.displayName ?? "").split(" ")[0];
+  const greeting = t(hour < 12 ? "greeting.morning" : hour < 18 ? "greeting.afternoon" : "greeting.evening", { name: first });
   return (
     <>
-      <PageHeader title={t("menu.dashboard")} />
+      <PageHeader title={t("menu.dashboard")} subtitle={`${greeting} · ${new Intl.DateTimeFormat(f.locale === "ur" ? "ur-PK-u-nu-latn" : "en-GB", { dateStyle: "full" }).format(new Date())}`} />
       <Async state={layout}>{(l) => <Widgets widgets={l.widgets as string[]} />}</Async>
     </>
   );

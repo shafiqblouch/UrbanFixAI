@@ -42,7 +42,8 @@ ${vars(t.themes.dark).replace(/^/gm, "  ")}
 }
 
 body { font-family: var(--uf-font-latin); line-height: ${t.font.lineHeight}; color: var(--uf-text); background: var(--uf-bg); }
-:lang(ur), [lang="ur"] { font-family: var(--uf-font-urdu); line-height: ${t.font.urduLineHeight}; font-size: ${t.font.urduScale}em; }
+/* Font and line height inherit down the tree; the size is scaled once, on the app root (see ui styles), because a size set on every :lang(ur) element would compound at each level of nesting. */
+:lang(ur), [lang="ur"] { font-family: var(--uf-font-urdu); line-height: ${t.font.urduLineHeight}; }
 [dir="rtl"] { text-align: start; }
 :focus-visible { outline: 3px solid var(--uf-focus-ring); outline-offset: 2px; }
 `;

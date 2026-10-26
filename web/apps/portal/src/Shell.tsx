@@ -1,4 +1,5 @@
 import { Button, EmptyState, Sheet, Sidebar, useLocale, type NavItem } from "@urbanfix/ui";
+import { Icon, initials } from "./icons";
 import { useEffect, useState, type FormEvent } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { api, ok } from "./api";
@@ -42,6 +43,7 @@ export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
   const [theme, cycleTheme] = useTheme();
   const [search, setSearch] = useState("");
   const [bell, setBell] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const f = useFormat();
 
   if (loading) return <p className="muted center" role="status">{t("loading")}</p>;
@@ -51,7 +53,7 @@ export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
   const current = menus.find((m) => location.pathname.startsWith(paths[m])) ?? menus[0] ?? "";
   const countFor = (m: MenuId): number | undefined =>
     m === "review" ? counts.review : m === "jobs" ? (role === "Technician" ? counts.jobs : counts.signoff) : undefined;
-  const items: NavItem[] = menus.map((m) => ({ id: m, label: m === "jobs" && role === "Technician" ? t("menu.myJobs") : t(`menu.${m}` as Key), href: paths[m], count: countFor(m) }));
+  const items: NavItem[] = menus.map((m) => ({ id: m, label: m === "jobs" && role === "Technician" ? t("menu.myJobs") : t(`menu.${m}` as Key), href: paths[m], count: countFor(m), icon: <Icon name={m} /> }));
   const organization = me.memberships.find((m) => m.organizationId === me.organizationId)?.organizationName;
 
   function submitSearch(e: FormEvent) {
@@ -78,25 +80,43 @@ export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
         </div>
       )}
       <header className="shell__header">
+        <button type="button" className="icon-btn shell__burger" aria-label={navOpen ? t("nav.close") : t("nav.open")} aria-expanded={navOpen} onClick={() => setNavOpen((v) => !v)}>
+          <Icon name={navOpen ? "close" : "menu"} />
+        </button>
         <strong className="shell__brand"><span className="logo-mark" aria-hidden="true">UF</span>{t("app.name")}</strong>
         {organization && <span className="shell__org">{organization}</span>}
         {menus.includes("complaints") && (
           <form className="shell__search" role="search" onSubmit={submitSearch}>
+            <span className="shell__search-icon" aria-hidden="true"><Icon name="search" size={18} /></span>
             <input type="search" className="uf-field__input" aria-label={t("search")} placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />
           </form>
         )}
         <div className="shell__tools">
-          <Button variant="ghost" onClick={switchLocale} aria-label={t("language")}>{locale === "en" ? "اردو" : "English"}</Button>
-          <Button variant="ghost" onClick={cycleTheme} aria-label={t("theme")}>{t(`theme.${theme}` as Key)}</Button>
-          <Button variant="ghost" onClick={() => setBell(true)} aria-label={t("notifications.title")}>
-            {t("notifications.title")}{unread > 0 && <span className="uf-badge" data-testid="unread">{unread}</span>}
-          </Button>
-          <span className="muted">{me.displayName}</span>
-          <Button variant="secondary" onClick={() => void signOut().then(() => navigate("/login"))}>{t("signOut")}</Button>
+          <button type="button" className="pill-btn" onClick={switchLocale} aria-label={t("language")}>{locale === "en" ? "اردو" : "English"}</button>
+          <button type="button" className="icon-btn" onClick={cycleTheme} aria-label={t("theme")} title={t(`theme.${theme}` as Key)}>
+            <Icon name={theme === "dark" ? "moon" : theme === "light" ? "sun" : "auto"} />
+          </button>
+          <button type="button" className="icon-btn" onClick={() => setBell(true)} aria-label={t("notifications.title")} title={t("notifications.title")}>
+            <Icon name="bell" />
+            {unread > 0 && <span className="uf-badge icon-btn__badge" data-testid="unread">{unread}</span>}
+          </button>
         </div>
       </header>
       <div className="shell__body">
-        <Sidebar items={items} currentId={current} onNavigate={(id) => navigate(paths[id as MenuId])} />
+        {navOpen && <div className="shell__scrim" onClick={() => setNavOpen(false)} aria-hidden="true" />}
+        <div className="shell__nav" data-open={navOpen}>
+          <Sidebar items={items} currentId={current} onNavigate={(id) => { setNavOpen(false); navigate(paths[id as MenuId]); }} />
+          <div className="shell__user">
+            <span className="avatar" aria-hidden="true">{initials(me.displayName)}</span>
+            <span className="shell__user-text">
+              <strong>{me.displayName}</strong>
+              <small>{role ? t(`role.${role}` as Key) : ""}</small>
+            </span>
+            <button type="button" className="icon-btn icon-btn--on-dark" onClick={() => void signOut().then(() => navigate("/login"))} aria-label={t("signOut")} title={t("signOut")}>
+              <Icon name="logout" />
+            </button>
+          </div>
+        </div>
         <main className="shell__main" id="main">
           <Outlet />
         </main>
