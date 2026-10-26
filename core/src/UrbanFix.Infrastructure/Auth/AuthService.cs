@@ -10,6 +10,11 @@ public sealed class AuthOptions
 {
     public TimeSpan SessionLifetime { get; set; } = TimeSpan.FromHours(12);
     public string Issuer { get; set; } = "UrbanFix";
+    /// <summary>
+    /// Demo only: a fixed authenticator code that is always accepted, so a demo needs no authenticator app. The application refuses to start
+    /// with this set outside the Development environment.
+    /// </summary>
+    public string? DemoTotpCode { get; set; }
 }
 
 public enum LoginOutcome { Success, InvalidCredentials, TotpRequired, TotpEnrollmentRequired }
@@ -42,7 +47,7 @@ public sealed class AuthService(
         if (user.TotpEnabled)
         {
             if (string.IsNullOrEmpty(totpCode)) return new LoginResult(LoginOutcome.TotpRequired);
-            if (!TotpService.Verify(Protector.Unprotect(user.TotpSecretProtected!), totpCode))
+            if (!IsDemoCode(totpCode) && !TotpService.Verify(Protector.Unprotect(user.TotpSecretProtected!), totpCode))
                 return new LoginResult(LoginOutcome.InvalidCredentials);
         }
 
@@ -76,6 +81,8 @@ public sealed class AuthService(
         await db.SaveChangesAsync(ct);
         return token;
     }
+
+    private bool IsDemoCode(string? code) => !string.IsNullOrEmpty(options.DemoTotpCode) && code == options.DemoTotpCode;
 
     /// <summary>Looks the token up on every request, so a revoked or expired session stops working immediately.</summary>
     public async Task<SessionPrincipal?> AuthenticateAsync(string token, CancellationToken ct)
@@ -125,7 +132,7 @@ public sealed class AuthService(
     {
         var user = await db.Users.SingleOrDefaultAsync(u => u.Id == principal.UserId, ct);
         if (user?.TotpSecretProtected is null || user.TotpEnabled) return false;
-        if (!TotpService.Verify(Protector.Unprotect(user.TotpSecretProtected), code)) return false;
+        if (!IsDemoCode(code) && !TotpService.Verify(Protector.Unprotect(user.TotpSecretProtected), code)) return false;
 
         user.TotpEnabled = true;
         await db.SaveChangesAsync(ct);

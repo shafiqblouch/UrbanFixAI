@@ -52,6 +52,9 @@ builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Ad
 if (!builder.Environment.IsDevelopment() && builder.Configuration["Database:AppRolePassword"] == "urbanfix_app_dev")
     throw new InvalidOperationException("Refusing to start outside Development with the default database role password.");
 
+if (!string.IsNullOrEmpty(builder.Configuration["Auth:DemoTotpCode"]) && !builder.Environment.IsDevelopment())
+    throw new InvalidOperationException("Refusing to start outside Development with a fixed authenticator code (Auth:DemoTotpCode).");
+
 var app = builder.Build();
 
 if (builder.Configuration.GetValue("Database:MigrateOnStartup", false))

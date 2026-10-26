@@ -55,7 +55,17 @@ export function LoginPage() {
 
   return (
     <main className="login">
-      <Card title={t("app.name")}>
+      <aside className="login__hero">
+        <span className="login__logo"><span className="logo-mark" aria-hidden="true">UF</span>{t("app.name")}</span>
+        <h1 className="login__tagline">{t("login.tagline")}</h1>
+        <ul className="login__points">
+          <li>{t("login.point1")}</li>
+          <li>{t("login.point2")}</li>
+          <li>{t("login.point3")}</li>
+        </ul>
+      </aside>
+      <div className="login__form">
+      <Card title={t("login.welcome")}>
         {step === "credentials" ? (
           <form className="stack" onSubmit={submit}>
             <TextField label={t("email")} type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -78,6 +88,7 @@ export function LoginPage() {
           </form>
         )}
       </Card>
+      </div>
     </main>
   );
 }

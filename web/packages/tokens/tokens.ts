@@ -2,20 +2,28 @@
 export const tokens = {
   "themes": {
     "light": {
-      "bg": "#FFFFFF",
-      "surface": "#F5F6FB",
+      "bg": "#F1F5F9",
+      "surface": "#E8EEF5",
       "surfaceRaised": "#FFFFFF",
-      "border": "#8A8FB0",
-      "text": "#1B1F3B",
-      "textMuted": "#474C6B",
-      "primary": "#4338CA",
+      "border": "#7A8AA3",
+      "borderSoft": "#D5DDE8",
+      "text": "#0F1B2D",
+      "textMuted": "#475569",
+      "primary": "#0E7490",
+      "primaryStrong": "#155E75",
       "onPrimary": "#FFFFFF",
-      "primarySoft": "#E4E5FB",
-      "onPrimarySoft": "#2E2793",
-      "accent": "#FF7A66",
+      "primarySoft": "#D5EEF4",
+      "onPrimarySoft": "#0B4F63",
+      "accent": "#FF7A59",
       "onAccent": "#1B1F3B",
-      "link": "#3730A3",
-      "focusRing": "#4338CA",
+      "link": "#0B6B84",
+      "focusRing": "#0E7490",
+      "sidebar": "#0C2437",
+      "onSidebar": "#E6EEF6",
+      "sidebarMuted": "#9DB2C7",
+      "sidebarActive": "#164A63",
+      "onSidebarActive": "#FFFFFF",
+      "sidebarAccent": "#5EEAD4",
       "success": "#14532D",
       "successBg": "#DCFCE7",
       "warning": "#7C2D12",
@@ -28,20 +36,28 @@ export const tokens = {
       "neutralBg": "#E5E7EB"
     },
     "dark": {
-      "bg": "#0E1126",
-      "surface": "#171A36",
-      "surfaceRaised": "#1F2347",
-      "border": "#5E65A0",
-      "text": "#ECEEFB",
-      "textMuted": "#B4B9DC",
-      "primary": "#9AA0FF",
-      "onPrimary": "#0E1126",
-      "primarySoft": "#2A2F69",
-      "onPrimarySoft": "#DADDFF",
-      "accent": "#FF8F7D",
-      "onAccent": "#0E1126",
-      "link": "#B3B8FF",
-      "focusRing": "#B3B8FF",
+      "bg": "#0A1220",
+      "surface": "#111C2E",
+      "surfaceRaised": "#16243A",
+      "border": "#7C8DA8",
+      "borderSoft": "#26364F",
+      "text": "#E7EEF8",
+      "textMuted": "#A9B8CE",
+      "primary": "#4CC9E0",
+      "primaryStrong": "#7DD8EA",
+      "onPrimary": "#04202A",
+      "primarySoft": "#12384A",
+      "onPrimarySoft": "#CFF3FA",
+      "accent": "#FF8F70",
+      "onAccent": "#0A1220",
+      "link": "#7CD6EA",
+      "focusRing": "#7CD6EA",
+      "sidebar": "#070E1A",
+      "onSidebar": "#E7EEF8",
+      "sidebarMuted": "#9FB1C8",
+      "sidebarActive": "#12384A",
+      "onSidebarActive": "#FFFFFF",
+      "sidebarAccent": "#5EEAD4",
       "success": "#86EFAC",
       "successBg": "#14391F",
       "warning": "#FCD34D",
@@ -56,20 +72,24 @@ export const tokens = {
   },
   "gradients": {
     "kpiIndigo": [
-      "#4338CA",
-      "#5A4FDD"
+      "#3B47C9",
+      "#5B4FE0"
     ],
     "kpiCoral": [
-      "#BE3A25",
-      "#C8452E"
+      "#B83A22",
+      "#CC4A28"
     ],
     "kpiTeal": [
-      "#0F766E",
-      "#188077"
+      "#0B6F68",
+      "#0E7A72"
     ],
     "kpiAmber": [
-      "#B45309",
+      "#9A4506",
       "#B8590B"
+    ],
+    "hero": [
+      "#0C2437",
+      "#0E7490"
     ]
   },
   "font": {
@@ -100,9 +120,9 @@ export const tokens = {
     64
   ],
   "radius": {
-    "sm": 6,
-    "md": 10,
-    "lg": 16,
+    "sm": 8,
+    "md": 12,
+    "lg": 18,
     "pill": 999
   },
   "touchTarget": 48

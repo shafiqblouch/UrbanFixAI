@@ -78,8 +78,8 @@ export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
         </div>
       )}
       <header className="shell__header">
-        <strong className="shell__brand">{t("app.name")}</strong>
-        <span className="muted shell__org">{organization}</span>
+        <strong className="shell__brand"><span className="logo-mark" aria-hidden="true">UF</span>{t("app.name")}</strong>
+        {organization && <span className="shell__org">{organization}</span>}
         {menus.includes("complaints") && (
           <form className="shell__search" role="search" onSubmit={submitSearch}>
             <input type="search" className="uf-field__input" aria-label={t("search")} placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />

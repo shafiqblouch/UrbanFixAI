@@ -965,6 +965,11 @@ export const en = {
   "error.invalid_token": "The device address is not valid.",
   "error.invalid_kind": "That kind of device is not supported.",
   "job.requestNote": "Message for the store",
+  "login.welcome": "Sign in to UrbanFix",
+  "login.tagline": "Report it. Track it. See it fixed.",
+  "login.point1": "Every complaint has a number and a clear status",
+  "login.point2": "Work is assigned, costed and checked with photos",
+  "login.point3": "In English and Urdu, on phone or computer",
 } as const;
 
 export type Key = keyof typeof en;
@@ -1934,4 +1939,9 @@ export const ur: Record<Key, string> = {
   "error.invalid_token": "آلے کا پتہ درست نہیں۔",
   "error.invalid_kind": "اس قسم کا آلہ سپورٹ نہیں۔",
   "job.requestNote": "اسٹور کے لیے پیغام",
+  "login.welcome": "اربن فکس میں سائن ان کریں",
+  "login.tagline": "بتائیں، پیچھا کریں، حل ہوتا دیکھیں۔",
+  "login.point1": "ہر شکایت کا نمبر اور واضح حالت ہوتی ہے",
+  "login.point2": "کام سونپا، لاگت کا حساب اور تصاویر سے جانچا جاتا ہے",
+  "login.point3": "اردو اور انگریزی میں، فون یا کمپیوٹر پر",
 };
