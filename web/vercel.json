@@ -4,7 +4,7 @@
   "buildCommand": "pnpm --filter @urbanfix/portal exec vite build",
   "outputDirectory": "apps/portal/dist",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://urbanfix-core.onrender.com/:path*" },
+    { "source": "/api/:path*", "destination": "https://REPLACE-WITH-CORE-SPACE-URL.hf.space/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

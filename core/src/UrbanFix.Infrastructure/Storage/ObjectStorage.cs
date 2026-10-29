@@ -16,6 +16,8 @@ public sealed class StorageOptions
     public string AccessKey { get; set; } = "";
     public string SecretKey { get; set; } = "";
     public string Bucket { get; set; } = "urbanfix-media";
+    /// <summary>Signing region; hosted S3 services (Supabase, AWS) check it against the bucket's region.</summary>
+    public string Region { get; set; } = "us-east-1";
     public TimeSpan MaxUrlLifetime { get; set; } = TimeSpan.FromMinutes(15);
 }
 

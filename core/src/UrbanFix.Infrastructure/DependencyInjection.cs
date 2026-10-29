@@ -72,7 +72,7 @@ public static class DependencyInjection
         services.AddSingleton(storage);
         services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(
             new BasicAWSCredentials(storage.AccessKey, storage.SecretKey),
-            new AmazonS3Config { ServiceURL = storage.ServiceUrl, ForcePathStyle = true, AuthenticationRegion = "us-east-1" }));
+            new AmazonS3Config { ServiceURL = storage.ServiceUrl, ForcePathStyle = true, AuthenticationRegion = storage.Region }));
         services.AddScoped<IObjectStorage, ObjectStorage>();
 
         // Complaints: numbering, media, AI enrichment ---------------------------------------------------

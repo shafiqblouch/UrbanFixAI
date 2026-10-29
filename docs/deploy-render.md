@@ -1,3 +1,5 @@
+> Render now asks for a card even for free plans. For a no-card test deployment use [deploy-free.md](deploy-free.md) instead.
+
 # Deploying a test copy on Render
 
 `render.yaml` at the repo root defines four pieces: Postgres, the AI service, the core API and the portal.
