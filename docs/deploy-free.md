@@ -55,3 +55,14 @@ Everything below is done in the browser. Do the steps in order; each gives a val
 - **If migration fails** on first start, read the core Space logs. The likely cause is the database login not being allowed to create the `urbanfix_app` role or the `vector` extension; Supabase's `postgres` user can do both.
 - **Updating:** pushing to GitHub does not redeploy a Space. Use **Settings > Factory rebuild** on the Space to pull the latest code.
 - **ImageSharp license:** the core builds in Debug (allowed for testing). A production Release build needs a Six Labors key.
+
+## Mobile-only testing (API + AI + database, no portal)
+
+Skip step 4 (Vercel). Do steps 1 to 3, then build an installable Android app that talks to the core Space:
+
+1. In `mobile/eas.json`, replace `REPLACE-WITH-CORE-SPACE-URL.hf.space` with your core Space host, and push.
+2. Make a free account at expo.dev, then from `web` run `pnpm install`, and from `mobile`: `pnpm install`, `npx eas-cli login`, `npx eas-cli build --platform android --profile preview`.
+3. EAS builds in the cloud (a free-tier queue, often 10 to 30 minutes) and gives a link and QR code to the APK. Open it on any Android phone and install it (allow "install unknown apps").
+4. Sign in with a demo phone number and code `123456` (Development mode accepts it).
+
+Notes: iPhones need an Apple developer account for a standalone build, so use Android for this. Push notifications need Firebase (FCM) credentials and do not work in this build; everything else does. Because the API address is baked in at build time, rebuild if the Space URL changes.
