@@ -30,6 +30,8 @@ class TranscribeResponse(BaseModel):
     low_confidence: bool
     model: str
     prompt_version: str
+    # The same words in English (empty for providers that do not translate), so staff and the categoriser can read an Urdu note.
+    translation_en: str = ""
     # Speech providers report no tokens; the call itself is what gets counted.
     usage: UsageBody = UsageBody()
 
@@ -42,12 +44,13 @@ async def transcribe(audio: bytes, mime_type: str, language_hint: str | None, pr
     if mime_type.split(";")[0].strip().lower() not in SUPPORTED_TYPES:
         raise SpeechError("unsupported_file_type")
 
-    result = await providers.speech.transcribe(model=settings.speech_model, audio=audio, mime_type=mime_type, language_hint=language_hint)
+    version = settings.prompt_versions["speech_transcription"]
+    result = await providers.speech.transcribe(model=settings.speech_model, audio=audio, mime_type=mime_type, language_hint=language_hint, prompt_version=version)
     text = result.text.strip()[:MAX_TRANSCRIPT]
     language = result.language if result.language in {"en", "ur", "roman_ur", "mixed"} else "mixed"
     confidence = 0.0 if not text else min(max(result.confidence, 0.0), 1.0)
     return TranscribeResponse(
         transcript=text, confidence=confidence, language=language,  # type: ignore[arg-type]
         low_confidence=confidence < LOW_CONFIDENCE, model=result.model,
-        prompt_version=settings.prompt_versions["speech_transcription"],
+        prompt_version=version, translation_en="" if not text else result.translation.strip()[:MAX_TRANSCRIPT],
     )

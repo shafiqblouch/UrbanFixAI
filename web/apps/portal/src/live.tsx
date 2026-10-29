@@ -12,7 +12,7 @@ export interface LiveValue {
   markRead: (id: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   /** Badge counts for the sidebar (WP-01). */
-  counts: { review: number; signoff: number; jobs: number };
+  counts: { review: number; signoff: number; jobs: number; complaints: number; overdue: number };
 }
 
 const Ctx = createContext<LiveValue | null>(null);
@@ -22,7 +22,7 @@ export function LiveProvider({ children }: { children: ReactNode }) {
   const { me, role } = useSession();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unread, setUnread] = useState(0);
-  const [counts, setCounts] = useState({ review: 0, signoff: 0, jobs: 0 });
+  const [counts, setCounts] = useState({ review: 0, signoff: 0, jobs: 0, complaints: 0, overdue: 0 });
   const signedIn = !!me?.organizationId;
 
   const loadInbox = useCallback(async () => {
@@ -32,8 +32,16 @@ export function LiveProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadCounts = useCallback(async () => {
-    const next = { review: 0, signoff: 0, jobs: 0 };
+    const next = { review: 0, signoff: 0, jobs: 0, complaints: 0, overdue: 0 };
     try {
+      // Complaint total and overdue jobs for the badges on Complaints and Jobs (the same summary the dashboard reads).
+      if (role === "Manager" || role === "Supervisor" || role === "Office" || role === "Committee") {
+        try {
+          const summary = await ok(api.GET("/dashboard/summary"));
+          next.complaints = typeof summary.total === "number" ? summary.total : 0;
+          next.overdue = Array.isArray(summary.overdueJobs) ? summary.overdueJobs.length : 0;
+        } catch { /* the other counts still load */ }
+      }
       if (role === "Manager" || role === "Supervisor" || role === "Office") next.review = (await ok(api.GET("/review-queue", { params: { query: { limit: 200 } } }))).length;
       if (isSupervising(role)) next.signoff = (await ok(api.GET("/jobs", { params: { query: { status: "PendingVerification", limit: 200 } } }))).length;
       if (role === "Technician") next.jobs = (await ok(api.GET("/jobs", { params: { query: { mine: true, limit: 200 } } }))).filter((j) => ["Open", "Accepted", "InProgress"].includes(j.job.status)).length;

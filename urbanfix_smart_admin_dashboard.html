@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFix - Smart Executive Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        urdu: ['"Noto Nastaliq Urdu"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        darkbg: '#080d0b',
+                        darkcard: '#111915',
+                        darkborder: '#1b2a22',
+                        darkhover: '#16231c'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for inner dense modules only */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(10, 15, 13, 0.5);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #1b2a22;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        
+        .glass-card {
+            background: rgba(17, 25, 21, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.12);
+        }
+        
+        .ur-font {
+            font-family: 'Noto Nastaliq Urdu', serif;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen bg-darkbg text-slate-100 font-sans antialiased overflow-hidden flex flex-col selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN DASHBOARD CONTAINER (Fixed 100vh Layout - Zero Page Scroll) -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT SIDEBAR (Compact Collapsible Navigation) -->
+        <aside id="sidebar" class="w-64 bg-darkcard border-e border-darkborder flex flex-col justify-between shrink-0 transition-all duration-300 z-30">
+            
+            <!-- Top Branding & Navigation -->
+            <div class="flex flex-col h-full overflow-hidden">
+                
+                <!-- Brand Header -->
+                <div class="p-4 border-b border-darkborder flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shrink-0 shadow-md shadow-brand-500/20">
+                            <span class="text-slate-950 font-black text-base tracking-wider">UF</span>
+                        </div>
+                        <div class="truncate">
+                            <h1 class="font-extrabold text-base tracking-tight text-white leading-none">UrbanFix</h1>
+                            <span class="text-[10px] text-brand-400 font-medium tracking-wide">Enterprise Ops</span>
+                        </div>
+                    </div>
+                    <!-- Society Switcher Dropdown Badge -->
+                    <button onclick="toggleSocietyMenu()" class="text-xs px-2 py-1 rounded-lg bg-darkbg border border-darkborder text-slate-300 hover:text-white hover:border-brand-500/40 transition-all flex items-center gap-1.5 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="font-medium text-[11px]">Demo</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                </div>
+
+                <!-- Action Button -->
+                <div class="p-3">
+                    <button onclick="triggerNewComplaintModal()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 text-slate-950 font-bold text-xs shadow-md shadow-brand-500/20 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>New Complaint</span>
+                    </button>
+                </div>
+
+                <!-- Scrollable Navigation Items -->
+                <nav class="flex-1 px-3 space-y-1 custom-scroll overflow-y-auto">
+                    
+                    <a href="#" onclick="switchNav(this, 'dashboard')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i>
+                            <span>Dashboard</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'complaints')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-regular fa-folder-open w-4 text-center text-sm"></i>
+                            <span>Complaints</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-darkbg border border-darkborder text-[10px] text-slate-400 font-bold">5</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'queue')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-clipboard-check w-4 text-center text-sm"></i>
+                            <span>Review Queue</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-brand-300 border border-brand-500/30 text-[10px] font-bold">3</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'jobs')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-wrench w-4 text-center text-sm"></i>
+                            <span>Jobs</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold">1 Alert</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'directory')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-users w-4 text-center text-sm"></i>
+                            <span>Directory</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'reports')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-line w-4 text-center text-sm"></i>
+                            <span>Reports</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'store')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-boxes-stacked w-4 text-center text-sm"></i>
+                            <span>Store / Inventory</span>
+                        </div>
+                    </a>
+
+                    <div class="pt-2 pb-1 text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3">System</div>
+
+                    <a href="#" onclick="switchNav(this, 'approvals')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-circle-check w-4 text-center text-sm"></i>
+                            <span>Approvals</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'notices')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bullhorn w-4 text-center text-sm"></i>
+                            <span>Notices</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'config')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-sliders w-4 text-center text-sm"></i>
+                            <span>Configuration</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'audit')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-shield-halved w-4 text-center text-sm"></i>
+                            <span>Audit Log</span>
+                        </div>
+                    </a>
+
+                </nav>
+
+                <!-- Profile Footer Card -->
+                <div class="p-3 border-t border-darkborder bg-darkbg/50">
+                    <div class="p-2 rounded-xl bg-darkcard border border-darkborder flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-700 to-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center shrink-0">
+                                MM
+                            </div>
+                            <div class="truncate">
+                                <h4 class="text-xs font-bold text-white truncate">Mariam M.</h4>
+                                <p class="text-[10px] text-slate-400 truncate">Manager • Admin</p>
+                            </div>
+                        </div>
+                        <button onclick="logoutSimulation()" class="text-slate-400 hover:text-rose-400 p-1.5 transition-colors" title="Sign Out">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- RIGHT MAIN CONTENT WORKSPACE -->
+        <main class="flex-1 flex flex-col min-w-0 bg-darkbg overflow-hidden">
+            
+            <!-- TOP APP BAR -->
+            <header class="h-14 border-b border-darkborder bg-darkcard/80 px-4 flex items-center justify-between shrink-0 z-20">
+                
+                <!-- Left Section: Search & Quick Date Context -->
+                <div class="flex items-center gap-4 flex-1 max-w-xl">
+                    <!-- Global Search Bar -->
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                        <input type="text" placeholder="Search complaints, jobs, or citizens (Press '/' to focus)..." 
+                            class="w-full pl-9 pr-8 py-1.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] bg-darkcard px-1.5 py-0.5 rounded border border-darkborder text-slate-500">⌘K</span>
+                    </div>
+                </div>
+
+                <!-- Right Section: Actions, Language Switcher, Notifications, User -->
+                <div class="flex items-center gap-3">
+                    
+                    <!-- Language Switcher Pill -->
+                    <button id="dashboardLangBtn" onclick="toggleDashboardLang()" class="px-2.5 py-1 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 text-xs text-slate-300 font-medium flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-globe text-brand-400 text-xs"></i>
+                        <span id="dashLangText">اردو</span>
+                    </button>
+
+                    <!-- Theme Indicator -->
+                    <div class="w-8 h-8 rounded-lg bg-darkbg border border-darkborder flex items-center justify-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-moon text-brand-300"></i>
+                    </div>
+
+                    <!-- Notification Bell with Active Badge -->
+                    <button onclick="toggleNotifications()" class="relative w-8 h-8 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 flex items-center justify-center text-slate-300 transition-all">
+                        <i class="fa-regular fa-bell text-xs"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-slate-950 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-darkcard">
+                            5
+                        </span>
+                    </button>
+
+                    <!-- User Greeting Pill -->
+                    <div class="hidden sm:flex items-center gap-2 pl-2 border-s border-darkborder">
+                        <span class="text-xs text-slate-400">Tue, 27 Oct 2026</span>
+                    </div>
+                </div>
+
+            </header>
+
+            <!-- SMART AI INSIGHTS BAR (High-Density Context Alert) -->
+            <div class="bg-gradient-to-r from-emerald-950/60 via-darkcard to-darkcard border-b border-brand-500/20 px-4 py-2 flex items-center justify-between text-xs shrink-0">
+                <div class="flex items-center gap-2.5 truncate">
+                    <span class="px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/40 text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1">
+                        <i class="fa-solid fa-brain text-brand-400"></i> Smart AI Pulse
+                    </span>
+                    <span class="text-slate-300 truncate font-medium">
+                        <strong class="text-rose-400 font-semibold">1 Overdue Job (#J-2026-00001)</strong> requires immediate sign-off. Avg resolution time is optimal at <strong class="text-brand-300">2.5h</strong>.
+                    </span>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    <button onclick="switchTab('overview')" class="text-brand-400 hover:text-brand-300 font-bold text-[11px] underline flex items-center gap-1">
+                        Take Action <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- COMPACT DASHBOARD BODY (Grid View - Fits 100vh) -->
+            <div class="flex-1 p-4 flex flex-col gap-4 overflow-hidden">
+                
+                <!-- 1. COMPACT KPI SUMMARY ROW (4 High-Density Stat Cards) -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+                    
+                    <!-- KPI 1: All Complaints -->
+                    <div onclick="filterComplaints('all')" class="glass-card p-3 rounded-2xl border border-darkborder hover:border-brand-500/50 transition-all duration-200 cursor-pointer group">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">All Complaints</p>
+                                <h3 class="text-2xl font-black text-white mt-1 group-hover:text-brand-300 transition-colors">5</h3>
+                            </div>
+                            <div class="w-9 h-9 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
+                                <i class="fa-solid fa-list-check text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+                            <span><strong class="text-emerald-400">+20%</strong> vs last week</span>
+                            <span class="text-slate-500">Total</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Awaiting Action -->
+                    <div onclick="filterComplaints('awaiting')" class="glass-card p-3 rounded-2xl border border-darkborder hover:border-amber-500/50 transition-all duration-200 cursor-pointer group">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Awaiting Action</p>
+                                <h3 class="text-2xl font-black text-amber-400 mt-1">3</h3>
+                            </div>
+                            <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                <i class="fa-regular fa-clock text-sm"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-[11px] text-slate-400 truncate">New, on hold, under review</p>
+                    </div>
+
+                    <!-- KPI 3: Being Worked On -->
+                    <div onclick="filterComplaints('in_progress')" class="glass-card p-3 rounded-2xl border border-darkborder hover:border-blue-500/50 transition-all duration-200 cursor-pointer group">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Being Worked On</p>
+                                <h3 class="text-2xl font-black text-sky-400 mt-1">1</h3>
+                            </div>
+                            <div class="w-9 h-9 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                                <i class="fa-solid fa-person-digging text-sm"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-[11px] text-slate-400 truncate">Assigned to Water Crew</p>
+                    </div>
+
+                    <!-- KPI 4: Overdue Jobs -->
+                    <div onclick="filterComplaints('overdue')" class="glass-card p-3 rounded-2xl border border-rose-500/30 hover:border-rose-500/70 transition-all duration-200 cursor-pointer group bg-rose-950/10">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-rose-300 uppercase tracking-wider">Overdue Jobs</p>
+                                <h3 class="text-2xl font-black text-rose-400 mt-1">1</h3>
+                            </div>
+                            <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
+                                <i class="fa-solid fa-circle-exclamation text-sm"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-[11px] text-rose-300/80 font-medium truncate">17.3 hours past target</p>
+                    </div>
+
+                </div>
+
+                <!-- 2. TAB NAVIGATION FOR MODULES (Saves Vertical Space) -->
+                <div class="flex items-center justify-between border-b border-darkborder pb-2 shrink-0">
+                    <!-- Tab Buttons -->
+                    <div class="flex items-center gap-1 bg-darkcard p-1 rounded-xl border border-darkborder">
+                        <button id="tabBtn-overview" onclick="switchTab('overview')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-brand-600 shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-chart-simple text-[11px]"></i>
+                            <span>Overview & Live Jobs</span>
+                        </button>
+                        <button id="tabBtn-trends" onclick="switchTab('trends')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-[11px]"></i>
+                            <span>Trends & Sectors</span>
+                        </button>
+                        <button id="tabBtn-finance" onclick="switchTab('finance')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-wallet text-[11px]"></i>
+                            <span>Finance & Inventory</span>
+                        </button>
+                        <button id="tabBtn-workload" onclick="switchTab('workload')" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-users-gear text-[11px]"></i>
+                            <span>Workload & Messaging</span>
+                        </button>
+                    </div>
+
+                    <!-- Action Controls Right -->
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-400 text-[11px] hidden md:inline">Avg Resolution: <strong class="text-brand-300">2.5 hours</strong></span>
+                        <button onclick="refreshDashboardData()" class="p-1.5 rounded-lg bg-darkcard border border-darkborder hover:border-brand-500/40 text-slate-300 hover:text-white transition-all" title="Refresh Dashboard Data">
+                            <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. DYNAMIC TAB CONTENT AREA (Fits remaining height) -->
+                <div class="flex-1 min-h-0 relative">
+                    
+                    <!-- TAB 1: OVERVIEW & LIVE JOBS -->
+                    <div id="tabContent-overview" class="tab-content h-full grid grid-cols-1 lg:grid-cols-12 gap-4">
+                        
+                        <!-- Left Sub-panel: Resolution Progress + Recent Complaints List (7 Cols) -->
+                        <div class="lg:col-span-7 flex flex-col gap-3 h-full overflow-hidden">
+                            
+                            <!-- Resolution Progress Card -->
+                            <div class="glass-card p-3.5 rounded-2xl border border-darkborder shrink-0">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="text-xs font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-bars-progress text-brand-400"></i> Resolution Stage Breakdown
+                                    </h4>
+                                    <span class="text-xs font-extrabold text-brand-300">20% Overall Resolved</span>
+                                </div>
+                                <div class="space-y-2 text-xs">
+                                    <div>
+                                        <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                                            <span>New Complaints (3)</span>
+                                            <span class="text-slate-300 font-semibold">60%</span>
+                                        </div>
+                                        <div class="w-full h-1.5 bg-darkbg rounded-full overflow-hidden">
+                                            <div class="h-full bg-sky-400 rounded-full w-[60%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                                            <span>Assigned & Progress (1)</span>
+                                            <span class="text-slate-300 font-semibold">20%</span>
+                                        </div>
+                                        <div class="w-full h-1.5 bg-darkbg rounded-full overflow-hidden">
+                                            <div class="h-full bg-amber-400 rounded-full w-[20%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                                            <span>Resolved or Closed (1)</span>
+                                            <span class="text-slate-300 font-semibold">20%</span>
+                                        </div>
+                                        <div class="w-full h-1.5 bg-darkbg rounded-full overflow-hidden">
+                                            <div class="h-full bg-emerald-400 rounded-full w-[20%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Complaints Table Panel -->
+                            <div class="glass-card rounded-2xl border border-darkborder p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
+                                <div class="flex justify-between items-center mb-2 shrink-0">
+                                    <h4 class="text-xs font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-clock-rotate-left text-brand-400"></i> Recent Complaints
+                                    </h4>
+                                    <a href="#" class="text-[11px] font-bold text-brand-400 hover:text-brand-300">View All (5)</a>
+                                </div>
+                                <div class="flex-1 custom-scroll overflow-y-auto pr-1">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead class="sticky top-0 bg-darkcard text-[10px] uppercase font-bold text-slate-500 border-b border-darkborder">
+                                            <tr>
+                                                <th class="py-2 px-2">ID & Title</th>
+                                                <th class="py-2 px-2">Status</th>
+                                                <th class="py-2 px-2 text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-darkborder/50 text-slate-300">
+                                            <tr class="hover:bg-darkhover/50 transition-colors">
+                                                <td class="py-2 px-2">
+                                                    <span class="font-bold text-brand-300 block">UF-2026-00005</span>
+                                                    <span class="text-slate-400 text-[11px]">Streetlight issue near park</span>
+                                                </td>
+                                                <td class="py-2 px-2">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                                        ✓ Closed
+                                                    </span>
+                                                </td>
+                                                <td class="py-2 px-2 text-right">
+                                                    <button onclick="viewComplaintDetails('UF-2026-00005')" class="p-1 text-slate-400 hover:text-white"><i class="fa-regular fa-eye"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-darkhover/50 transition-colors">
+                                                <td class="py-2 px-2">
+                                                    <span class="font-bold text-brand-300 block">UF-2026-00004</span>
+                                                    <span class="text-slate-400 text-[11px]">Garbage not collected for 3 days</span>
+                                                </td>
+                                                <td class="py-2 px-2">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                                        ○ New
+                                                    </span>
+                                                </td>
+                                                <td class="py-2 px-2 text-right">
+                                                    <button onclick="assignComplaint('UF-2026-00004')" class="p-1 text-brand-400 hover:text-brand-300"><i class="fa-solid fa-user-plus"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-darkhover/50 transition-colors">
+                                                <td class="py-2 px-2">
+                                                    <span class="font-bold text-brand-300 block">UF-2026-00003</span>
+                                                    <span class="text-slate-400 text-[11px]">Sewer overflowing outside House 3</span>
+                                                </td>
+                                                <td class="py-2 px-2">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                                        ○ New
+                                                    </span>
+                                                </td>
+                                                <td class="py-2 px-2 text-right">
+                                                    <button onclick="assignComplaint('UF-2026-00003')" class="p-1 text-brand-400 hover:text-brand-300"><i class="fa-solid fa-user-plus"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-darkhover/50 transition-colors">
+                                                <td class="py-2 px-2">
+                                                    <span class="font-bold text-brand-300 block">UF-2026-00001</span>
+                                                    <span class="text-slate-400 text-[11px]">No water supply in main pipe</span>
+                                                </td>
+                                                <td class="py-2 px-2">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                                        ⚡ Assigned
+                                                    </span>
+                                                </td>
+                                                <td class="py-2 px-2 text-right">
+                                                    <button onclick="viewJob('J-2026-00001')" class="p-1 text-amber-400 hover:text-amber-300"><i class="fa-solid fa-wrench"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Sub-panel: Overdue Jobs Urgent Card & Quick Actions (5 Cols) -->
+                        <div class="lg:col-span-5 flex flex-col gap-3 h-full overflow-hidden">
+                            
+                            <!-- Overdue Job Alert Card -->
+                            <div class="glass-card p-3.5 rounded-2xl border border-rose-500/40 bg-rose-950/10 shrink-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Overdue Attention
+                                    </span>
+                                    <span class="text-xs text-rose-300 font-bold">17.3 Hours Over</span>
+                                </div>
+                                <div class="p-2.5 bg-darkcard rounded-xl border border-darkborder mb-3">
+                                    <div class="flex justify-between text-xs font-bold text-white mb-1">
+                                        <span>Job: J-2026-00001</span>
+                                        <span class="text-rose-400 uppercase text-[10px]">High Priority</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mb-1">Ref: UF-2026-00001 (Water Pipeline Repair)</p>
+                                    <p class="text-[10px] text-slate-500">Assigned Crew: Water Crew Alpha</p>
+                                </div>
+                                <button onclick="expediteJob('J-2026-00001')" class="w-full py-2 bg-rose-500 hover:bg-rose-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-rose-500/20 transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-bolt"></i> Expedite & Notify Team
+                                </button>
+                            </div>
+
+                            <!-- Satisfaction Rating Widget -->
+                            <div class="glass-card p-3.5 rounded-2xl border border-darkborder flex items-center justify-between shrink-0">
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Citizen Rating</p>
+                                    <h3 class="text-xl font-black text-white mt-0.5">4.0 <span class="text-xs text-slate-400 font-normal">out of 5</span></h3>
+                                    <p class="text-[10px] text-brand-300 mt-1">based on verified fixes</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="flex gap-1 text-amber-400 text-xs mb-1">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star text-slate-600"></i>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">100% Feedback Rate</span>
+                                </div>
+                            </div>
+
+                            <!-- Fast Action Shortcuts -->
+                            <div class="glass-card p-3 rounded-2xl border border-darkborder flex-1 flex flex-col justify-between">
+                                <h4 class="text-xs font-bold text-slate-300 mb-2">Quick Administration</h4>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="triggerBroadcastModal()" class="p-2.5 rounded-xl bg-darkbg border border-darkborder hover:border-brand-500/40 text-xs text-slate-300 hover:text-white transition-all text-left flex flex-col gap-1">
+                                        <i class="fa-solid fa-bullhorn text-brand-400"></i>
+                                        <span class="font-bold text-[11px]">Send Notice</span>
+                                    </button>
+                                    <button onclick="exportReportCSV()" class="p-2.5 rounded-xl bg-darkbg border border-darkborder hover:border-brand-500/40 text-xs text-slate-300 hover:text-white transition-all text-left flex flex-col gap-1">
+                                        <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                                        <span class="font-bold text-[11px]">Export Analytics</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 2: TRENDS & SECTORS -->
+                    <div id="tabContent-trends" class="tab-content h-full hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+                        
+                        <!-- Trends Chart Side (8 Cols) -->
+                        <div class="lg:col-span-8 glass-card p-4 rounded-2xl border border-darkborder flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-3 shrink-0">
+                                <div>
+                                    <h4 class="text-xs font-bold text-white">Complaints & Resolutions Trend</h4>
+                                    <p class="text-[10px] text-slate-400">Historical velocity tracking over selected timeframe</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <select id="trendTimeframe" onchange="updateTrendsChart()" class="bg-darkbg border border-darkborder text-slate-300 text-xs rounded-lg px-2 py-1 focus:outline-none">
+                                        <option value="week">Per Week</option>
+                                        <option value="month">Per Month</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative w-full min-h-0">
+                                <canvas id="trendsChartCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Sector Breakdown Side (4 Cols) -->
+                        <div class="lg:col-span-4 flex flex-col gap-3 h-full">
+                            <div class="glass-card p-3.5 rounded-2xl border border-darkborder flex-1">
+                                <h4 class="text-xs font-bold text-white mb-2">Complaints by Sector</h4>
+                                <div class="space-y-3 mt-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-300 mb-1">
+                                            <span>Block A</span>
+                                            <span class="font-bold text-brand-300">5 Complaints</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-darkbg rounded-full overflow-hidden">
+                                            <div class="h-full bg-brand-500 rounded-full w-[100%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                            <span>Block B</span>
+                                            <span>0 Complaints</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-darkbg rounded-full overflow-hidden">
+                                            <div class="h-full bg-slate-700 rounded-full w-[0%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                            <span>Commercial Area</span>
+                                            <span>0 Complaints</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-darkbg rounded-full overflow-hidden">
+                                            <div class="h-full bg-slate-700 rounded-full w-[0%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 3: FINANCE & INVENTORY -->
+                    <div id="tabContent-finance" class="tab-content h-full hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+                        
+                        <!-- Spend Overview (7 Cols) -->
+                        <div class="lg:col-span-7 glass-card p-4 rounded-2xl border border-darkborder flex flex-col h-full">
+                            <h4 class="text-xs font-bold text-white mb-3">Spend This Month</h4>
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div class="p-3 bg-darkbg rounded-xl border border-darkborder">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold">Active Jobs</p>
+                                    <p class="text-lg font-black text-white mt-1">2</p>
+                                </div>
+                                <div class="p-3 bg-darkbg rounded-xl border border-darkborder">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold">Estimated</p>
+                                    <p class="text-lg font-black text-slate-300 mt-1">Rs 0.00</p>
+                                </div>
+                                <div class="p-3 bg-darkbg rounded-xl border border-darkborder">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold">Actual Spend</p>
+                                    <p class="text-lg font-black text-brand-300 mt-1">Rs 1,950</p>
+                                </div>
+                            </div>
+
+                            <h5 class="text-[11px] font-bold text-slate-400 mb-2">Cost Breakdown by Category</h5>
+                            <div class="flex-1 custom-scroll overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="text-[10px] uppercase font-bold text-slate-500 border-b border-darkborder">
+                                        <tr>
+                                            <th class="py-2">Category</th>
+                                            <th class="py-2">Estimated</th>
+                                            <th class="py-2 text-right">Actual</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-darkborder/40 text-slate-300">
+                                        <tr>
+                                            <td class="py-2 font-medium">Street Lights Repair</td>
+                                            <td class="py-2 text-slate-400">Rs 0.00</td>
+                                            <td class="py-2 text-right font-bold text-brand-300">Rs 1,950.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Water Supply Pipe</td>
+                                            <td class="py-2 text-slate-400">Rs 0.00</td>
+                                            <td class="py-2 text-right font-bold text-slate-300">Rs 0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Inventory & Stock Status (5 Cols) -->
+                        <div class="lg:col-span-5 glass-card p-4 rounded-2xl border border-darkborder flex flex-col h-full">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="text-xs font-bold text-white">Store & Stock Monitor</h4>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-bold">
+                                    All Supplies OK
+                                </span>
+                            </div>
+                            <div class="flex-1 flex flex-col justify-center items-center text-center p-6 bg-darkbg/50 rounded-xl border border-darkborder">
+                                <div class="w-12 h-12 rounded-full bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mb-3">
+                                    <i class="fa-solid fa-boxes-packing text-lg"></i>
+                                </div>
+                                <h5 class="text-xs font-bold text-white">No Items Running Low</h5>
+                                <p class="text-[11px] text-slate-400 mt-1">Electrical components, PVC pipes, and road fix materials are sufficiently stocked.</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 4: WORKLOAD & MESSAGING -->
+                    <div id="tabContent-workload" class="tab-content h-full hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+                        
+                        <!-- Team Workload Table (7 Cols) -->
+                        <div class="lg:col-span-7 glass-card p-4 rounded-2xl border border-darkborder flex flex-col h-full">
+                            <h4 class="text-xs font-bold text-white mb-3">Team Workload Distribution</h4>
+                            <div class="flex-1 custom-scroll overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="text-[10px] uppercase font-bold text-slate-500 border-b border-darkborder">
+                                        <tr>
+                                            <th class="py-2">Team Name</th>
+                                            <th class="py-2">Not Started</th>
+                                            <th class="py-2">In Progress</th>
+                                            <th class="py-2 text-right">Sign-off Pending</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-darkborder/40 text-slate-300">
+                                        <tr>
+                                            <td class="py-2.5 font-bold text-white">Water Crew Alpha</td>
+                                            <td class="py-2.5"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">1</span></td>
+                                            <td class="py-2.5"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">0</span></td>
+                                            <td class="py-2.5 text-right"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold">0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2.5 font-bold text-white">Electrical Team</td>
+                                            <td class="py-2.5"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">0</span></td>
+                                            <td class="py-2.5"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">0</span></td>
+                                            <td class="py-2.5 text-right"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold">0</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Message Delivery Stats (5 Cols) -->
+                        <div class="lg:col-span-5 glass-card p-4 rounded-2xl border border-darkborder flex flex-col h-full">
+                            <h4 class="text-xs font-bold text-white mb-3">Citizen Communication Dispatch</h4>
+                            <div class="p-3 bg-darkbg rounded-xl border border-darkborder space-y-2 text-xs mb-3">
+                                <div class="flex justify-between text-slate-300">
+                                    <span>Channel:</span>
+                                    <strong class="text-white">In-App & SMS</strong>
+                                </div>
+                                <div class="flex justify-between text-slate-300">
+                                    <span>Total Sent:</span>
+                                    <strong class="text-brand-300">22 Messages</strong>
+                                </div>
+                                <div class="flex justify-between text-slate-300">
+                                    <span>Delivered:</span>
+                                    <strong class="text-emerald-400">22 (100%)</strong>
+                                </div>
+                                <div class="flex justify-between text-slate-300">
+                                    <span>Failure Rate:</span>
+                                    <strong class="text-emerald-400">0%</strong>
+                                </div>
+                            </div>
+                            <button onclick="sendBulkSMS()" class="mt-auto py-2.5 bg-darkcard border border-darkborder hover:border-brand-500/40 text-xs font-bold text-slate-300 hover:text-white rounded-xl transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane text-brand-400"></i> Dispatch SMS Updates
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Interactive New Complaint Modal -->
+    <div id="newComplaintModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-darkcard border border-brand-500/30 rounded-2xl max-w-lg w-full p-6 shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-darkborder mb-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-brand-400"></i> File Internal / Citizen Complaint
+                </h3>
+                <button onclick="closeModal('newComplaintModal')" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="submitNewComplaint(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Issue Category</label>
+                    <select class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white focus:outline-none focus:border-brand-500">
+                        <option>Water Supply Pipeline</option>
+                        <option>Streetlight Fault</option>
+                        <option>Garbage / Sanitation</option>
+                        <option>Road repair / Pothole</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Location Details</label>
+                    <input type="text" placeholder="e.g. House 42, Block A" required class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Priority Level</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="p-2 border border-darkborder rounded-xl text-center cursor-pointer hover:border-brand-500">
+                            <input type="radio" name="prio" class="hidden" checked> Standard
+                        </label>
+                        <label class="p-2 border border-darkborder rounded-xl text-center cursor-pointer hover:border-amber-500">
+                            <input type="radio" name="prio" class="hidden"> Medium
+                        </label>
+                        <label class="p-2 border border-darkborder rounded-xl text-center cursor-pointer hover:border-rose-500">
+                            <input type="radio" name="prio" class="hidden"> Urgent
+                        </label>
+                    </div>
+                </div>
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('newComplaintModal')" class="px-4 py-2 rounded-xl bg-darkbg text-slate-400 font-bold hover:text-white">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-brand-500 text-slate-950 font-bold hover:bg-brand-400">Save Complaint</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interactive Script Section -->
+    <script>
+        let trendsChartInstance = null;
+
+        window.onload = function() {
+            initTrendsChart();
+        }
+
+        // Tab Switch Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-2";
+            });
+
+            document.getElementById(`tabContent-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+            if(activeBtn) {
+                activeBtn.className = "tab-btn px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-brand-600 shadow-md transition-all flex items-center gap-2";
+            }
+
+            if (tabId === 'trends') {
+                setTimeout(() => initTrendsChart(), 100);
+            }
+        }
+
+        // Initialize Responsive Trends Chart
+        function initTrendsChart() {
+            const ctx = document.getElementById('trendsChartCanvas');
+            if(!ctx) return;
+
+            if (trendsChartInstance) {
+                trendsChartInstance.destroy();
+            }
+
+            trendsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['10 Aug', '24 Aug', '7 Sept', '21 Sept', '5 Oct', '19 Oct', '26 Oct'],
+                    datasets: [
+                        {
+                            label: 'Reported Complaints',
+                            data: [0, 0, 0, 0, 0, 4, 1],
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Resolved Issues',
+                            data: [0, 0, 0, 0, 0, 0, 1],
+                            borderColor: '#10b981',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#64748b', font: { size: 10 } },
+                            grid: { color: 'rgba(27, 42, 34, 0.4)' }
+                        },
+                        y: {
+                            ticks: { color: '#64748b', font: { size: 10 } },
+                            grid: { color: 'rgba(27, 42, 34, 0.4)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTrendsChart() {
+            showToast('Analytics timeframe updated', 'info');
+        }
+
+        // Sidebar Navigation Focus
+        function switchNav(element, navName) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.className = "nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all";
+            });
+            element.className = "nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30 transition-all";
+            showToast(`Navigated to ${navName}`, 'info');
+        }
+
+        // Action Handlers & Modals
+        function triggerNewComplaintModal() {
+            const modal = document.getElementById('newComplaintModal');
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.querySelector('div').classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('pointer-events-none', 'opacity-0');
+            modal.querySelector('div').classList.replace('scale-100', 'scale-95');
+        }
+
+        function submitNewComplaint(e) {
+            e.preventDefault();
+            closeModal('newComplaintModal');
+            showToast('Complaint registered successfully! ID: #UF-2026-00006', 'success');
+        }
+
+        function expediteJob(jobId) {
+            showToast(`Alert dispatched to Water Crew for ${jobId}!`, 'warning');
+        }
+
+        function assignComplaint(id) {
+            showToast(`Opening team assignment tool for ${id}`, 'info');
+        }
+
+        function refreshDashboardData() {
+            showToast('Refreshing live metrics...', 'info');
+        }
+
+        function toggleDashboardLang() {
+            const label = document.getElementById('dashLangText');
+            if(label.innerText === 'اردو') {
+                label.innerText = 'English';
+                showToast('زبان تبدیل ہو گئی۔', 'info');
+            } else {
+                label.innerText = 'اردو';
+                showToast('Switched language to English', 'info');
+            }
+        }
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgStyle = 'bg-slate-900 border-brand-500/40 text-slate-100';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bgStyle = 'bg-emerald-950/90 border-emerald-500 text-emerald-100';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgStyle = 'bg-amber-950/90 border-amber-500 text-amber-100';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border backdrop-blur-md shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-x-8 opacity-0 ${bgStyle}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-x-8', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function logoutSimulation() {
+            showToast('Signing out of UrbanFix...', 'warning');
+        }
+    </script>
+</body>
+</html>

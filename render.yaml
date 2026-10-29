@@ -1,0 +1,76 @@
+# Render Blueprint: New > Blueprint, point it at this repo. See docs/deploy-render.md.
+# Services: Postgres, AI (FastAPI), core API (.NET), portal (nginx, the only public entry point).
+databases:
+  - name: urbanfix-db
+    plan: free
+    databaseName: urbanfix
+    user: urbanfix
+
+services:
+  - type: web
+    name: urbanfix-ai
+    runtime: docker
+    dockerfilePath: ./ai/Dockerfile
+    dockerContext: ./ai
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: AI_SERVICE_TOKEN
+        generateValue: true
+      - key: OPENROUTER_API_KEY
+        sync: false
+
+  - type: web
+    name: urbanfix-core
+    runtime: docker
+    dockerfilePath: ./core/Dockerfile
+    dockerContext: ./core
+    plan: free
+    healthCheckPath: /health/live
+    envVars:
+      # Development turns on the demo sign-in (any *@demo.test / Demo-Pass-12345! / code 123456). The API refuses
+      # these demo codes in any other environment; see docs/deploy-render.md before exposing real data.
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - key: DATABASE_URL
+        fromDatabase:
+          name: urbanfix-db
+          property: connectionString
+      - key: Database__AppRolePassword
+        generateValue: true
+      - key: Database__MigrateOnStartup
+        value: "true"
+      - key: Bootstrap__PlatformAdminEmail
+        value: admin@urbanfix.local
+      - key: Bootstrap__PlatformAdminPassword
+        generateValue: true
+      # Public URL of urbanfix-ai once created, e.g. https://urbanfix-ai.onrender.com (set in the dashboard).
+      - key: Ai__BaseUrl
+        sync: false
+      - key: Ai__ServiceToken
+        fromService:
+          type: web
+          name: urbanfix-ai
+          envVarKey: AI_SERVICE_TOKEN
+      # S3-compatible storage (Cloudflare R2, Backblaze B2, AWS S3). Render has none; fill these in the dashboard.
+      - key: Storage__ServiceUrl
+        sync: false
+      - key: Storage__AccessKey
+        sync: false
+      - key: Storage__SecretKey
+        sync: false
+      - key: Storage__Bucket
+        sync: false
+
+  - type: web
+    name: urbanfix-portal
+    runtime: docker
+    dockerfilePath: ./web/Dockerfile
+    dockerContext: ./web
+    plan: free
+    envVars:
+      - key: CORE_HOSTPORT
+        fromService:
+          type: web
+          name: urbanfix-core
+          property: hostport

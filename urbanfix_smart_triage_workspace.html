@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFix - Review Queue Triage</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        urdu: ['"Noto Nastaliq Urdu"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        darkbg: '#071813',
+                        darkcard: '#0f2c22',
+                        darksidebar: '#0b221a',
+                        darkborder: '#153e30',
+                        darkhover: '#14382b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(7, 24, 19, 0.5);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #153e30;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        
+        .glass-card {
+            background: rgba(15, 44, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.12);
+        }
+
+        .item-card-selected {
+            border-color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.12) !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen bg-darkbg text-slate-100 font-sans antialiased overflow-hidden flex flex-col selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Rejection Reason Modal -->
+    <div id="rejectionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
+        <div class="glass-card max-w-md w-full p-5 rounded-2xl border border-rose-500/30 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-darkborder pb-3">
+                <div class="flex items-center gap-2.5 text-rose-400 font-extrabold text-sm">
+                    <i class="fa-solid fa-circle-xmark text-base"></i>
+                    <span>Reject Complaint Ticket</span>
+                </div>
+                <button onclick="closeRejectionModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-300">
+                Please select or state a reason for rejecting ticket <strong id="modalTicketRef" class="text-white font-mono">UF-2026-XXXXX</strong>.
+            </p>
+
+            <div class="space-y-2 text-xs">
+                <label class="block font-bold text-slate-300">Rejection Category</label>
+                <select id="rejectionReasonSelect" class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white focus:outline-none focus:border-rose-500">
+                    <option value="Duplicate Complaint">Duplicate Complaint (Already filed)</option>
+                    <option value="Insufficient Address / Details">Insufficient Address or Unclear Details</option>
+                    <option value="Outside Jurisdiction">Outside Society / Municipal Jurisdiction</option>
+                    <option value="Spam / Invalid Report">Spam / Test / Invalid Report</option>
+                    <option value="Custom Reason">Other (Specify below)</option>
+                </select>
+                
+                <textarea id="rejectionNotes" rows="2" placeholder="Additional reviewer feedback for citizen..." 
+                    class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 resize-none"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button onclick="closeRejectionModal()" class="px-4 py-2 rounded-xl bg-darkcard border border-darkborder text-xs font-bold text-slate-300 hover:bg-darkhover">
+                    Cancel
+                </button>
+                <button onclick="confirmRejection()" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold shadow-lg shadow-rose-600/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-ban"></i>
+                    <span>Confirm Rejection</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE LAYOUT (100vh Layout) -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="w-64 bg-darksidebar border-e border-darkborder flex flex-col justify-between shrink-0 z-30">
+            <div class="flex flex-col h-full overflow-hidden">
+                
+                <!-- Brand Header -->
+                <div class="p-4 border-b border-darkborder flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shrink-0 shadow-md shadow-brand-500/20">
+                            <span class="text-slate-950 font-black text-base tracking-wider">UF</span>
+                        </div>
+                        <div class="truncate">
+                            <h1 class="font-extrabold text-base tracking-tight text-white leading-none">UrbanFix</h1>
+                            <span class="text-[10px] text-brand-400 font-medium tracking-wide">Enterprise Ops</span>
+                        </div>
+                    </div>
+                    <!-- Society Switcher -->
+                    <button onclick="showToast('Society: Demo Society', 'info')" class="text-xs px-2 py-1 rounded-lg bg-darkbg border border-darkborder text-slate-300 hover:text-white transition-all flex items-center gap-1.5 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="font-medium text-[11px]">Demo</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="flex-1 px-3 py-3 space-y-1 custom-scroll overflow-y-auto">
+                    <a href="#" onclick="showToast('Switching to Dashboard', 'info')" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i>
+                            <span>Dashboard</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="showToast('Switching to Complaints Ledger', 'info')" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-regular fa-folder-open w-4 text-center text-sm"></i>
+                            <span>Complaints</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-darkbg border border-darkborder text-[10px] text-slate-400 font-bold">5</span>
+                    </a>
+
+                    <!-- ACTIVE REVIEW QUEUE NAV -->
+                    <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-brand-300 bg-brand-500/15 border border-brand-500/30 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-clipboard-check w-4 text-center text-sm text-brand-400"></i>
+                            <span>Review Queue</span>
+                        </div>
+                        <span id="queueCountBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-brand-300 border border-brand-500/40 text-[10px] font-extrabold animate-pulse">
+                            3
+                        </span>
+                    </a>
+
+                    <a href="#" onclick="showToast('Opening New Intake Form', 'info')" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-plus-circle w-4 text-center text-sm"></i>
+                            <span>New Complaint</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="showToast('Opening Resident Directory', 'info')" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-address-book w-4 text-center text-sm"></i>
+                            <span>Directory</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="showToast('Opening Jobs Board', 'info')" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-wrench w-4 text-center text-sm"></i>
+                            <span>Jobs</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold">1 Alert</span>
+                    </a>
+
+                    <a href="#" onclick="showToast('Opening Reports & Analytics', 'info')" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-line w-4 text-center text-sm"></i>
+                            <span>Reports</span>
+                        </div>
+                    </a>
+
+                    <div class="pt-3 pb-1 text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3">System</div>
+
+                    <a href="#" onclick="showToast('Opening System Configuration', 'info')" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-sliders w-4 text-center text-sm"></i>
+                            <span>Configuration</span>
+                        </div>
+                    </a>
+                </nav>
+
+                <!-- Profile Footer Card -->
+                <div class="p-3 border-t border-darkborder bg-darkbg/50">
+                    <div class="p-2 rounded-xl bg-darkcard border border-darkborder flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-700 to-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center shrink-0">
+                                MM
+                            </div>
+                            <div class="truncate">
+                                <h4 class="text-xs font-bold text-white truncate">Mariam Manager</h4>
+                                <p class="text-[10px] text-slate-400 truncate">Manager • Triage Specialist</p>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Logged out session', 'warning')" class="text-slate-400 hover:text-rose-400 p-1.5 transition-colors">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE -->
+        <main class="flex-1 flex flex-col min-w-0 bg-darkbg overflow-hidden relative">
+            
+            <!-- TOP APP BAR -->
+            <header class="h-14 border-b border-darkborder bg-darkcard/90 px-5 flex items-center justify-between shrink-0 z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-300 flex items-center justify-center text-xs font-bold">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold text-white leading-tight">Review Queue & Triage</h1>
+                        <p class="text-[10px] text-slate-400">Review incoming reports, edit category/priority/team, and assign jobs</p>
+                    </div>
+                </div>
+
+                <!-- Central Hotkeys Hint -->
+                <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-darkbg border border-darkborder text-[11px] text-slate-400">
+                    <span class="font-bold text-slate-300"><i class="fa-solid fa-keyboard text-brand-400 me-1"></i> Hotkeys:</span>
+                    <span><kbd class="px-1.5 py-0.5 rounded bg-darkcard border border-darkborder font-mono text-[10px] text-brand-300">A</kbd> Accept</span>
+                    <span>•</span>
+                    <span><kbd class="px-1.5 py-0.5 rounded bg-darkcard border border-darkborder font-mono text-[10px] text-rose-400">R</kbd> Reject</span>
+                    <span>•</span>
+                    <span><kbd class="px-1.5 py-0.5 rounded bg-darkcard border border-darkborder font-mono text-[10px]">↑</kbd> <kbd class="px-1.5 py-0.5 rounded bg-darkcard border border-darkborder font-mono text-[10px]">↓</kbd> Select</span>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center gap-2">
+                    <button id="langToggleBtn" onclick="toggleLanguage()" class="px-2.5 py-1 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 text-xs text-slate-300 font-medium flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-globe text-brand-400 text-xs"></i>
+                        <span id="langBtnText">اردو</span>
+                    </button>
+
+                    <button onclick="showToast('Active Review Mode', 'info')" class="w-8 h-8 rounded-lg bg-darkbg border border-darkborder flex items-center justify-center text-brand-300 text-xs">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SUB-HEADER TOOLBAR & TRIAGE FILTERS -->
+            <div class="p-3 border-b border-darkborder bg-darkcard/50 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                
+                <!-- Left: Search & Urgency Filter -->
+                <div class="flex items-center gap-2 flex-1 max-w-md">
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500"></i>
+                        <input type="text" id="queueSearch" oninput="renderMasterList()" placeholder="Filter queue by description, ref, category..." 
+                            class="w-full pl-8 pr-3 py-1.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <select id="priorityFilter" onchange="renderMasterList()" class="bg-darkbg border border-darkborder rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Priorities</option>
+                        <option value="High">High / Urgent</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+
+                <!-- Right: Batch Accept & Layout Toggle -->
+                <div class="flex items-center gap-2">
+                    <button onclick="batchAcceptAll()" class="px-3 py-1.5 rounded-xl bg-brand-500/20 border border-brand-500/40 text-brand-300 hover:bg-brand-500 hover:text-slate-950 font-extrabold text-xs transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt text-xs"></i>
+                        <span>Accept High Confidence (2)</span>
+                    </button>
+
+                    <div class="h-4 w-px bg-darkborder"></div>
+
+                    <!-- View Switcher Toggle -->
+                    <div class="bg-darkbg border border-darkborder rounded-xl p-0.5 flex items-center">
+                        <button onclick="setViewMode('split')" id="splitViewBtn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-500 text-slate-950 flex items-center gap-1 transition-all">
+                            <i class="fa-solid fa-columns"></i>
+                            <span class="hidden sm:inline">Split Inspector</span>
+                        </button>
+                        <button onclick="setViewMode('stream')" id="streamViewBtn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1 transition-all">
+                            <i class="fa-solid fa-table-list"></i>
+                            <span class="hidden sm:inline">Compact Stream</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DYNAMIC SPLIT / STREAM TRIAGE AREA -->
+            <div id="triageContainer" class="flex-1 flex overflow-hidden">
+                
+                <!-- MASTER QUEUE LIST (LEFT / FULL) -->
+                <div id="masterPanel" class="w-full lg:w-7/12 border-e border-darkborder flex flex-col h-full bg-darkbg">
+                    
+                    <!-- Queue Counter & Select All -->
+                    <div class="p-2.5 px-4 border-b border-darkborder bg-darkbg/80 flex items-center justify-between text-xs text-slate-400">
+                        <span id="queueItemCountText" class="font-bold text-slate-300">Showing 3 Items Pending Review</span>
+                        <span class="text-[10px] text-brand-400 font-medium"><i class="fa-solid fa-pen-to-square me-1"></i> Inline Editing Enabled</span>
+                    </div>
+
+                    <!-- Scrollable Cards Feed -->
+                    <div id="cardsList" class="flex-1 overflow-y-auto custom-scroll p-3 space-y-3">
+                        <!-- Dynamic items rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- RIGHT DETAIL INSPECTION PANEL (DYNAMICALLY UPDATED) -->
+                <div id="inspectorPanel" class="hidden lg:flex flex-1 flex-col h-full bg-darkcard/50 overflow-y-auto custom-scroll">
+                    <!-- Dynamic Detail Content Rendered via JavaScript -->
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- JAVASCRIPT STATE MANAGEMENT & EDITING LOGIC -->
+    <script>
+        // AVAILABLE OPTIONS DATA DICTIONARIES
+        const CATEGORIES = [
+            "Street lights",
+            "Sewerage & Drainage",
+            "Sanitation & Garbage",
+            "Water Supply",
+            "Road Repair",
+            "Parks & Horticulture",
+            "Public Safety"
+        ];
+
+        const PRIORITIES = [
+            { id: "Low", label: "Low", color: "bg-slate-500/20 text-slate-300 border-slate-500/40" },
+            { id: "Normal", label: "Normal", color: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
+            { id: "High", label: "High", color: "bg-amber-500/20 text-amber-300 border-amber-500/40" },
+            { id: "Critical/Urgent", label: "Critical / Urgent", color: "bg-rose-500/20 text-rose-300 border-rose-500/40" }
+        ];
+
+        const TEAMS = [
+            "Electrical Maintenance Crew",
+            "Sewerage & Water Team",
+            "Sanitation & Solid Waste",
+            "Road Repair Squad",
+            "Parks Maintenance Team",
+            "Auto-Routing Rules Engine"
+        ];
+
+        // INITIAL COMPLAINTS QUEUE DATA STORE
+        let queueItems = [
+            {
+                id: "UF-2026-00002",
+                description: "Streetlight is out near the central park entrance. Path is completely dark at night.",
+                category: "Street lights",
+                priority: "Normal",
+                team: "Electrical Maintenance Crew",
+                created: "23 Oct 2026, 17:03",
+                channel: "Mobile App",
+                aiMatchConfidence: 96,
+                suggestedCategory: "Street lights",
+                citizen: { name: "Zainab Malik", house: "House #44, Street 2, Block B", phone: "0300 9876543", historyCount: 1 },
+                location: "Block B • Near Park Pole #E-14",
+                audioAttached: false
+            },
+            {
+                id: "UF-2026-00003",
+                description: "Sewer overflowing outside House 3 in Block A. Dirty water spreading into main walkway.",
+                category: "Sewerage & Drainage",
+                priority: "High",
+                team: "Sewerage & Water Team",
+                created: "23 Oct 2026, 17:03",
+                channel: "Phone Call",
+                aiMatchConfidence: 98,
+                suggestedCategory: "Sewerage & Drainage",
+                citizen: { name: "Hassan Ahmed", house: "House #12, Street 4, Block A", phone: "0300 1234567", historyCount: 3 },
+                location: "Block A • Street 4, House 3",
+                audioAttached: true
+            },
+            {
+                id: "UF-2026-00004",
+                description: "Garbage container overflowed and not collected for three days in Sector C main market.",
+                category: "Sanitation & Garbage",
+                priority: "Normal",
+                team: "Sanitation & Solid Waste",
+                created: "23 Oct 2026, 17:03",
+                channel: "WhatsApp",
+                aiMatchConfidence: 91,
+                suggestedCategory: "Sanitation & Garbage",
+                citizen: { name: "Bilal Raza", house: "Shop #03, Commercial Plaza", phone: "0312 4445566", historyCount: 0 },
+                location: "Commercial Area • Bin #9",
+                audioAttached: false
+            }
+        ];
+
+        let selectedItemId = "UF-2026-00002";
+        let viewMode = "split"; // "split" or "stream"
+        let activeRejectTargetId = null;
+
+        // INITIALIZATION
+        window.onload = function() {
+            renderMasterList();
+            renderInspectorPane();
+            setupKeyboardShortcuts();
+        };
+
+        // VIEW MODE TOGGLER
+        function setViewMode(mode) {
+            viewMode = mode;
+            const masterPanel = document.getElementById('masterPanel');
+            const inspectorPanel = document.getElementById('inspectorPanel');
+            const splitBtn = document.getElementById('splitViewBtn');
+            const streamBtn = document.getElementById('streamViewBtn');
+
+            if (mode === 'split') {
+                masterPanel.className = "w-full lg:w-7/12 border-e border-darkborder flex flex-col h-full bg-darkbg";
+                inspectorPanel.classList.remove('hidden');
+                splitBtn.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-500 text-slate-950 flex items-center gap-1 transition-all";
+                streamBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1 transition-all";
+            } else {
+                masterPanel.className = "w-full flex flex-col h-full bg-darkbg";
+                inspectorPanel.classList.add('hidden');
+                splitBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1 transition-all";
+                streamBtn.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-500 text-slate-950 flex items-center gap-1 transition-all";
+            }
+            renderMasterList();
+        }
+
+        // RENDER MASTER CARDS LIST WITH INLINE EDIT SELECTORS
+        function renderMasterList() {
+            const container = document.getElementById('cardsList');
+            const searchVal = document.getElementById('queueSearch').value.toLowerCase();
+            const priorityVal = document.getElementById('priorityFilter').value;
+
+            const filteredItems = queueItems.filter(item => {
+                const matchesSearch = item.id.toLowerCase().includes(searchVal) || 
+                                     item.description.toLowerCase().includes(searchVal) ||
+                                     item.category.toLowerCase().includes(searchVal);
+                const matchesPriority = priorityVal === 'ALL' || item.priority === priorityVal;
+                return matchesSearch && matchesPriority;
+            });
+
+            document.getElementById('queueItemCountText').innerText = `Showing ${filteredItems.length} Items Pending Review`;
+            document.getElementById('queueCountBadge').innerText = queueItems.length;
+
+            if (filteredItems.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center border-2 border-dashed border-darkborder rounded-2xl bg-darkcard/30">
+                        <i class="fa-solid fa-circle-check text-3xl text-brand-400 mb-2"></i>
+                        <h4 class="text-xs font-bold text-white">Queue Empty / No Matches</h4>
+                        <p class="text-[11px] text-slate-400">All incoming complaint tickets have been processed!</p>
+                    </div>
+                `;
+                document.getElementById('inspectorPanel').innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center p-6 text-center text-slate-500">
+                        <i class="fa-solid fa-inbox text-4xl mb-2 opacity-50"></i>
+                        <p class="text-xs font-semibold">Select a complaint item from the left queue to inspect and triage.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredItems.map(item => {
+                const isSelected = item.id === selectedItemId && viewMode === 'split';
+                const prioObj = PRIORITIES.find(p => p.id === item.priority) || PRIORITIES[1];
+
+                return `
+                    <div onclick="selectItem('${item.id}')" 
+                        class="glass-card p-4 rounded-2xl border transition-all cursor-pointer space-y-3 ${isSelected ? 'item-card-selected' : 'border-darkborder hover:border-brand-500/40'}">
+                        
+                        <!-- Header Row -->
+                        <div class="flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono font-extrabold text-brand-300 text-xs">${item.id}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-brand-300 border border-brand-500/30">
+                                    <i class="fa-solid fa-circle text-[6px] me-1"></i> New
+                                </span>
+                                <span class="text-[10px] text-slate-400 hidden sm:inline">
+                                    <i class="fa-solid fa-robot text-brand-400 me-0.5"></i> ${item.aiMatchConfidence}% AI Match
+                                </span>
+                            </div>
+                            <span class="text-[10px] text-slate-400">${item.created}</span>
+                        </div>
+
+                        <!-- Complaint Description -->
+                        <p class="text-xs font-medium text-slate-200 line-clamp-2 leading-relaxed">
+                            "${item.description}"
+                        </p>
+
+                        <!-- INLINE EDITING CONTROL GRID (Master List View) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-darkborder/60" onclick="event.stopPropagation()">
+                            
+                            <!-- Inline Category Picker -->
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Category</label>
+                                <select onchange="updateItemField('${item.id}', 'category', this.value)" 
+                                    class="w-full bg-darkbg border border-darkborder rounded-lg px-2 py-1 text-[11px] font-semibold text-white focus:outline-none focus:border-brand-500">
+                                    ${CATEGORIES.map(cat => `<option value="${cat}" ${cat === item.category ? 'selected' : ''}>${cat}</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <!-- Inline Priority Picker -->
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Priority</label>
+                                <select onchange="updateItemField('${item.id}', 'priority', this.value)" 
+                                    class="w-full bg-darkbg border border-darkborder rounded-lg px-2 py-1 text-[11px] font-semibold text-white focus:outline-none focus:border-brand-500">
+                                    ${PRIORITIES.map(p => `<option value="${p.id}" ${p.id === item.priority ? 'selected' : ''}>${p.label}</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <!-- Inline Team Picker -->
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Assign Crew</label>
+                                <select onchange="updateItemField('${item.id}', 'team', this.value)" 
+                                    class="w-full bg-darkbg border border-darkborder rounded-lg px-2 py-1 text-[11px] font-semibold text-white focus:outline-none focus:border-brand-500">
+                                    ${TEAMS.map(tm => `<option value="${tm}" ${tm === item.team ? 'selected' : ''}>${tm}</option>`).join('')}
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- Card Action Quick Bar -->
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[10px] text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-user text-slate-500"></i> ${item.citizen.name}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="triggerRejection('${item.id}', event)" class="px-2.5 py-1 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white font-bold text-[11px] transition-all">
+                                    Reject
+                                </button>
+                                <button onclick="acceptItem('${item.id}', event)" class="px-3 py-1 rounded-lg bg-brand-500 hover:bg-brand-400 text-slate-950 font-extrabold text-[11px] shadow-sm shadow-brand-500/20 transition-all">
+                                    Accept & Assign
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // RENDER RIGHT DETAILED INSPECTION PANEL
+        function renderInspectorPane() {
+            const container = document.getElementById('inspectorPanel');
+            const item = queueItems.find(i => i.id === selectedItemId);
+
+            if (!item) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center p-6 text-center text-slate-500">
+                        <i class="fa-solid fa-clipboard-question text-4xl mb-2 opacity-40"></i>
+                        <p class="text-xs font-semibold">Select a complaint from the left panel to inspect.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const prioObj = PRIORITIES.find(p => p.id === item.priority) || PRIORITIES[1];
+
+            container.innerHTML = `
+                <!-- Inspector Header -->
+                <div class="p-4 border-b border-darkborder bg-darkcard flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="font-mono text-base font-black text-brand-300">${item.id}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border ${prioObj.color}">
+                            ${prioObj.label} Priority
+                        </span>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Recorded: ${item.created}</span>
+                </div>
+
+                <div class="p-5 space-y-5 flex-1">
+                    
+                    <!-- AI Confidence Banner -->
+                    <div class="p-3.5 rounded-xl bg-gradient-to-r from-brand-950/60 to-darkbg border border-brand-500/30 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-300 font-bold flex items-center justify-center text-sm">
+                                ✨
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-white">AI Auto-Categorization Engine</h4>
+                                <p class="text-[11px] text-slate-400">Suggested: <strong class="text-brand-300">${item.suggestedCategory}</strong> based on issue intent.</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/40 text-xs font-extrabold">
+                            ${item.aiMatchConfidence}% Match
+                        </span>
+                    </div>
+
+                    <!-- Full Complaint Text & Location -->
+                    <div class="glass-card p-4 rounded-xl border border-darkborder space-y-2">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Citizen Issue Statement</span>
+                        <p class="text-xs font-medium text-white leading-relaxed bg-darkbg p-3 rounded-lg border border-darkborder">
+                            "${item.description}"
+                        </p>
+
+                        <div class="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <span class="text-slate-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-dot text-rose-400"></i>
+                                <strong class="text-slate-200">${item.location}</strong>
+                            </span>
+                            <span class="text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-headset text-brand-400"></i> Intake via <strong>${item.channel}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- PROMINENT EDITABLE METADATA CONTROLS (Right Inspector Pane) -->
+                    <div class="glass-card p-4 rounded-xl border border-brand-500/30 space-y-4 bg-darkcard/80">
+                        <div class="flex items-center justify-between border-b border-darkborder pb-2">
+                            <h4 class="text-xs font-extrabold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-brand-400"></i>
+                                <span>Modify Triage & Crew Assignment</span>
+                            </h4>
+                            <span class="text-[10px] text-brand-300 font-medium">Real-time update</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            
+                            <!-- 1. Category Control -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Complaint Category</label>
+                                <select onchange="updateItemField('${item.id}', 'category', this.value)" 
+                                    class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-brand-500">
+                                    ${CATEGORIES.map(cat => `<option value="${cat}" ${cat === item.category ? 'selected' : ''}>${cat}</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <!-- 2. Priority Selector -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Urgency / Priority Level</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    ${PRIORITIES.map(p => `
+                                        <button type="button" onclick="updateItemField('${item.id}', 'priority', '${p.id}')" 
+                                            class="p-2 rounded-xl text-xs font-bold border text-center transition-all ${p.id === item.priority ? p.color + ' ring-2 ring-brand-500' : 'bg-darkbg border-darkborder text-slate-400 hover:text-white'}">
+                                            ${p.label}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- 3. Assign Crew Team Dropdown -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Dispatch Maintenance Crew</label>
+                                <select onchange="updateItemField('${item.id}', 'team', this.value)" 
+                                    class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-brand-500">
+                                    ${TEAMS.map(tm => `<option value="${tm}" ${tm === item.team ? 'selected' : ''}>${tm}</option>`).join('')}
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Citizen Profile Info Card -->
+                    <div class="glass-card p-4 rounded-xl border border-darkborder space-y-3">
+                        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-address-card text-brand-400"></i>
+                            <span>Citizen Contact Details</span>
+                        </h4>
+                        <div class="p-3 bg-darkbg rounded-xl border border-darkborder flex items-center justify-between text-xs">
+                            <div class="space-y-0.5">
+                                <h5 class="font-extrabold text-white">${item.citizen.name}</h5>
+                                <p class="text-[11px] text-slate-400">${item.citizen.house}</p>
+                                <p class="text-[11px] font-mono text-brand-300">${item.citizen.phone}</p>
+                            </div>
+                            <span class="text-[10px] bg-darkcard px-2.5 py-1 rounded border border-darkborder text-slate-300 font-bold">
+                                ${item.citizen.historyCount} Previous Tickets
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Inspector Action Dispatch Bar -->
+                <div class="p-4 border-t border-darkborder bg-darkcard shrink-0 flex items-center justify-between">
+                    <button onclick="triggerRejection('${item.id}')" class="px-4 py-2.5 rounded-xl border border-rose-500/40 text-rose-400 hover:bg-rose-500 hover:text-white font-bold text-xs transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-ban"></i>
+                        <span>Reject Report</span>
+                    </button>
+                    <button onclick="acceptItem('${item.id}')" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-brand-500/20 active:scale-95 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-sm"></i>
+                        <span>Accept & Dispatch to ${item.team}</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        // DYNAMIC STATE UPDATE FUNCTION (Synchronizes left card & right panel)
+        function updateItemField(itemId, field, value) {
+            const item = queueItems.find(i => i.id === itemId);
+            if (item) {
+                item[field] = value;
+                
+                // Live UI feedback
+                renderMasterList();
+                if (selectedItemId === itemId) {
+                    renderInspectorPane();
+                }
+
+                showToast(`Updated ${field.toUpperCase()} for ${itemId} -> "${value}"`, 'success');
+            }
+        }
+
+        function selectItem(id) {
+            selectedItemId = id;
+            renderMasterList();
+            renderInspectorPane();
+        }
+
+        // ACCEPT ACTION HANDLER
+        function acceptItem(id, event) {
+            if (event) event.stopPropagation();
+            const item = queueItems.find(i => i.id === id);
+            if (!item) return;
+
+            showToast(`Ticket ${id} accepted & dispatched to [${item.team}]!`, 'success');
+
+            queueItems = queueItems.filter(i => i.id !== id);
+            if (selectedItemId === id && queueItems.length > 0) {
+                selectedItemId = queueItems[0].id;
+            }
+            renderMasterList();
+            renderInspectorPane();
+        }
+
+        // BATCH ACCEPT HIGH CONFIDENCE
+        function batchAcceptAll() {
+            const initialCount = queueItems.length;
+            queueItems = queueItems.filter(i => i.aiMatchConfidence < 95);
+            const acceptedCount = initialCount - queueItems.length;
+
+            if (acceptedCount > 0) {
+                showToast(`Batch approved & dispatched ${acceptedCount} high-confidence tickets!`, 'success');
+                if (queueItems.length > 0) selectedItemId = queueItems[0].id;
+                renderMasterList();
+                renderInspectorPane();
+            } else {
+                showToast('No pending tickets meet >95% auto-confidence threshold.', 'info');
+            }
+        }
+
+        // REJECTION MODAL HANDLERS
+        function triggerRejection(id, event) {
+            if (event) event.stopPropagation();
+            activeRejectTargetId = id;
+            document.getElementById('modalTicketRef').innerText = id;
+            document.getElementById('rejectionModal').classList.remove('hidden');
+        }
+
+        function closeRejectionModal() {
+            document.getElementById('rejectionModal').classList.add('hidden');
+            activeRejectTargetId = null;
+        }
+
+        function confirmRejection() {
+            if (!activeRejectTargetId) return;
+            const reason = document.getElementById('rejectionReasonSelect').value;
+            showToast(`Rejected ticket ${activeRejectTargetId}: ${reason}`, 'warning');
+
+            queueItems = queueItems.filter(i => i.id !== activeRejectTargetId);
+            if (selectedItemId === activeRejectTargetId && queueItems.length > 0) {
+                selectedItemId = queueItems[0].id;
+            }
+            closeRejectionModal();
+            renderMasterList();
+            renderInspectorPane();
+        }
+
+        // KEYBOARD SHORTCUTS ENGINE (A = Accept, R = Reject, Arrow Keys)
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ignore keypresses if typing in input/textarea/select fields
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+                if (e.key === 'a' || e.key === 'A') {
+                    if (selectedItemId) acceptItem(selectedItemId);
+                } else if (e.key === 'r' || e.key === 'R') {
+                    if (selectedItemId) triggerRejection(selectedItemId);
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    navigateQueue(1);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    navigateQueue(-1);
+                }
+            });
+        }
+
+        function navigateQueue(direction) {
+            if (queueItems.length === 0) return;
+            const currentIndex = queueItems.findIndex(i => i.id === selectedItemId);
+            let newIndex = currentIndex + direction;
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= queueItems.length) newIndex = queueItems.length - 1;
+            selectItem(queueItems[newIndex].id);
+        }
+
+        function toggleLanguage() {
+            const btnText = document.getElementById('langBtnText');
+            if (btnText.innerText === 'اردو') {
+                btnText.innerText = 'English';
+                showToast('زبان تبدیل کی گئی (اردو)', 'info');
+            } else {
+                btnText.innerText = 'اردو';
+                showToast('Switched language to English', 'info');
+            }
+        }
+
+        // TOAST NOTIFIER SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgStyle = 'bg-slate-900 border-brand-500/40 text-slate-100';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bgStyle = 'bg-emerald-950/90 border-emerald-500 text-emerald-100';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgStyle = 'bg-amber-950/90 border-amber-500 text-amber-100';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-2 rounded-xl border backdrop-blur-md shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-x-8 opacity-0 ${bgStyle}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-x-8', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

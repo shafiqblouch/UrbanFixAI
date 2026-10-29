@@ -32,7 +32,7 @@ public sealed record AiEmbedding(IReadOnlyList<float> Vector, string Model, AiUs
 
 public sealed record AiPhoto(IReadOnlyList<string> Labels, string Description, bool NeedsMoreInfo, float Confidence, bool SafetyFlag, bool Degraded, string Model, string PromptVersion, AiUsage? Usage = null);
 
-public sealed record AiTranscript(string Transcript, float Confidence, string Language, bool LowConfidence, string Model, string PromptVersion, AiUsage? Usage = null);
+public sealed record AiTranscript(string Transcript, float Confidence, string Language, bool LowConfidence, string Model, string PromptVersion, AiUsage? Usage = null, string Translation = "");
 
 /// <summary>Typed client for the AI service's <c>/v1/complaints/understand</c> contract (AI-02).</summary>
 public sealed class HttpAiClient(HttpClient http) : IAiBackend
@@ -72,7 +72,8 @@ public sealed class HttpAiClient(HttpClient http) : IAiBackend
         [property: JsonPropertyName("low_confidence")] bool LowConfidence,
         [property: JsonPropertyName("model")] string Model,
         [property: JsonPropertyName("prompt_version")] string PromptVersion,
-        [property: JsonPropertyName("usage")] UsageBody? Usage = null);
+        [property: JsonPropertyName("usage")] UsageBody? Usage = null,
+        [property: JsonPropertyName("translation_en")] string? TranslationEn = null);
 
     private sealed record PhotoResponse(
         [property: JsonPropertyName("labels")] List<string> Labels,
@@ -149,7 +150,7 @@ public sealed class HttpAiClient(HttpClient http) : IAiBackend
         using var response = await http.PostAsync(url, form, ct);
         response.EnsureSuccessStatusCode();
         var r = (await response.Content.ReadFromJsonAsync<TranscriptResponse>(ct))!;
-        return new AiTranscript(r.Transcript, r.Confidence, r.Language, r.LowConfidence, r.Model, r.PromptVersion, Usage(r.Usage));
+        return new AiTranscript(r.Transcript, r.Confidence, r.Language, r.LowConfidence, r.Model, r.PromptVersion, Usage(r.Usage), r.TranslationEn ?? "");
     }
 
     public async Task<AiUnderstanding> UnderstandAsync(string text, IReadOnlyList<AiCategory> categories, IReadOnlyList<string> knownNames, IReadOnlyList<string> landmarks, CancellationToken ct)
@@ -339,10 +340,20 @@ public sealed class VoiceTranscriptionJob(
             if (complaint is not null && SafetyTerms.IsSafety(result.Transcript)) await planner.FlagSafetyAsync(complaint, ct);
 
             // A complaint sent as only a voice note gets its words from the transcript, and is then read by the AI like any other.
-            var useAsDescription = complaint is not null && complaint.Description == IntakeText.MediaOnly && !string.IsNullOrWhiteSpace(result.Transcript);
+            // What was said leads; if a photo already gave the complaint its words, those follow, and the guessed category is dropped.
+            var fromPhoto = complaint is not null && complaint.Description.Contains(IntakeText.SeenInPhoto);
+            var useAsDescription = complaint is not null && (complaint.Description == IntakeText.MediaOnly || fromPhoto) && !string.IsNullOrWhiteSpace(result.Transcript);
             if (useAsDescription)
             {
-                complaint!.Description = result.Transcript.Trim().Length > 4000 ? result.Transcript.Trim()[..4000] : result.Transcript.Trim();
+                // Non-English speech is kept as said, with the AI's English translation beneath it for staff and the categoriser.
+                var said = result.Transcript.Trim();
+                var english = result.Translation.Trim();
+                var text = english.Length == 0 || string.Equals(english, said, StringComparison.OrdinalIgnoreCase) ? said : $"{said}\n\nEnglish: {english}";
+                if (fromPhoto) text += $"\n\n{complaint!.Description}";
+                complaint!.Description = text.Length > 4000 ? text[..4000] : text;
+                if (complaint.AiCategoryKey is { } guessed && complaint.CategoryId is { } current
+                    && await db.Categories.AsNoTracking().AnyAsync(c => c.Id == current && c.Key == guessed, ct))
+                    complaint.CategoryId = null;
                 complaint.AiStatus = "pending";
                 complaint.UpdatedAt = DateTimeOffset.UtcNow;
             }
@@ -372,6 +383,12 @@ public sealed class VoiceTranscriptionJob(
             throw;
         }
     }
+}
+
+/// <summary>Labels from the AI service's photo list that mean "nothing to report".</summary>
+internal static class PhotoLabels
+{
+    public static readonly HashSet<string> NonIssue = ["no_visible_issue", "unclear_image"];
 }
 
 /// <summary>
@@ -405,9 +422,26 @@ public sealed class PhotoInterpretationJob(
                 CategoryKey = result.Labels.FirstOrDefault(), Summary = result.Description, NeedsMoreInfo = result.NeedsMoreInfo,
                 Confidence = result.Confidence, Model = result.Model, PromptVersion = result.PromptVersion,
             });
-            if (result.SafetyFlag && await db.Complaints.SingleOrDefaultAsync(c => c.Id == media.ComplaintId, ct) is { } complaint)
-                await planner.FlagSafetyAsync(complaint, ct);
+            var complaint = await db.Complaints.SingleOrDefaultAsync(c => c.Id == media.ComplaintId, ct);
+            if (result.SafetyFlag && complaint is not null) await planner.FlagSafetyAsync(complaint, ct);
+
+            // A complaint sent as only a photo gets its words from what the AI saw, and is then categorised like any other.
+            // An unclear photo or one with no visible issue says nothing useful, so the placeholder stays for a person to read.
+            var seen = result.Labels.Where(l => !PhotoLabels.NonIssue.Contains(l)).ToList();
+            var useAsDescription = complaint is not null && complaint.Description == IntakeText.MediaOnly && !result.Degraded && seen.Count > 0;
+            if (useAsDescription)
+            {
+                var text = $"{result.Description.Trim()} {IntakeText.SeenInPhoto} {string.Join(", ", seen.Select(l => l.Replace('_', ' ')))})";
+                complaint!.Description = text.Length > 4000 ? text[..4000] : text;
+                // A category the AI guessed from the placeholder is thrown away; one a person chose stays.
+                if (complaint.AiCategoryKey is { } guessed && complaint.CategoryId is { } current
+                    && await db.Categories.AsNoTracking().AnyAsync(c => c.Id == current && c.Key == guessed, ct))
+                    complaint.CategoryId = null;
+                complaint.AiStatus = "pending";
+                complaint.UpdatedAt = DateTimeOffset.UtcNow;
+            }
             await db.SaveChangesAsync(ct);
+            if (useAsDescription) jobs.Enqueue<ComplaintEnrichmentJob>(j => j.RunAsync(organizationId, complaint!.Id, null!, CancellationToken.None));
             if (options.EmbeddingsEnabled && !result.Degraded)
                 jobs.Enqueue<EmbeddingJob>(j => j.RunAsync(organizationId, media.ComplaintId, media.Id, null!, CancellationToken.None));
         }

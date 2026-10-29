@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFix - Complaints Management</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        urdu: ['"Noto Nastaliq Urdu"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        darkbg: '#071813',
+                        darkcard: '#0f2c22',
+                        darksidebar: '#0b221a',
+                        darkborder: '#153e30',
+                        darkhover: '#14382b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for dense tables and drawers */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(7, 24, 19, 0.5);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #153e30;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        
+        .glass-card {
+            background: rgba(15, 44, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.12);
+        }
+
+        .ur-font {
+            font-family: 'Noto Nastaliq Urdu', serif;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen bg-darkbg text-slate-100 font-sans antialiased overflow-hidden flex flex-col selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN INTERFACE LAYOUT (Fixed 100vh Layout) -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT SIDEBAR -->
+        <aside id="sidebar" class="w-64 bg-darksidebar border-e border-darkborder flex flex-col justify-between shrink-0 transition-all duration-300 z-30">
+            <div class="flex flex-col h-full overflow-hidden">
+                
+                <!-- Brand Header -->
+                <div class="p-4 border-b border-darkborder flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shrink-0 shadow-md shadow-brand-500/20">
+                            <span class="text-slate-950 font-black text-base tracking-wider">UF</span>
+                        </div>
+                        <div class="truncate">
+                            <h1 class="font-extrabold text-base tracking-tight text-white leading-none">UrbanFix</h1>
+                            <span class="text-[10px] text-brand-400 font-medium tracking-wide">Enterprise Ops</span>
+                        </div>
+                    </div>
+                    <!-- Society Switcher Badge -->
+                    <button onclick="showToast('Society switcher active: Demo Society', 'info')" class="text-xs px-2 py-1 rounded-lg bg-darkbg border border-darkborder text-slate-300 hover:text-white hover:border-brand-500/40 transition-all flex items-center gap-1.5 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="font-medium text-[11px]">Demo</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                </div>
+
+                <!-- Primary Call to Action Button -->
+                <div class="p-3">
+                    <button onclick="triggerNewComplaintModal()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 text-slate-950 font-bold text-xs shadow-md shadow-brand-500/20 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>New Complaint</span>
+                    </button>
+                </div>
+
+                <!-- Navigation Items -->
+                <nav class="flex-1 px-3 space-y-1 custom-scroll overflow-y-auto">
+                    <a href="#" onclick="switchNav(this, 'Dashboard')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i>
+                            <span>Dashboard</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Complaints')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-regular fa-folder-open w-4 text-center text-sm"></i>
+                            <span>Complaints</span>
+                        </div>
+                        <span id="navCountComplaints" class="px-1.5 py-0.5 rounded-md bg-brand-500/20 border border-brand-500/40 text-[10px] text-brand-300 font-bold">5</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Review Queue')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-clipboard-check w-4 text-center text-sm"></i>
+                            <span>Review Queue</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-brand-300 border border-brand-500/30 text-[10px] font-bold">3</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Directory')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-address-book w-4 text-center text-sm"></i>
+                            <span>Directory</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Jobs')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-wrench w-4 text-center text-sm"></i>
+                            <span>Jobs</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold">1 Alert</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Reports')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-line w-4 text-center text-sm"></i>
+                            <span>Reports</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Store')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-boxes-stacked w-4 text-center text-sm"></i>
+                            <span>Store / Inventory</span>
+                        </div>
+                    </a>
+
+                    <div class="pt-3 pb-1 text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3">System</div>
+
+                    <a href="#" onclick="switchNav(this, 'Approvals')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-circle-check w-4 text-center text-sm"></i>
+                            <span>Approvals</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Notices')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bullhorn w-4 text-center text-sm"></i>
+                            <span>Notices</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav(this, 'Configuration')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-sliders w-4 text-center text-sm"></i>
+                            <span>Configuration</span>
+                        </div>
+                    </a>
+                </nav>
+
+                <!-- Profile Footer Card -->
+                <div class="p-3 border-t border-darkborder bg-darkbg/50">
+                    <div class="p-2 rounded-xl bg-darkcard border border-darkborder flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-700 to-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center shrink-0">
+                                MM
+                            </div>
+                            <div class="truncate">
+                                <h4 class="text-xs font-bold text-white truncate">Mariam Manager</h4>
+                                <p class="text-[10px] text-slate-400 truncate">Manager • Admin</p>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Logged out session', 'warning')" class="text-slate-400 hover:text-rose-400 p-1.5 transition-colors" title="Sign Out">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT WORKSPACE -->
+        <main class="flex-1 flex flex-col min-w-0 bg-darkbg overflow-hidden relative">
+            
+            <!-- TOP APP BAR -->
+            <header class="h-14 border-b border-darkborder bg-darkcard/90 px-5 flex items-center justify-between shrink-0 z-20">
+                
+                <!-- Left: Global Search Bar -->
+                <div class="flex items-center gap-4 flex-1 max-w-md">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                        <input id="globalSearchInput" type="text" oninput="handleTableFilter()" placeholder="Search complaints, jobs or citizens (press / to focus)..." 
+                            class="w-full pl-9 pr-12 py-1.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] bg-darkcard px-1.5 py-0.5 rounded border border-darkborder text-slate-400 font-mono">Ctrl K</span>
+                    </div>
+                </div>
+
+                <!-- Right: Lang Switch, Theme, Notifications, Date -->
+                <div class="flex items-center gap-3">
+                    <!-- Language Switcher Pill -->
+                    <button id="langToggleBtn" onclick="toggleLanguage()" class="px-2.5 py-1 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 text-xs text-slate-300 font-medium flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-globe text-brand-400 text-xs"></i>
+                        <span id="langBtnText">اردو</span>
+                    </button>
+
+                    <!-- Dark Mode Indicator -->
+                    <div class="w-8 h-8 rounded-lg bg-darkbg border border-darkborder flex items-center justify-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-moon text-brand-300"></i>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <button onclick="showToast('5 active system alerts pending', 'info')" class="relative w-8 h-8 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 flex items-center justify-center text-slate-300 transition-all">
+                        <i class="fa-regular fa-bell text-xs"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-slate-950 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-darkcard">
+                            5
+                        </span>
+                    </button>
+
+                    <!-- Date Display Badge -->
+                    <div class="hidden sm:flex items-center gap-2 pl-2 border-s border-darkborder text-xs text-slate-400 font-medium">
+                        <i class="fa-regular fa-calendar text-slate-500"></i>
+                        <span>Tue, 27 Oct 2026</span>
+                    </div>
+                </div>
+
+            </header>
+
+            <!-- COMPLAINTS PAGE CONTENT AREA -->
+            <div class="flex-1 p-5 flex flex-col gap-4 overflow-hidden">
+                
+                <!-- PAGE HEADER & ACTION CONTROLS -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                            <span>Complaints Workspace</span>
+                            <span id="totalResultsBadge" class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 font-bold">
+                                5 Total
+                            </span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Track, filter, assign, and manage municipal and community complaints.</p>
+                    </div>
+
+                    <!-- Action Export Buttons & Batch Controls -->
+                    <div class="flex items-center gap-2">
+                        <!-- Batch Action Button (Visible when rows selected) -->
+                        <div id="batchActionGroup" class="hidden items-center gap-2 bg-brand-950/80 border border-brand-500/40 p-1 rounded-xl">
+                            <span id="selectedCountText" class="text-[11px] font-bold text-brand-300 px-2">1 Selected</span>
+                            <button onclick="triggerBatchAssign()" class="px-2.5 py-1 rounded-lg bg-brand-500 text-slate-950 font-bold text-xs hover:bg-brand-400 transition-all">
+                                Bulk Assign
+                            </button>
+                            <button onclick="triggerBatchStatus()" class="px-2.5 py-1 rounded-lg bg-darkcard border border-darkborder text-slate-200 font-bold text-xs hover:border-brand-500/40 transition-all">
+                                Change Status
+                            </button>
+                        </div>
+
+                        <button onclick="exportCSV()" class="px-3 py-1.5 rounded-xl bg-darkcard border border-darkborder hover:border-brand-500/40 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                            <span>Export CSV</span>
+                        </button>
+                        <button onclick="exportPDF()" class="px-3 py-1.5 rounded-xl bg-darkcard border border-darkborder hover:border-brand-500/40 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-pdf text-rose-400"></i>
+                            <span>Export PDF</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SLEEK SMART FILTER TOOLBAR (PILLS & ADVANCED CONTROLS) -->
+                <div class="glass-card p-3 rounded-2xl border border-darkborder flex flex-col gap-3 shrink-0">
+                    
+                    <!-- Top Row: Quick Filter Status Pills + Advanced Toggle -->
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        
+                        <!-- Status Filter Pills -->
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Status:</span>
+                            
+                            <button onclick="setStatusFilter('all', this)" class="status-pill px-3 py-1 rounded-xl text-xs font-bold bg-brand-500 text-slate-950 border border-brand-400 shadow-md transition-all">
+                                All (5)
+                            </button>
+                            
+                            <button onclick="setStatusFilter('New', this)" class="status-pill px-3 py-1 rounded-xl text-xs font-semibold bg-darkbg border border-darkborder text-sky-400 hover:border-sky-500/50 transition-all flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> New (3)
+                            </button>
+                            
+                            <button onclick="setStatusFilter('Assigned', this)" class="status-pill px-3 py-1 rounded-xl text-xs font-semibold bg-darkbg border border-darkborder text-amber-400 hover:border-amber-500/50 transition-all flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Assigned (1)
+                            </button>
+                            
+                            <button onclick="setStatusFilter('Closed', this)" class="status-pill px-3 py-1 rounded-xl text-xs font-semibold bg-darkbg border border-darkborder text-emerald-400 hover:border-emerald-500/50 transition-all flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Closed (1)
+                            </button>
+
+                            <button onclick="setPriorityFilterToggle('High', this)" class="status-pill px-3 py-1 rounded-xl text-xs font-semibold bg-darkbg border border-darkborder text-rose-400 hover:border-rose-500/50 transition-all flex items-center gap-1.5 ml-2">
+                                <i class="fa-solid fa-fire text-[10px]"></i> High Priority (2)
+                            </button>
+                        </div>
+
+                        <!-- Advanced Filter Toggle Button -->
+                        <button onclick="toggleAdvancedFilters()" class="text-xs px-3 py-1 rounded-xl bg-darkbg border border-darkborder hover:border-brand-500/40 text-slate-300 font-semibold flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-sliders text-brand-400 text-xs"></i>
+                            <span>Advanced Filters</span>
+                            <i id="advancedFilterChevron" class="fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform"></i>
+                        </button>
+
+                    </div>
+
+                    <!-- Expandable Advanced Filters Panel -->
+                    <div id="advancedFiltersPanel" class="hidden pt-3 border-t border-darkborder grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                        
+                        <!-- Category Select -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
+                            <select id="filterCategory" onchange="handleTableFilter()" class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                <option value="all">All Categories</option>
+                                <option value="Street lights">Street Lights</option>
+                                <option value="Sanitation">Sanitation</option>
+                                <option value="Sewage">Sewage</option>
+                                <option value="Water supply">Water Supply</option>
+                            </select>
+                        </div>
+
+                        <!-- Department Select -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Department</label>
+                            <select id="filterDepartment" onchange="handleTableFilter()" class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                <option value="all">All Departments</option>
+                                <option value="Electrical">Electrical Works</option>
+                                <option value="Sanitation">Sanitation Dept</option>
+                                <option value="Water Works">Water & Plumbing</option>
+                            </select>
+                        </div>
+
+                        <!-- Sector Select -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Sector / Zone</label>
+                            <select id="filterSector" onchange="handleTableFilter()" class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                <option value="all">All Sectors</option>
+                                <option value="Block A">Block A</option>
+                                <option value="Block B">Block B</option>
+                                <option value="Commercial Area">Commercial Area</option>
+                            </select>
+                        </div>
+
+                        <!-- Priority Select -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Priority</label>
+                            <select id="filterPriority" onchange="handleTableFilter()" class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                <option value="all">All Priorities</option>
+                                <option value="Normal">Normal</option>
+                                <option value="High">High Priority</option>
+                            </select>
+                        </div>
+
+                        <!-- Date Range Inputs -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Created Date</label>
+                            <div class="flex items-center gap-1">
+                                <input type="date" id="filterFromDate" class="w-full p-1.5 bg-darkbg border border-darkborder rounded-lg text-[11px] text-white focus:outline-none focus:border-brand-500">
+                                <span class="text-slate-500 text-xs">-</span>
+                                <input type="date" id="filterToDate" class="w-full p-1.5 bg-darkbg border border-darkborder rounded-lg text-[11px] text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- REDESIGNED DATA TABLE (FITS SCREEN CONTAINER) -->
+                <div class="glass-card rounded-2xl border border-darkborder flex-1 flex flex-col min-h-0 overflow-hidden shadow-xl">
+                    
+                    <div class="flex-1 custom-scroll overflow-y-auto overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-darkcard z-10 text-[10px] uppercase font-bold text-slate-400 border-b border-darkborder tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-3 w-10 text-center">
+                                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAllRows(this)" class="rounded bg-darkbg border-darkborder text-brand-500 focus:ring-0 cursor-pointer">
+                                    </th>
+                                    <th class="py-3 px-3">Reference ID</th>
+                                    <th class="py-3 px-3">Description & Sector</th>
+                                    <th class="py-3 px-3">Category</th>
+                                    <th class="py-3 px-3">Status</th>
+                                    <th class="py-3 px-3">Priority</th>
+                                    <th class="py-3 px-3">Created Date</th>
+                                    <th class="py-3 px-3 text-right">Quick Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="complaintsTableBody" class="divide-y divide-darkborder/50 text-slate-200">
+                                <!-- Dynamic Render Target -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TABLE FOOTER & PAGINATION -->
+                    <div class="px-4 py-3 border-t border-darkborder bg-darkcard/90 flex items-center justify-between text-xs shrink-0">
+                        <div id="paginationInfo" class="text-slate-400 text-[11px]">
+                            Showing <strong class="text-white">1 - 5</strong> of <strong class="text-white">5</strong> entries
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="showToast('Already on the first page', 'info')" class="px-3 py-1 rounded-xl bg-darkbg border border-darkborder text-slate-500 hover:text-slate-300 font-semibold text-xs disabled cursor-not-allowed">
+                                Previous
+                            </button>
+                            <span class="px-2.5 py-1 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-bold">
+                                Page 1 of 1
+                            </span>
+                            <button onclick="showToast('No additional pages available', 'info')" class="px-3 py-1 rounded-xl bg-darkbg border border-darkborder text-slate-500 hover:text-slate-300 font-semibold text-xs disabled cursor-not-allowed">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SLIDE-OVER DETAIL INSPECTOR DRAWER -->
+            <div id="detailDrawerOverlay" onclick="closeDetailDrawer()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+            
+            <div id="detailDrawer" class="fixed inset-y-0 right-0 w-full max-w-md bg-darkcard border-s border-darkborder shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+                
+                <!-- Drawer Header -->
+                <div class="p-4 border-b border-darkborder flex items-center justify-between bg-darkbg/50">
+                    <div>
+                        <span id="drawerRefId" class="text-xs font-extrabold text-brand-300 font-mono">UF-2026-00001</span>
+                        <h3 id="drawerTitle" class="text-sm font-bold text-white mt-0.5">Complaint Inspector</h3>
+                    </div>
+                    <button onclick="closeDetailDrawer()" class="p-1.5 rounded-lg bg-darkbg text-slate-400 hover:text-white border border-darkborder">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Drawer Scrollable Content -->
+                <div class="flex-1 p-4 custom-scroll overflow-y-auto space-y-4 text-xs">
+                    
+                    <!-- Status & Priority Banner -->
+                    <div class="p-3 rounded-xl bg-darkbg border border-darkborder flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Current Status</span>
+                            <span id="drawerStatusBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                Assigned
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Priority</span>
+                            <span id="drawerPriorityBadge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                High
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Category & Sector Card -->
+                    <div class="p-3 rounded-xl bg-darkbg border border-darkborder space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Category:</span>
+                            <strong id="drawerCategory" class="text-white">Water supply</strong>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Sector / Zone:</span>
+                            <strong id="drawerSector" class="text-white">Block A</strong>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Reported On:</span>
+                            <strong id="drawerDate" class="text-slate-300">23 Oct 2026</strong>
+                        </div>
+                    </div>
+
+                    <!-- Reporter / Citizen Info -->
+                    <div class="p-3 rounded-xl bg-darkbg border border-darkborder">
+                        <h4 class="text-[11px] font-bold uppercase text-slate-400 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-user text-brand-400"></i> Citizen Reporter
+                        </h4>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold">
+                                HA
+                            </div>
+                            <div>
+                                <h5 id="drawerCitizenName" class="font-bold text-white text-xs">Hassan Ahmed</h5>
+                                <p class="text-[10px] text-slate-400">House #12, Street 4, Block A</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attachment Preview Simulation -->
+                    <div class="p-3 rounded-xl bg-darkbg border border-darkborder">
+                        <h4 class="text-[11px] font-bold uppercase text-slate-400 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-paperclip text-brand-400"></i> Attached Evidence Photo
+                        </h4>
+                        <div class="relative rounded-lg overflow-hidden border border-darkborder bg-slate-900 h-32 flex items-center justify-center group cursor-pointer" onclick="showToast('Expanding full resolution photo preview', 'info')">
+                            <img id="drawerPhoto" src="https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="px-2.5 py-1 rounded-lg bg-darkbg/80 text-white font-bold text-[10px]">Click to View Full</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Activity -->
+                    <div class="p-3 rounded-xl bg-darkbg border border-darkborder space-y-3">
+                        <h4 class="text-[11px] font-bold uppercase text-slate-400 mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-timeline text-brand-400"></i> Progress Timeline
+                        </h4>
+                        <div class="relative pl-4 space-y-3 border-s border-darkborder">
+                            <div class="relative">
+                                <div class="absolute -left-[21px] top-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-darkbg"></div>
+                                <p class="text-[11px] font-bold text-white">Complaint Filed</p>
+                                <p class="text-[10px] text-slate-400">23 Oct 2026 at 09:15 AM</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[21px] top-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-darkbg"></div>
+                                <p class="text-[11px] font-bold text-white">Assigned to Water Crew Alpha</p>
+                                <p class="text-[10px] text-slate-400">23 Oct 2026 at 11:30 AM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Drawer Action Footer -->
+                <div class="p-4 border-t border-darkborder bg-darkbg/80 flex items-center gap-2">
+                    <button onclick="triggerAssignModalFromDrawer()" class="flex-1 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-brand-500/20">
+                        <i class="fa-solid fa-user-gear mr-1"></i> Reassign Crew
+                    </button>
+                    <button onclick="toggleComplaintStatusDrawer()" class="py-2 px-3 rounded-xl bg-darkcard border border-darkborder hover:border-brand-500/40 text-slate-200 font-bold text-xs transition-all">
+                        Update Status
+                    </button>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- NEW COMPLAINT MODAL -->
+    <div id="newComplaintModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-darkcard border border-brand-500/30 rounded-2xl max-w-lg w-full p-6 shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-darkborder mb-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-brand-400"></i> Register New Complaint
+                </h3>
+                <button onclick="closeModal('newComplaintModal')" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="submitNewComplaintForm(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Issue Description</label>
+                    <input type="text" id="inputDesc" placeholder="e.g. Water leak outside central plaza" required class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white focus:outline-none focus:border-brand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-300 mb-1">Category</label>
+                        <select id="inputCat" class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white focus:outline-none focus:border-brand-500">
+                            <option value="Street lights">Street lights</option>
+                            <option value="Sanitation">Sanitation</option>
+                            <option value="Sewage">Sewage</option>
+                            <option value="Water supply">Water supply</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-300 mb-1">Sector / Zone</label>
+                        <select id="inputSector" class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-white focus:outline-none focus:border-brand-500">
+                            <option value="Block A">Block A</option>
+                            <option value="Block B">Block B</option>
+                            <option value="Commercial Area">Commercial Area</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Priority</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="p-2 border border-darkborder rounded-xl text-center cursor-pointer hover:border-brand-500 bg-darkbg">
+                            <input type="radio" name="inputPrio" value="Normal" checked class="accent-brand-500"> Normal
+                        </label>
+                        <label class="p-2 border border-darkborder rounded-xl text-center cursor-pointer hover:border-rose-500 bg-darkbg">
+                            <input type="radio" name="inputPrio" value="High" class="accent-rose-500"> High Priority
+                        </label>
+                    </div>
+                </div>
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('newComplaintModal')" class="px-4 py-2 rounded-xl bg-darkbg text-slate-400 font-bold hover:text-white">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-brand-500 text-slate-950 font-bold hover:bg-brand-400">Save Complaint</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Sample Initial Data matching the image specification
+        let complaintsData = [
+            {
+                id: "UF-2026-00005",
+                desc: "i have street issue",
+                sector: "Block A",
+                category: "Street lights",
+                status: "Closed",
+                priority: "Normal",
+                created: "26 Oct 2026",
+                citizen: "Mariam M.",
+                photo: "https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: "UF-2026-00004",
+                desc: "Garbage not collected for three days",
+                sector: "Block B",
+                category: "Sanitation",
+                status: "New",
+                priority: "Normal",
+                created: "23 Oct 2026",
+                citizen: "Bilal Khan",
+                photo: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: "UF-2026-00003",
+                desc: "Sewer overflowing outside house 3",
+                sector: "Block A",
+                category: "Sewage",
+                status: "New",
+                priority: "High",
+                created: "23 Oct 2026",
+                citizen: "Usman Raza",
+                photo: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: "UF-2026-00002",
+                desc: "Streetlight is out near the park",
+                sector: "Commercial Area",
+                category: "Street lights",
+                status: "New",
+                priority: "Normal",
+                created: "23 Oct 2026",
+                citizen: "Zainab Bibi",
+                photo: "https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: "UF-2026-00001",
+                desc: "No water in the street since morning",
+                sector: "Block A",
+                category: "Water supply",
+                status: "Assigned",
+                priority: "High",
+                created: "23 Oct 2026",
+                citizen: "Hassan Ahmed",
+                photo: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=600&q=80"
+            }
+        ];
+
+        let selectedRowIds = new Set();
+        let currentStatusFilter = 'all';
+        let currentActiveItem = null;
+
+        window.onload = function() {
+            renderTableRows(complaintsData);
+        };
+
+        // Render Table Rows Dynamically
+        function renderTableRows(items) {
+            const tbody = document.getElementById('complaintsTableBody');
+            tbody.innerHTML = '';
+
+            if (items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-10 text-slate-500">
+                            <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                            No complaints matching your current filters.
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('totalResultsBadge').innerText = '0 Total';
+                document.getElementById('paginationInfo').innerHTML = 'Showing <strong>0</strong> entries';
+                return;
+            }
+
+            document.getElementById('totalResultsBadge').innerText = `${items.length} Total`;
+            document.getElementById('paginationInfo').innerHTML = `Showing <strong class="text-white">1 - ${items.length}</strong> of <strong class="text-white">${items.length}</strong> entries`;
+
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-darkhover/60 transition-colors cursor-pointer group";
+                
+                // Status Badge Styling
+                let statusBadge = '';
+                if (item.status === 'Closed') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">✓ Closed</span>`;
+                } else if (item.status === 'Assigned') {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">⚡ Assigned</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">○ New</span>`;
+                }
+
+                // Priority Badge Styling
+                let priorityBadge = '';
+                if (item.priority === 'High') {
+                    priorityBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1 w-max"><span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> High</span>`;
+                } else {
+                    priorityBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1 w-max"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Normal</span>`;
+                }
+
+                const isChecked = selectedRowIds.has(item.id) ? 'checked' : '';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 text-center" onclick="event.stopPropagation()">
+                        <input type="checkbox" ${isChecked} onchange="toggleRowSelection('${item.id}', this)" class="rounded bg-darkbg border-darkborder text-brand-500 focus:ring-0 cursor-pointer">
+                    </td>
+                    <td class="py-3 px-3" onclick="openDetailDrawer('${item.id}')">
+                        <span class="font-extrabold text-brand-300 hover:underline font-mono">${item.id}</span>
+                    </td>
+                    <td class="py-3 px-3" onclick="openDetailDrawer('${item.id}')">
+                        <span class="font-bold text-white block group-hover:text-brand-300 transition-colors">${item.desc}</span>
+                        <span class="text-[10px] text-slate-400"><i class="fa-solid fa-location-dot text-slate-500"></i> ${item.sector}</span>
+                    </td>
+                    <td class="py-3 px-3" onclick="openDetailDrawer('${item.id}')">
+                        <span class="text-slate-300 font-medium">${item.category}</span>
+                    </td>
+                    <td class="py-3 px-3" onclick="openDetailDrawer('${item.id}')">
+                        ${statusBadge}
+                    </td>
+                    <td class="py-3 px-3" onclick="openDetailDrawer('${item.id}')">
+                        ${priorityBadge}
+                    </td>
+                    <td class="py-3 px-3 text-slate-400 font-medium" onclick="openDetailDrawer('${item.id}')">
+                        ${item.created}
+                    </td>
+                    <td class="py-3 px-3 text-right" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-end gap-1">
+                            <button onclick="openDetailDrawer('${item.id}')" class="p-1.5 rounded-lg hover:bg-darkbg text-slate-400 hover:text-white" title="Inspect">
+                                <i class="fa-regular fa-eye text-xs"></i>
+                            </button>
+                            <button onclick="quickAssign('${item.id}')" class="p-1.5 rounded-lg hover:bg-darkbg text-brand-400 hover:text-brand-300" title="Assign">
+                                <i class="fa-solid fa-user-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Filtering Logic
+        function handleTableFilter() {
+            const query = document.getElementById('globalSearchInput').value.toLowerCase();
+            const category = document.getElementById('filterCategory').value;
+            const sector = document.getElementById('filterSector').value;
+            const priority = document.getElementById('filterPriority').value;
+
+            let filtered = complaintsData.filter(item => {
+                const matchesSearch = item.id.toLowerCase().includes(query) || 
+                                      item.desc.toLowerCase().includes(query) || 
+                                      item.citizen.toLowerCase().includes(query);
+                
+                const matchesStatus = (currentStatusFilter === 'all') || (item.status === currentStatusFilter);
+                const matchesCategory = (category === 'all') || (item.category === category);
+                const matchesSector = (sector === 'all') || (item.sector === sector);
+                const matchesPriority = (priority === 'all') || (item.priority === priority);
+
+                return matchesSearch && matchesStatus && matchesCategory && matchesSector && matchesPriority;
+            });
+
+            renderTableRows(filtered);
+        }
+
+        function setStatusFilter(status, btnElement) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.status-pill').forEach(btn => {
+                btn.className = "status-pill px-3 py-1 rounded-xl text-xs font-semibold bg-darkbg border border-darkborder text-slate-300 hover:border-brand-500/40 transition-all";
+            });
+            btnElement.className = "status-pill px-3 py-1 rounded-xl text-xs font-bold bg-brand-500 text-slate-950 border border-brand-400 shadow-md transition-all";
+            handleTableFilter();
+        }
+
+        function setPriorityFilterToggle(prio, btnElement) {
+            const prioSelect = document.getElementById('filterPriority');
+            if (prioSelect.value === prio) {
+                prioSelect.value = 'all';
+                btnElement.classList.replace('bg-rose-500', 'bg-darkbg');
+            } else {
+                prioSelect.value = prio;
+            }
+            handleTableFilter();
+        }
+
+        function toggleAdvancedFilters() {
+            const panel = document.getElementById('advancedFiltersPanel');
+            const chevron = document.getElementById('advancedFilterChevron');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                panel.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        // Batch Selection Logic
+        function toggleSelectAllRows(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('#complaintsTableBody input[type="checkbox"]');
+            selectedRowIds.clear();
+            
+            checkboxes.forEach((cb, index) => {
+                cb.checked = masterCheckbox.checked;
+                if (masterCheckbox.checked) {
+                    selectedRowIds.add(complaintsData[index].id);
+                }
+            });
+
+            updateBatchUI();
+        }
+
+        function toggleRowSelection(id, checkbox) {
+            if (checkbox.checked) {
+                selectedRowIds.add(id);
+            } else {
+                selectedRowIds.delete(id);
+            }
+            updateBatchUI();
+        }
+
+        function updateBatchUI() {
+            const batchGroup = document.getElementById('batchActionGroup');
+            const countText = document.getElementById('selectedCountText');
+
+            if (selectedRowIds.size > 0) {
+                batchGroup.classList.remove('hidden');
+                batchGroup.classList.add('flex');
+                countText.innerText = `${selectedRowIds.size} Selected`;
+            } else {
+                batchGroup.classList.add('hidden');
+                batchGroup.classList.remove('flex');
+            }
+        }
+
+        function triggerBatchAssign() {
+            showToast(`Batch assigning ${selectedRowIds.size} complaints to Water Crew`, 'success');
+        }
+
+        function triggerBatchStatus() {
+            showToast(`Status updated for ${selectedRowIds.size} complaints`, 'info');
+        }
+
+        // Detail Drawer Side Inspector
+        function openDetailDrawer(id) {
+            const item = complaintsData.find(i => i.id === id);
+            if (!item) return;
+
+            currentActiveItem = item;
+            document.getElementById('drawerRefId').innerText = item.id;
+            document.getElementById('drawerTitle').innerText = item.desc;
+            document.getElementById('drawerCategory').innerText = item.category;
+            document.getElementById('drawerSector').innerText = item.sector;
+            document.getElementById('drawerDate').innerText = item.created;
+            document.getElementById('drawerCitizenName').innerText = item.citizen;
+            document.getElementById('drawerPhoto').src = item.photo;
+
+            // Status Badge
+            const statusBadge = document.getElementById('drawerStatusBadge');
+            statusBadge.innerText = item.status;
+
+            // Drawer Visibility
+            document.getElementById('detailDrawerOverlay').classList.remove('pointer-events-none', 'opacity-0');
+            document.getElementById('detailDrawer').classList.remove('translate-x-full');
+        }
+
+        function closeDetailDrawer() {
+            document.getElementById('detailDrawerOverlay').classList.add('pointer-events-none', 'opacity-0');
+            document.getElementById('detailDrawer').classList.add('translate-x-full');
+        }
+
+        function triggerAssignModalFromDrawer() {
+            if (currentActiveItem) {
+                showToast(`Reassigned ${currentActiveItem.id} to Field Crew`, 'success');
+                closeDetailDrawer();
+            }
+        }
+
+        function toggleComplaintStatusDrawer() {
+            if (currentActiveItem) {
+                currentActiveItem.status = currentActiveItem.status === 'Closed' ? 'New' : 'Closed';
+                renderTableRows(complaintsData);
+                openDetailDrawer(currentActiveItem.id);
+                showToast(`Status updated for ${currentActiveItem.id}`, 'info');
+            }
+        }
+
+        // Modals & New Complaint Form
+        function triggerNewComplaintModal() {
+            const modal = document.getElementById('newComplaintModal');
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.querySelector('div').classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('pointer-events-none', 'opacity-0');
+            modal.querySelector('div').classList.replace('scale-100', 'scale-95');
+        }
+
+        function submitNewComplaintForm(e) {
+            e.preventDefault();
+            const desc = document.getElementById('inputDesc').value;
+            const category = document.getElementById('inputCat').value;
+            const sector = document.getElementById('inputSector').value;
+            const priority = document.querySelector('input[name="inputPrio"]:checked').value;
+
+            const newId = `UF-2026-0000${complaintsData.length + 1}`;
+            
+            complaintsData.unshift({
+                id: newId,
+                desc: desc,
+                sector: sector,
+                category: category,
+                status: "New",
+                priority: priority,
+                created: "27 Oct 2026",
+                citizen: "Mariam Manager",
+                photo: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=600&q=80"
+            });
+
+            closeModal('newComplaintModal');
+            renderTableRows(complaintsData);
+            showToast(`Complaint ${newId} registered successfully!`, 'success');
+        }
+
+        function quickAssign(id) {
+            showToast(`Assigned ${id} to Maintenance Unit`, 'info');
+        }
+
+        // Exports Simulation
+        function exportCSV() {
+            showToast('Exporting Complaints dataset as CSV...', 'success');
+        }
+
+        function exportPDF() {
+            showToast('Generating PDF summary report...', 'info');
+        }
+
+        // Sidebar Nav Switcher
+        function switchNav(element, navName) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.className = "nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all";
+            });
+            element.className = "nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30 transition-all";
+            showToast(`Switched view to ${navName}`, 'info');
+        }
+
+        // Bilingual Toggle Simulation
+        function toggleLanguage() {
+            const btnText = document.getElementById('langBtnText');
+            if (btnText.innerText === 'اردو') {
+                btnText.innerText = 'English';
+                showToast('زبان تبدیل کی گئی (اردو)', 'info');
+            } else {
+                btnText.innerText = 'اردو';
+                showToast('Switched language to English', 'info');
+            }
+        }
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgStyle = 'bg-slate-900 border-brand-500/40 text-slate-100';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bgStyle = 'bg-emerald-950/90 border-emerald-500 text-emerald-100';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgStyle = 'bg-amber-950/90 border-amber-500 text-amber-100';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border backdrop-blur-md shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-x-8 opacity-0 ${bgStyle}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-x-8', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

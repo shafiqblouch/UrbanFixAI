@@ -7681,6 +7681,10 @@
             "type": "string",
             "default": null,
             "nullable": true
+          },
+          "mediaOnly": {
+            "type": "boolean",
+            "default": false
           }
         }
       },

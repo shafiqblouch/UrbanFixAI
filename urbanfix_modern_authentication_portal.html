@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFix - Sign In / Register</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        urdu: ['"Noto Nastaliq Urdu"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        darkbg: '#0a0f0d',
+                        darkcard: '#121a16',
+                        darkborder: '#1e2d26'
+                    },
+                    animation: {
+                        'float-slow': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.4 },
+                            '50%': { opacity: 0.8 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Customizations & Glassmorphism */
+        .glass-panel {
+            background: rgba(6, 78, 59, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .glass-card {
+            background: rgba(18, 26, 22, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        .bg-mesh {
+            background-color: #042f24;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.35) 0px, transparent 50%),
+                radial-gradient(at 90% 20%, rgba(5, 150, 105, 0.25) 0px, transparent 50%),
+                radial-gradient(at 50% 80%, rgba(2, 44, 34, 0.9) 0px, transparent 50%),
+                radial-gradient(at 80% 90%, rgba(16, 185, 129, 0.2) 0px, transparent 50%);
+        }
+        /* Hide scrollbars for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .ur-text {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            line-height: 2;
+        }
+    </style>
+</head>
+<body class="h-full bg-darkbg text-slate-100 font-sans antialiased overflow-x-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <div class="min-h-screen w-full flex flex-col lg:flex-row">
+        
+        <!-- LEFT PANEL: Brand & Experience Showcase -->
+        <div class="relative lg:w-7/12 bg-mesh p-8 lg:p-16 flex flex-col justify-between overflow-hidden min-h-[480px] lg:min-h-screen">
+            
+            <!-- Ambient Lighting Effects -->
+            <div class="absolute -top-32 -left-32 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+            <div class="absolute bottom-10 left-1/3 w-80 h-80 bg-brand-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Top Header & Brand Logo -->
+            <div class="relative z-10 flex items-center justify-between">
+                <div class="flex items-center gap-3 group cursor-pointer">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform duration-300">
+                        <span class="text-slate-950 font-extrabold text-xl tracking-wider">UF</span>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold tracking-tight text-white block">UrbanFix</span>
+                        <span class="text-xs text-brand-300 font-medium tracking-wide uppercase">Civic Action Portal</span>
+                    </div>
+                </div>
+
+                <!-- Live Citizen Counter Pill -->
+                <div class="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full glass-panel text-xs font-medium text-emerald-200 border border-brand-500/30 shadow-inner">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-400"></span>
+                    </span>
+                    <span id="activeIssuesCount" class="font-bold text-white">14,280+</span> Issues Resolved
+                </div>
+            </div>
+
+            <!-- Middle Content / Main Hero Statement -->
+            <div class="relative z-10 my-12 lg:my-0 max-w-2xl">
+                <!-- Glowing Sub-Badge -->
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-semibold mb-6 uppercase tracking-wider">
+                    <i class="fa-solid fa-shield-halved text-brand-400"></i> Empowering Communities
+                </div>
+
+                <h1 id="heroHeading" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-6">
+                    Report it. Track it.<br>
+                    <span class="bg-gradient-to-r from-brand-300 via-brand-400 to-emerald-200 bg-clip-text text-transparent">
+                        See it fixed.
+                    </span>
+                </h1>
+
+                <!-- Dynamic Bullet Points -->
+                <ul class="space-y-4 mb-10 text-slate-200 text-base sm:text-lg font-normal">
+                    <li class="flex items-start gap-3.5 group">
+                        <div class="mt-1 w-6 h-6 rounded-full bg-brand-500/20 border border-brand-400/40 flex items-center justify-center shrink-0 group-hover:bg-brand-500 group-hover:text-slate-950 transition-all duration-300">
+                            <i class="fa-solid fa-check text-xs text-brand-300 group-hover:text-slate-950"></i>
+                        </div>
+                        <span id="bullet1">Every complaint gets a unique tracking ID and real-time status updates.</span>
+                    </li>
+                    <li class="flex items-start gap-3.5 group">
+                        <div class="mt-1 w-6 h-6 rounded-full bg-brand-500/20 border border-brand-400/40 flex items-center justify-center shrink-0 group-hover:bg-brand-500 group-hover:text-slate-950 transition-all duration-300">
+                            <i class="fa-solid fa-check text-xs text-brand-300 group-hover:text-slate-950"></i>
+                        </div>
+                        <span id="bullet2">Assigned, cost-estimated, and verified with photographic proof.</span>
+                    </li>
+                    <li class="flex items-start gap-3.5 group">
+                        <div class="mt-1 w-6 h-6 rounded-full bg-brand-500/20 border border-brand-400/40 flex items-center justify-center shrink-0 group-hover:bg-brand-500 group-hover:text-slate-950 transition-all duration-300">
+                            <i class="fa-solid fa-check text-xs text-brand-300 group-hover:text-slate-950"></i>
+                        </div>
+                        <span id="bullet3">Seamless bilingual support (English & Urdu) on phone or computer.</span>
+                    </li>
+                </ul>
+
+                <!-- Floating Interactive Live Status Widget -->
+                <div class="glass-panel p-5 rounded-2xl shadow-2xl border border-brand-500/30 max-w-md animate-float-slow hover:border-brand-400/60 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-brand-300">
+                                <i class="fa-solid fa-road"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Main Blvd Pothole Repair</h4>
+                                <p class="text-xs text-slate-400">ID: #UF-8921 • Sector G-9</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+                            In Progress
+                        </span>
+                    </div>
+                    <!-- Mini Progress Indicator -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs text-slate-300 font-medium">
+                            <span>Verification & Costing</span>
+                            <span class="text-brand-300 font-semibold">75%</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-brand-500/20">
+                            <div class="h-full bg-gradient-to-r from-brand-500 to-brand-300 rounded-full w-[75%] transition-all duration-1000 shadow-sm"></div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-brand-500/10 flex items-center justify-between text-[11px] text-slate-400">
+                        <span><i class="fa-regular fa-clock me-1 text-brand-400"></i> Assigned to Public Works</span>
+                        <span class="text-emerald-400 font-medium"><i class="fa-solid fa-camera me-1"></i> Photo Verified</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Quote / Disclaimer -->
+            <div class="relative z-10 pt-6 border-t border-brand-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-emerald-200/70">
+                <p>© 2026 UrbanFix Municipal Portal. Official Citizen Reporting Tool.</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-brand-300 transition-colors">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#" class="hover:text-brand-300 transition-colors">Helpline 1122</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT PANEL: Authentication Form -->
+        <div class="lg:w-5/12 bg-darkbg p-6 sm:p-12 lg:p-16 flex flex-col justify-center relative shadow-2xl">
+            
+            <!-- Language Switcher & Quick Role Selector Header Bar -->
+            <div class="absolute top-6 right-6 sm:top-10 sm:right-10 flex items-center gap-3">
+                <!-- Language Toggle Button -->
+                <button id="langToggleBtn" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-xl glass-card text-xs font-semibold text-slate-300 hover:text-white hover:border-brand-500/50 transition-all flex items-center gap-2 group">
+                    <i class="fa-solid fa-globe text-brand-400 group-hover:rotate-180 transition-transform duration-500"></i>
+                    <span id="langLabel">اردو (Urdu)</span>
+                </button>
+            </div>
+
+            <div class="max-w-md w-full mx-auto">
+                
+                <!-- Tab Switching Bar (Sign In / Register) -->
+                <div class="mb-8">
+                    <div class="flex bg-darkcard p-1.5 rounded-2xl border border-darkborder">
+                        <button id="tabSignin" onclick="switchTab('signin')" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white bg-brand-600 shadow-lg shadow-brand-600/30 transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                            <span id="txtTabSignin">Sign In</span>
+                        </button>
+                        <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-user-plus text-xs"></i>
+                            <span id="txtTabRegister">Register</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Header -->
+                <div class="mb-8">
+                    <h2 id="formTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        Sign in to UrbanFix
+                    </h2>
+                    <p id="formSubtitle" class="text-sm text-slate-400 mt-2">
+                        Enter your credentials to manage reports and track city fixes.
+                    </p>
+                </div>
+
+                <!-- SIGN IN FORM -->
+                <form id="authForm" onsubmit="handleFormSubmit(event)" class="space-y-5" novalidate>
+                    
+                    <!-- Dynamic Field: Full Name (Visible only on Register) -->
+                    <div id="fullNameGroup" class="hidden space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider" for="fullNameInput">
+                            Full Name <span class="text-emerald-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                            <input type="text" id="fullNameInput" placeholder="e.g. Ahmed Khan" 
+                                class="w-full pl-10 pr-4 py-3.5 bg-darkcard border border-darkborder rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                        </div>
+                        <p id="nameError" class="text-xs text-rose-400 hidden mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>Please enter your full name.</p>
+                    </div>
+
+                    <!-- Email / CNIC / Phone Field -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider" for="identifierInput" id="labelIdentifier">
+                                Email or CNIC Number <span class="text-emerald-400">*</span>
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500" id="identifierIcon">
+                                <i class="fa-regular fa-envelope"></i>
+                            </div>
+                            <input type="text" ididentifierInput" id="identifierInput" required placeholder="name@domain.com or 35201-XXXXXXX-X"
+                                oninput="validateIdentifier()"
+                                class="w-full pl-10 pr-10 py-3.5 bg-darkcard border border-darkborder rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                            <div id="validIdentifierIcon" class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-brand-400 opacity-0 transition-opacity">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                        <p id="identifierError" class="text-xs text-rose-400 hidden mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>Please enter a valid email address or CNIC format.</p>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider" for="passwordInput" id="labelPassword">
+                                Password <span class="text-emerald-400">*</span>
+                            </label>
+                            <a href="#" id="forgotPasswordLink" onclick="triggerForgotPassword(event)" class="text-xs font-semibold text-brand-400 hover:text-brand-300 transition-colors">
+                                Forgot Password?
+                            </a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <input type="password" id="passwordInput" required placeholder="••••••••••••"
+                                oninput="validatePassword()"
+                                class="w-full pl-10 pr-12 py-3.5 bg-darkcard border border-darkborder rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                            
+                            <!-- Toggle Password Visibility -->
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors">
+                                <i id="passwordToggleIcon" class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <p id="passwordError" class="text-xs text-rose-400 hidden mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>Password must be at least 6 characters long.</p>
+                    </div>
+
+                    <!-- Checkbox Options -->
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded bg-darkcard border-darkborder text-brand-500 focus:ring-brand-500 focus:ring-offset-0 cursor-pointer accent-brand-500">
+                            <span class="text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-colors" id="txtRememberMe">Remember this browser</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit CTA Button -->
+                    <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 text-slate-950 font-extrabold text-sm tracking-wide shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2">
+                        <span id="btnText">Sign In to Dashboard</span>
+                        <i id="btnIcon" class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+
+                </form>
+
+                <!-- Divider -->
+                <div class="relative my-7 flex items-center justify-center">
+                    <div class="border-t border-darkborder w-full"></div>
+                    <span class="bg-darkbg px-4 text-xs font-semibold text-slate-500 uppercase tracking-widest absolute">Or continue with</span>
+                </div>
+
+                <!-- Alternate / Quick Social Logins -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="simulateSocialAuth('Govt Citizen Portal')" class="py-3 px-4 rounded-xl bg-darkcard border border-darkborder hover:border-brand-500/40 text-xs font-bold text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2.5 group">
+                        <i class="fa-solid fa-landmark text-brand-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Pak Identity</span>
+                    </button>
+                    <button onclick="simulateSocialAuth('Google')" class="py-3 px-4 rounded-xl bg-darkcard border border-darkborder hover:border-brand-500/40 text-xs font-bold text-slate-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2.5 group">
+                        <i class="fa-brands fa-google text-rose-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Google Account</span>
+                    </button>
+                </div>
+
+                <!-- Guest Report Quick Action -->
+                <div class="mt-8 text-center pt-6 border-t border-darkborder/60">
+                    <p class="text-xs text-slate-400">
+                        Want to submit an urgent report anonymously?
+                    </p>
+                    <button onclick="showGuestReportModal()" class="mt-2 text-xs font-bold text-brand-400 hover:text-brand-300 hover:underline inline-flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> Quick Guest Filing (No Login)
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Interactive Guest Filing Modal Simulation -->
+    <div id="guestModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-darkcard border border-brand-500/30 rounded-2xl max-w-md w-full p-6 shadow-2xl transform scale-95 transition-transform duration-300" id="guestModalCard">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-darkborder">
+                <div class="flex items-center gap-2 text-brand-400 font-bold text-lg">
+                    <i class="fa-solid fa-bolt"></i> Guest Complaint Filing
+                </div>
+                <button onclick="closeGuestReportModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-300 mb-4">You can lodge emergency civic complaints directly. Note that registered users receive SMS tracking notifications.</p>
+            <div class="space-y-3">
+                <input type="text" placeholder="Location / Landmark (e.g. Blue Area, St 4)" class="w-full p-3 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                <textarea placeholder="Brief description of the issue..." rows="3" class="w-full p-3 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"></textarea>
+                <button onclick="submitGuestReport()" class="w-full py-3 bg-brand-500 text-slate-950 font-bold rounded-xl text-xs hover:bg-brand-400 transition-colors">
+                    Submit Emergency Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Interactions Logic -->
+    <script>
+        let currentMode = 'signin'; // 'signin' or 'register'
+        let currentLang = 'en'; // 'en' or 'ur'
+
+        // Language Dictionary
+        const translations = {
+            en: {
+                heroHeading: 'Report it. Track it.<br><span class="bg-gradient-to-r from-brand-300 via-brand-400 to-emerald-200 bg-clip-text text-transparent">See it fixed.</span>',
+                bullet1: 'Every complaint gets a unique tracking ID and real-time status updates.',
+                bullet2: 'Assigned, cost-estimated, and verified with photographic proof.',
+                bullet3: 'Seamless bilingual support (English & Urdu) on phone or computer.',
+                signinTab: 'Sign In',
+                registerTab: 'Register',
+                signinTitle: 'Sign in to UrbanFix',
+                registerTitle: 'Create your Citizen Account',
+                signinSubtitle: 'Enter your credentials to manage reports and track city fixes.',
+                registerSubtitle: 'Join thousands of active citizens improving municipal infrastructure.',
+                identifierLabel: 'Email or CNIC Number',
+                passwordLabel: 'Password',
+                btnSignin: 'Sign In to Dashboard',
+                btnRegister: 'Create Free Account',
+                rememberMe: 'Remember this browser',
+                langBtnText: 'اردو (Urdu)'
+            },
+            ur: {
+                heroHeading: 'شکایت کریں۔ باخبر رہیں۔<br><span class="bg-gradient-to-r from-brand-300 via-brand-400 to-emerald-200 bg-clip-text text-transparent">حل ہوتے دیکھیں۔</span>',
+                bullet1: 'ہر شکایت کو ایک منفرد آئی ڈی اور برائے راست معلومات فراہم کی جاتی ہے۔',
+                bullet2: 'کام کی تفویض، تخمینہ لاگت اور تصاویری ثبوت کے ساتھ تصدیق۔',
+                bullet3: 'موبائل اور کمپیوٹر پر اردو اور انگریزی میں مکمل سہولت۔',
+                signinTab: 'سائن ان',
+                registerTab: 'رجسٹر کریں',
+                signinTitle: 'اربن فکس میں سائن ان کریں',
+                registerTitle: 'نیا شہری اکاؤنٹ بنائیں',
+                signinSubtitle: 'اپنی شکایت درج کرنے اور جائزہ لینے کے لیے لاگ ان کریں۔',
+                registerSubtitle: 'شہر کی بہتری کے لیے فعال شہریوں کا حصہ بنیں۔',
+                identifierLabel: 'ای میل یا قومی شناختی کارڈ نمبر',
+                passwordLabel: 'پاس ورڈ',
+                btnSignin: 'ڈیش بورڈ میں سائن ان کریں',
+                btnRegister: 'نیا اکاؤنٹ بنائیں',
+                rememberMe: 'براؤزر یاد رکھیں',
+                langBtnText: 'English'
+            }
+        };
+
+        // Switch between Sign In and Register Tabs
+        function switchTab(mode) {
+            currentMode = mode;
+            const tabSignin = document.getElementById('tabSignin');
+            const tabRegister = document.getElementById('tabRegister');
+            const fullNameGroup = document.getElementById('fullNameGroup');
+            const formTitle = document.getElementById('formTitle');
+            const formSubtitle = document.getElementById('formSubtitle');
+            const btnText = document.getElementById('btnText');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+            if (mode === 'signin') {
+                tabSignin.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white bg-brand-600 shadow-lg shadow-brand-600/30 transition-all duration-300 flex items-center justify-center gap-2";
+                tabRegister.className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300 flex items-center justify-center gap-2";
+                fullNameGroup.classList.add('hidden');
+                forgotPasswordLink.classList.remove('hidden');
+                
+                formTitle.innerHTML = translations[currentLang].signinTitle;
+                formSubtitle.innerHTML = translations[currentLang].signinSubtitle;
+                btnText.innerText = translations[currentLang].btnSignin;
+            } else {
+                tabRegister.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold text-white bg-brand-600 shadow-lg shadow-brand-600/30 transition-all duration-300 flex items-center justify-center gap-2";
+                tabSignin.className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300 flex items-center justify-center gap-2";
+                fullNameGroup.classList.remove('hidden');
+                forgotPasswordLink.classList.add('hidden');
+
+                formTitle.innerHTML = translations[currentLang].registerTitle;
+                formSubtitle.innerHTML = translations[currentLang].registerSubtitle;
+                btnText.innerText = translations[currentLang].btnRegister;
+            }
+
+            // Reset field validations
+            resetErrors();
+        }
+
+        // Toggle Language between English and Urdu
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ur' : 'en';
+            const langLabel = document.getElementById('langLabel');
+            const heroHeading = document.getElementById('heroHeading');
+            const bullet1 = document.getElementById('bullet1');
+            const bullet2 = document.getElementById('bullet2');
+            const bullet3 = document.getElementById('bullet3');
+            const txtTabSignin = document.getElementById('txtTabSignin');
+            const txtTabRegister = document.getElementById('txtTabRegister');
+            const labelIdentifier = document.getElementById('labelIdentifier');
+            const labelPassword = document.getElementById('labelPassword');
+            const txtRememberMe = document.getElementById('txtRememberMe');
+
+            langLabel.innerText = translations[currentLang].langBtnText;
+            heroHeading.innerHTML = translations[currentLang].heroHeading;
+            bullet1.innerText = translations[currentLang].bullet1;
+            bullet2.innerText = translations[currentLang].bullet2;
+            bullet3.innerText = translations[currentLang].bullet3;
+            txtTabSignin.innerText = translations[currentLang].signinTab;
+            txtTabRegister.innerText = translations[currentLang].registerTab;
+            labelIdentifier.innerHTML = `${translations[currentLang].identifierLabel} <span class="text-emerald-400">*</span>`;
+            labelPassword.innerHTML = `${translations[currentLang].passwordLabel} <span class="text-emerald-400">*</span>`;
+            txtRememberMe.innerText = translations[currentLang].rememberMe;
+
+            // Apply font family styling based on language
+            if (currentLang === 'ur') {
+                heroHeading.classList.add('ur-text');
+            } else {
+                heroHeading.classList.remove('ur-text');
+            }
+
+            // Refresh current mode title
+            switchTab(currentMode);
+            showToast(currentLang === 'ur' ? 'زبان تبدیل کر دی گئی ہے' : 'Language set to English', 'info');
+        }
+
+        // Show / Hide Password Toggle
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('passwordToggleIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fa-regular fa-eye-slash text-brand-400';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fa-regular fa-eye text-slate-400';
+            }
+        }
+
+        // Live Validation: Identifier (Email or CNIC)
+        function validateIdentifier() {
+            const input = document.getElementById('identifierInput');
+            const error = document.getElementById('identifierError');
+            const checkIcon = document.getElementById('validIdentifierIcon');
+            const val = input.value.trim();
+
+            // Simple Email Regex or CNIC (13 digits / dash pattern)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const cnicRegex = /^[0-9]{5}-?[0-9]{7}-?[0-9]{1}$/;
+
+            if (emailRegex.test(val) || cnicRegex.test(val)) {
+                error.classList.add('hidden');
+                input.classList.remove('border-rose-500');
+                input.classList.add('border-brand-500');
+                checkIcon.classList.remove('opacity-0');
+                return true;
+            } else {
+                checkIcon.classList.add('opacity-0');
+                return false;
+            }
+        }
+
+        // Live Validation: Password length
+        function validatePassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            if (input.value.length >= 6) {
+                error.classList.add('hidden');
+                input.classList.remove('border-rose-500');
+                return true;
+            }
+            return false;
+        }
+
+        // Clear Errors
+        function resetErrors() {
+            document.getElementById('identifierError').classList.add('hidden');
+            document.getElementById('passwordError').classList.add('hidden');
+            document.getElementById('nameError').classList.add('hidden');
+            document.getElementById('identifierInput').classList.remove('border-rose-500');
+            document.getElementById('passwordInput').classList.remove('border-rose-500');
+            document.getElementById('fullNameInput').classList.remove('border-rose-500');
+        }
+
+        // Handle Form Submission with simulated loading and validation
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            resetErrors();
+
+            const identifierInput = document.getElementById('identifierInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const fullNameInput = document.getElementById('fullNameInput');
+
+            let isValid = true;
+
+            if (currentMode === 'register' && !fullNameInput.value.trim()) {
+                document.getElementById('nameError').classList.remove('hidden');
+                fullNameInput.classList.add('border-rose-500');
+                isValid = false;
+            }
+
+            if (!validateIdentifier()) {
+                document.getElementById('identifierError').classList.remove('hidden');
+                identifierInput.classList.add('border-rose-500');
+                isValid = false;
+            }
+
+            if (!validatePassword()) {
+                document.getElementById('passwordError').classList.remove('hidden');
+                passwordInput.classList.add('border-rose-500');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Trigger Loading State on Button
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+
+            submitBtn.disabled = true;
+            btnText.innerText = currentMode === 'signin' ? 'Authenticating...' : 'Creating Account...';
+            btnIcon.className = 'fa-solid fa-circle-notch fa-spin text-xs';
+
+            // Simulate Network Request Delay
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                btnIcon.className = 'fa-solid fa-arrow-right text-xs';
+
+                if (currentMode === 'signin') {
+                    btnText.innerText = translations[currentLang].btnSignin;
+                    showToast('Welcome back! Successfully authenticated.', 'success');
+                } else {
+                    btnText.innerText = translations[currentLang].btnRegister;
+                    showToast('Account successfully created! Verification SMS sent.', 'success');
+                    switchTab('signin');
+                }
+            }, 1600);
+        }
+
+        // Trigger Forgot Password simulation
+        function triggerForgotPassword(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('identifierInput').value.trim();
+            if (!identifier) {
+                showToast('Please enter your Email or CNIC above first.', 'warning');
+            } else {
+                showToast(`Password reset link sent to ${identifier}`, 'info');
+            }
+        }
+
+        // Social Authentication Simulation
+        function simulateSocialAuth(provider) {
+            showToast(`Connecting to ${provider}... Please wait.`, 'info');
+            setTimeout(() => {
+                showToast(`Successfully authenticated via ${provider}`, 'success');
+            }, 1200);
+        }
+
+        // Guest Modal Controls
+        function showGuestReportModal() {
+            const modal = document.getElementById('guestModal');
+            const card = document.getElementById('guestModalCard');
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+        }
+
+        function closeGuestReportModal() {
+            const modal = document.getElementById('guestModal');
+            const card = document.getElementById('guestModalCard');
+            modal.classList.add('pointer-events-none', 'opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+        }
+
+        function submitGuestReport() {
+            closeGuestReportModal();
+            showToast('Emergency complaint filed! Unique Tracking ID: #UF-' + Math.floor(1000 + Math.random() * 9000), 'success');
+        }
+
+        // Custom Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgStyle = 'bg-slate-900 border-brand-500/40 text-slate-100';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bgStyle = 'bg-emerald-950/90 border-emerald-500 text-emerald-100';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgStyle = 'bg-amber-950/90 border-amber-500 text-amber-100';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border backdrop-blur-md shadow-2xl text-xs font-semibold flex items-center gap-3 transition-all duration-300 transform translate-x-8 opacity-0 ${bgStyle}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-x-8', 'opacity-0');
+            }, 10);
+
+            // Dismiss automatically
+            setTimeout(() => {
+                toast.classList.add('translate-x-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 import { Button, EmptyState, Sheet, Sidebar, useLocale, type NavItem } from "@urbanfix/ui";
 import { Icon, initials } from "./icons";
-import { useEffect, useState, type FormEvent } from "react";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Link, Navigate, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { api, ok } from "./api";
 import { useT, saveLocale, useFormat, type Key } from "./i18n";
 import { useLive } from "./live";
@@ -14,7 +14,7 @@ const THEME_KEY = "uf.theme";
 
 function useTheme(): [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>(() => {
-    try { return (localStorage.getItem(THEME_KEY) as Theme | null) ?? "system"; } catch { return "system"; }
+    try { return (localStorage.getItem(THEME_KEY) as Theme | null) ?? "dark"; } catch { return "dark"; }
   });
   useEffect(() => {
     const root = document.documentElement;
@@ -32,7 +32,10 @@ const paths: Record<MenuId, string> = {
   dashboard: "/dashboard", complaints: "/complaints", review: "/review", new: "/new", jobs: "/jobs", stock: "/stock", approvals: "/approvals", notices: "/notices", config: "/config", audit: "/audit",
 };
 
-/** Header, role-based sidebar with count badges, and the signed-in guard (WP-01). */
+/** Screens that sit under the "System" heading; "New complaint" is the button above the menu instead of a menu entry. */
+const SYSTEM: MenuId[] = ["approvals", "notices", "config", "audit"];
+
+/** Brand, role-based sidebar with count badges, top bar, and the signed-in guard (WP-01). */
 export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
   const t = useT();
   const { me, role, loading, signOut, leaveSupport } = useSession();
@@ -42,23 +45,54 @@ export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
   const location = useLocation();
   const [theme, cycleTheme] = useTheme();
   const [search, setSearch] = useState("");
+  const [urlParams, setUrlParams] = useSearchParams();
   const [bell, setBell] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const searchBox = useRef<HTMLInputElement>(null);
   const f = useFormat();
+
+  // "/" or Ctrl/Cmd+K jumps to the search box, as the hint in it says.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const typing = /^(input|textarea|select)$/i.test((e.target as HTMLElement)?.tagName ?? "");
+      if ((e.key === "k" && (e.ctrlKey || e.metaKey)) || (e.key === "/" && !typing)) { e.preventDefault(); searchBox.current?.focus(); }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   if (loading) return <p className="muted center" role="status">{t("loading")}</p>;
   if (!me?.organizationId) return <Navigate to="/login" replace />;
 
   const menus = menusFor(role);
-  const current = menus.find((m) => location.pathname.startsWith(paths[m])) ?? menus[0] ?? "";
+  const navMenus = menus.filter((m) => m !== "new");
+  const current = navMenus.find((m) => location.pathname.startsWith(paths[m])) ?? "";
   const countFor = (m: MenuId): number | undefined =>
-    m === "review" ? counts.review : m === "jobs" ? (role === "Technician" ? counts.jobs : counts.signoff) : undefined;
-  const items: NavItem[] = menus.map((m) => ({ id: m, label: m === "jobs" && role === "Technician" ? t("menu.myJobs") : t(`menu.${m}` as Key), href: paths[m], count: countFor(m), icon: <Icon name={m} /> }));
+    m === "review" ? counts.review : m === "complaints" ? counts.complaints : m === "jobs" ? (role === "Technician" ? counts.jobs : counts.overdue > 0 ? counts.overdue : counts.signoff) : undefined;
+  const items: NavItem[] = navMenus.map((m) => ({
+    id: m, label: m === "jobs" && role === "Technician" ? t("menu.myJobs") : t(`menu.${m}` as Key), href: paths[m], count: countFor(m), icon: <Icon name={m} />,
+    section: SYSTEM.includes(m) ? t("shell.system") : undefined,
+    // Complaints: a quiet chip; Review: the accent; Jobs: a warning when something is overdue.
+    tone: m === "complaints" ? "quiet" : m === "jobs" && role !== "Technician" && counts.overdue > 0 ? "alert" : "accent",
+    countText: m === "jobs" && role !== "Technician" && counts.overdue > 0 ? `${f.number(counts.overdue)} ${t("nav.alert")}` : undefined,
+  }));
   const organization = me.memberships.find((m) => m.organizationId === me.organizationId)?.organizationName;
+  const today = new Intl.DateTimeFormat(f.locale === "ur" ? "ur-PK-u-nu-latn" : "en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(new Date());
+
+  // On the complaints list the box edits that list's own filter (so it filters as you type); elsewhere it jumps there on Enter.
+  const onList = location.pathname === "/complaints";
+  const searchValue = onList ? urlParams.get("q") ?? "" : search;
+  function changeSearch(value: string) {
+    if (!onList) { setSearch(value); return; }
+    const next = new URLSearchParams(urlParams);
+    if (value) next.set("q", value); else next.delete("q");
+    next.delete("page");
+    setUrlParams(next, { replace: true });
+  }
 
   function submitSearch(e: FormEvent) {
     e.preventDefault();
-    navigate(`/complaints?q=${encodeURIComponent(search.trim())}`);
+    if (!onList) navigate(`/complaints?q=${encodeURIComponent(search.trim())}`);
   }
 
   function switchLocale() {
@@ -73,50 +107,62 @@ export function Shell({ onLocale }: { onLocale: (l: "en" | "ur") => void }) {
 
   return (
     <div className="shell">
-      {me.support && (
-        <div className="support-banner" role="status">
-          <span>{t("support.banner", { name: organization ?? "", until: f.dateTime(me.support.expiresAt) })}</span>
-          <Button variant="secondary" onClick={() => void leaveSupport().then(() => navigate("/"))}>{t("support.leave")}</Button>
+      {navOpen && <div className="shell__scrim" onClick={() => setNavOpen(false)} aria-hidden="true" />}
+      <aside className="shell__nav" data-open={navOpen}>
+        <div className="shell__brandrow">
+          <strong className="shell__brand">
+            <span className="logo-mark" aria-hidden="true">UF</span>
+            <span className="shell__brand-text"><span>{t("app.name")}</span><small>{t("shell.tagline")}</small></span>
+          </strong>
+          {organization && <span className="shell__org" title={organization}><span className="shell__org-dot" aria-hidden="true" /><span className="shell__org-name">{organization}</span><Icon name="chevron" size={11} /></span>}
         </div>
-      )}
-      <header className="shell__header">
-        <button type="button" className="icon-btn shell__burger" aria-label={navOpen ? t("nav.close") : t("nav.open")} aria-expanded={navOpen} onClick={() => setNavOpen((v) => !v)}>
-          <Icon name={navOpen ? "close" : "menu"} />
-        </button>
-        <strong className="shell__brand"><span className="logo-mark" aria-hidden="true">UF</span>{t("app.name")}</strong>
-        {organization && <span className="shell__org">{organization}</span>}
-        {menus.includes("complaints") && (
-          <form className="shell__search" role="search" onSubmit={submitSearch}>
-            <span className="shell__search-icon" aria-hidden="true"><Icon name="search" size={18} /></span>
-            <input type="search" className="uf-field__input" aria-label={t("search")} placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />
-          </form>
+        {menus.includes("new") && (
+          <Link to="/new" className="shell__new" onClick={() => setNavOpen(false)}><Icon name="new" size={16} />{t("menu.new")}</Link>
         )}
-        <div className="shell__tools">
-          <button type="button" className="pill-btn" onClick={switchLocale} aria-label={t("language")}>{locale === "en" ? "اردو" : "English"}</button>
-          <button type="button" className="icon-btn" onClick={cycleTheme} aria-label={t("theme")} title={t(`theme.${theme}` as Key)}>
-            <Icon name={theme === "dark" ? "moon" : theme === "light" ? "sun" : "auto"} />
-          </button>
-          <button type="button" className="icon-btn" onClick={() => setBell(true)} aria-label={t("notifications.title")} title={t("notifications.title")}>
-            <Icon name="bell" />
-            {unread > 0 && <span className="uf-badge icon-btn__badge" data-testid="unread">{unread}</span>}
-          </button>
-        </div>
-      </header>
-      <div className="shell__body">
-        {navOpen && <div className="shell__scrim" onClick={() => setNavOpen(false)} aria-hidden="true" />}
-        <div className="shell__nav" data-open={navOpen}>
+        <div className="shell__navscroll">
           <Sidebar items={items} currentId={current} onNavigate={(id) => { setNavOpen(false); navigate(paths[id as MenuId]); }} />
-          <div className="shell__user">
-            <span className="avatar" aria-hidden="true">{initials(me.displayName)}</span>
-            <span className="shell__user-text">
-              <strong>{me.displayName}</strong>
-              <small>{role ? t(`role.${role}` as Key) : ""}</small>
-            </span>
-            <button type="button" className="icon-btn icon-btn--on-dark" onClick={() => void signOut().then(() => navigate("/login"))} aria-label={t("signOut")} title={t("signOut")}>
-              <Icon name="logout" />
-            </button>
-          </div>
         </div>
+        <div className="shell__user">
+          <span className="avatar" aria-hidden="true">{initials(me.displayName)}</span>
+          <span className="shell__user-text">
+            <strong>{me.displayName}</strong>
+            <small>{role ? t(`role.${role}` as Key) : ""}</small>
+          </span>
+          <button type="button" className="icon-btn icon-btn--sm" onClick={() => void signOut().then(() => navigate("/login"))} aria-label={t("signOut")} title={t("signOut")}>
+            <Icon name="logout" size={16} />
+          </button>
+        </div>
+      </aside>
+      <div className="shell__col">
+        {me.support && (
+          <div className="support-banner" role="status">
+            <span>{t("support.banner", { name: organization ?? "", until: f.dateTime(me.support.expiresAt) })}</span>
+            <Button variant="secondary" onClick={() => void leaveSupport().then(() => navigate("/"))}>{t("support.leave")}</Button>
+          </div>
+        )}
+        <header className="shell__header">
+          <button type="button" className="icon-btn shell__burger" aria-label={navOpen ? t("nav.close") : t("nav.open")} aria-expanded={navOpen} onClick={() => setNavOpen((v) => !v)}>
+            <Icon name={navOpen ? "close" : "menu"} />
+          </button>
+          {menus.includes("complaints") && (
+            <form className="shell__search" role="search" onSubmit={submitSearch}>
+              <span className="shell__search-icon" aria-hidden="true"><Icon name="search" size={15} /></span>
+              <input ref={searchBox} type="search" className="uf-field__input" aria-label={t("search")} placeholder={t("shell.searchHint")} value={searchValue} onChange={(e) => changeSearch(e.target.value)} />
+              <kbd className="shell__kbd" aria-hidden="true">Ctrl K</kbd>
+            </form>
+          )}
+          <div className="shell__tools">
+            <button type="button" className="pill-btn" onClick={switchLocale} aria-label={t("language")}><Icon name="globe" size={14} />{locale === "en" ? "اردو" : "English"}</button>
+            <button type="button" className="icon-btn icon-btn--sm icon-btn--box" onClick={cycleTheme} aria-label={t("theme")} title={t(`theme.${theme}` as Key)}>
+              <Icon name={theme === "dark" ? "moon" : theme === "light" ? "sun" : "auto"} size={16} />
+            </button>
+            <button type="button" className="icon-btn icon-btn--sm icon-btn--box" onClick={() => setBell(true)} aria-label={t("notifications.title")} title={t("notifications.title")}>
+              <Icon name="bell" size={16} />
+              {unread > 0 && <span className="uf-badge icon-btn__badge" data-testid="unread">{unread}</span>}
+            </button>
+            <span className="shell__date">{today}</span>
+          </div>
+        </header>
         <main className="shell__main" id="main">
           <Outlet />
         </main>
@@ -151,4 +197,3 @@ function NotificationSheet({ open, onClose }: { open: boolean; onClose: () => vo
     </Sheet>
   );
 }
-

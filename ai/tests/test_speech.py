@@ -19,7 +19,7 @@ def test_transcript_comes_back_with_confidence_and_language(client, auth, fake):
     assert r.status_code == 200
     body = r.json()
     assert (body["transcript"], body["language"], body["confidence"], body["low_confidence"]) == ("پانی نہیں آ رہا", "ur", 0.82, False)
-    assert (body["model"], body["prompt_version"]) == ("fake-speech-1", "v1")
+    assert (body["model"], body["prompt_version"]) == ("fake-speech-1", "v2")
     assert fake.audio_seen == [(AUDIO, "audio/mp4")]
 
 

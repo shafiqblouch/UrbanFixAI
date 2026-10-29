@@ -7171,6 +7171,8 @@ export interface components {
             reporterPhone: string | null;
             /** @default null */
             assetRef: string | null;
+            /** @default false */
+            mediaOnly: boolean;
         };
         CreatedDto: {
             /** Format: uuid */

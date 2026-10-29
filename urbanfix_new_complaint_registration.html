@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFix - Record New Complaint</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        urdu: ['"Noto Nastaliq Urdu"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        darkbg: '#071813',
+                        darkcard: '#0f2c22',
+                        darksidebar: '#0b221a',
+                        darkborder: '#153e30',
+                        darkhover: '#14382b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(7, 24, 19, 0.5);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #153e30;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        
+        .glass-card {
+            background: rgba(15, 44, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.12);
+        }
+
+        .pulse-subtle {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.02); }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen bg-darkbg text-slate-100 font-sans antialiased overflow-hidden flex flex-col selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN INTERFACE LAYOUT (Fixed 100vh Layout) -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT SIDEBAR -->
+        <aside id="sidebar" class="w-64 bg-darksidebar border-e border-darkborder flex flex-col justify-between shrink-0 transition-all duration-300 z-30">
+            <div class="flex flex-col h-full overflow-hidden">
+                
+                <!-- Brand Header -->
+                <div class="p-4 border-b border-darkborder flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shrink-0 shadow-md shadow-brand-500/20">
+                            <span class="text-slate-950 font-black text-base tracking-wider">UF</span>
+                        </div>
+                        <div class="truncate">
+                            <h1 class="font-extrabold text-base tracking-tight text-white leading-none">UrbanFix</h1>
+                            <span class="text-[10px] text-brand-400 font-medium tracking-wide">Enterprise Ops</span>
+                        </div>
+                    </div>
+                    <!-- Society Switcher Badge -->
+                    <button onclick="showToast('Society: Demo Society', 'info')" class="text-xs px-2 py-1 rounded-lg bg-darkbg border border-darkborder text-slate-300 hover:text-white hover:border-brand-500/40 transition-all flex items-center gap-1.5 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="font-medium text-[11px]">Demo</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                </div>
+
+                <!-- Active CTA Indicator -->
+                <div class="p-3">
+                    <button class="w-full py-2.5 px-3 rounded-xl bg-brand-500/20 border border-brand-500/40 text-brand-300 font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-default">
+                        <i class="fa-solid fa-circle-dot text-xs text-brand-400 animate-pulse"></i>
+                        <span>Recording New Complaint</span>
+                    </button>
+                </div>
+
+                <!-- Navigation Items -->
+                <nav class="flex-1 px-3 space-y-1 custom-scroll overflow-y-auto">
+                    <a href="#" onclick="switchNav('Dashboard')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i>
+                            <span>Dashboard</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Complaints')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-regular fa-folder-open w-4 text-center text-sm"></i>
+                            <span>Complaints</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-brand-500/20 border border-brand-500/40 text-[10px] text-brand-300 font-bold">5</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Review Queue')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-clipboard-check w-4 text-center text-sm"></i>
+                            <span>Review Queue</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-brand-300 border border-brand-500/30 text-[10px] font-bold">3</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Directory')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-address-book w-4 text-center text-sm"></i>
+                            <span>Directory</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Jobs')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-wrench w-4 text-center text-sm"></i>
+                            <span>Jobs</span>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold">1 Alert</span>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Reports')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-line w-4 text-center text-sm"></i>
+                            <span>Reports</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Store')" class="nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-boxes-stacked w-4 text-center text-sm"></i>
+                            <span>Store / Inventory</span>
+                        </div>
+                    </a>
+
+                    <div class="pt-3 pb-1 text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3">System</div>
+
+                    <a href="#" onclick="switchNav('Approvals')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-circle-check w-4 text-center text-sm"></i>
+                            <span>Approvals</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Notices')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bullhorn w-4 text-center text-sm"></i>
+                            <span>Notices</span>
+                        </div>
+                    </a>
+
+                    <a href="#" onclick="switchNav('Configuration')" class="nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-darkhover hover:text-slate-200 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-sliders w-4 text-center text-sm"></i>
+                            <span>Configuration</span>
+                        </div>
+                    </a>
+                </nav>
+
+                <!-- Profile Footer Card -->
+                <div class="p-3 border-t border-darkborder bg-darkbg/50">
+                    <div class="p-2 rounded-xl bg-darkcard border border-darkborder flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-700 to-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center shrink-0">
+                                MM
+                            </div>
+                            <div class="truncate">
+                                <h4 class="text-xs font-bold text-white truncate">Mariam Manager</h4>
+                                <p class="text-[10px] text-slate-400 truncate">Manager • Admin</p>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Logged out session', 'warning')" class="text-slate-400 hover:text-rose-400 p-1.5 transition-colors" title="Sign Out">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT WORKSPACE -->
+        <main class="flex-1 flex flex-col min-w-0 bg-darkbg overflow-hidden relative">
+            
+            <!-- TOP APP BAR -->
+            <header class="h-14 border-b border-darkborder bg-darkcard/90 px-5 flex items-center justify-between shrink-0 z-20">
+                
+                <!-- Left: Navigation Breadcrumb & Back -->
+                <div class="flex items-center gap-3">
+                    <button onclick="window.history.back()" class="p-1.5 rounded-lg bg-darkbg border border-darkborder text-slate-400 hover:text-white hover:border-brand-500/40 transition-all" title="Back">
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                    </button>
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-400">Complaints</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="font-extrabold text-white">Record New Complaint</span>
+                    </div>
+                </div>
+
+                <!-- Center: Global Quick Search -->
+                <div class="hidden md:flex items-center gap-4 flex-1 max-w-sm mx-4">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                        <input type="text" placeholder="Search complaints, jobs or citizens (Ctrl+K)..." 
+                            class="w-full pl-9 pr-12 py-1.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-all">
+                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] bg-darkcard px-1.5 py-0.5 rounded border border-darkborder text-slate-400 font-mono">Ctrl K</span>
+                    </div>
+                </div>
+
+                <!-- Right: Lang Switch, Theme, Notifications, Date -->
+                <div class="flex items-center gap-3">
+                    <button id="langToggleBtn" onclick="toggleLanguage()" class="px-2.5 py-1 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 text-xs text-slate-300 font-medium flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-globe text-brand-400 text-xs"></i>
+                        <span id="langBtnText">اردو</span>
+                    </button>
+
+                    <div class="w-8 h-8 rounded-lg bg-darkbg border border-darkborder flex items-center justify-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-moon text-brand-300"></i>
+                    </div>
+
+                    <button onclick="showToast('5 active system alerts pending', 'info')" class="relative w-8 h-8 rounded-lg bg-darkbg border border-darkborder hover:border-brand-500/40 flex items-center justify-center text-slate-300 transition-all">
+                        <i class="fa-regular fa-bell text-xs"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-slate-950 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-darkcard">
+                            5
+                        </span>
+                    </button>
+
+                    <div class="hidden sm:flex items-center gap-2 pl-2 border-s border-darkborder text-xs text-slate-400 font-medium">
+                        <i class="fa-regular fa-calendar text-slate-500"></i>
+                        <span>Tue, 27 Oct 2026</span>
+                    </div>
+                </div>
+
+            </header>
+
+            <!-- ERGONOMIC 2-COLUMN FORM CONTENT AREA -->
+            <div class="flex-1 p-5 overflow-y-auto custom-scroll">
+                
+                <form id="recordComplaintForm" onsubmit="handleFormSubmit(event)" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 pb-8">
+                    
+                    <!-- LEFT COLUMN: FORM INPUT CARDS (7 COLS) -->
+                    <div class="lg:col-span-7 space-y-4">
+                        
+                        <!-- Header Banner Card -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder flex items-center justify-between bg-gradient-to-r from-darkcard via-darkcard to-brand-950/40">
+                            <div>
+                                <h2 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+                                    <i class="fa-solid fa-headset text-brand-400"></i>
+                                    <span>Intake & Complaint Details</span>
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-0.5">Capture incoming caller or digital complaints into the central ledger.</p>
+                            </div>
+                            <div class="hidden sm:block text-right">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase block">Ticket Identifier</span>
+                                <span class="text-xs font-mono font-extrabold text-brand-300">UF-2026-00006</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 1: Channel & Priority -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder space-y-3">
+                            <label class="block text-xs font-bold text-slate-300">
+                                Intake Channel <span class="text-rose-400">*</span>
+                            </label>
+
+                            <!-- Modern Channel Pill Selector -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button type="button" onclick="selectChannel('Phone Call', this)" class="channel-btn p-2.5 rounded-xl border border-brand-500 bg-brand-500/20 text-brand-300 font-bold text-xs flex items-center justify-center gap-2 transition-all">
+                                    <i class="fa-solid fa-phone text-xs"></i>
+                                    <span>Phone Call</span>
+                                </button>
+                                <button type="button" onclick="selectChannel('Mobile App', this)" class="channel-btn p-2.5 rounded-xl border border-darkborder bg-darkbg text-slate-400 font-semibold text-xs hover:border-brand-500/40 flex items-center justify-center gap-2 transition-all">
+                                    <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+                                    <span>Mobile App</span>
+                                </button>
+                                <button type="button" onclick="selectChannel('WhatsApp', this)" class="channel-btn p-2.5 rounded-xl border border-darkborder bg-darkbg text-slate-400 font-semibold text-xs hover:border-brand-500/40 flex items-center justify-center gap-2 transition-all">
+                                    <i class="fa-brands fa-whatsapp text-xs"></i>
+                                    <span>WhatsApp</span>
+                                </button>
+                                <button type="button" onclick="selectChannel('Walk-in', this)" class="channel-btn p-2.5 rounded-xl border border-darkborder bg-darkbg text-slate-400 font-semibold text-xs hover:border-brand-500/40 flex items-center justify-center gap-2 transition-all">
+                                    <i class="fa-solid fa-person-walking text-xs"></i>
+                                    <span>Walk-in</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="selectedChannel" value="Phone Call">
+                        </div>
+
+                        <!-- Card 2: Description & Auto-Category -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder space-y-3">
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-xs font-bold text-slate-300">
+                                        Complaint Description <span class="text-rose-400">*</span>
+                                    </label>
+                                    <span id="charCounter" class="text-[10px] text-slate-500">0 / 500 chars</span>
+                                </div>
+                                <textarea id="complaintDesc" rows="3" oninput="analyzeDescription(this.value)" placeholder="e.g. Water pipe leaking near House 12, Block A. Severe overflow into street since morning..." required
+                                    class="w-full p-3 bg-darkbg border border-darkborder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-none"></textarea>
+                            </div>
+
+                            <!-- Category Picker with Smart AI Suggest Trigger -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="block text-xs font-bold text-slate-300">Category</label>
+                                        <span id="aiConfidenceBadge" class="hidden text-[10px] font-bold text-brand-300 bg-brand-500/20 px-1.5 py-0.5 rounded border border-brand-500/30">
+                                            AI Suggested
+                                        </span>
+                                    </div>
+                                    <select id="complaintCategory" class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                        <option value="Let AI Suggest">✨ Let AI Suggest Automatically</option>
+                                        <option value="Water supply">Water Supply & Plumbing</option>
+                                        <option value="Street lights">Street Lights & Electrical</option>
+                                        <option value="Sanitation">Sanitation & Garbage</option>
+                                        <option value="Sewage">Sewage & Drainage</option>
+                                        <option value="Roads & Parks">Roads & Public Parks</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Priority Level</label>
+                                    <select id="complaintPriority" class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                        <option value="Normal">Normal Priority</option>
+                                        <option value="High">High Priority (Urgent)</option>
+                                        <option value="Emergency">Emergency (Immediate)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Card 3: Resident Lookup & Mobile Number -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder space-y-3">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2 border-b border-darkborder pb-2">
+                                <i class="fa-solid fa-address-card text-brand-400"></i>
+                                <span>Caller & Resident Lookup</span>
+                            </h3>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">
+                                        Caller's Mobile Number
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                                            <i class="fa-solid fa-phone text-xs"></i>
+                                        </div>
+                                        <input type="text" id="callerPhone" oninput="lookupResidentByPhone(this.value)" placeholder="e.g. 0300 1234567"
+                                            class="w-full pl-9 pr-3 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500 font-mono">
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 mt-1">If in directory, auto-links resident profile & house number.</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Resident House</label>
+                                    <select id="houseSelector" onchange="handleHouseSelect(this.value)" class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                        <option value="no_house">No house (use custom street location)</option>
+                                        <option value="house_12_a" selected>House #12, Street 4, Block A</option>
+                                        <option value="house_45_b">House #45, Main Ave, Block B</option>
+                                        <option value="comm_03">Shop #03, Commercial Plaza</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Searchable House / Landmark Input -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Exact Landmark or Street Detail</label>
+                                <input type="text" id="landmarkInput" placeholder="e.g. Near Park entrance pole #4" value="Street 4, Near Sector Park"
+                                    class="w-full p-2.5 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Sector / Zone</label>
+                                    <select id="sectorSelector" class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+                                        <option value="Block A" selected>Block A</option>
+                                        <option value="Block B">Block B</option>
+                                        <option value="Commercial Area">Commercial Area</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Pole or Asset Identifier (Optional)</label>
+                                    <input type="text" id="poleAssetNumber" placeholder="e.g. ELEC-PL-092"
+                                        class="w-full p-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-brand-500 font-mono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Photos, Voice Note & Media Attachments -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder space-y-3">
+                            <h3 class="text-xs font-bold text-white flex items-center justify-between border-b border-darkborder pb-2">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-paperclip text-brand-400"></i>
+                                    <span>Photos & Voice Evidence</span>
+                                </span>
+                                <span class="text-[10px] text-slate-400">Optional</span>
+                            </h3>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- Drag & Drop File Area -->
+                                <div id="dropZone" onclick="document.getElementById('fileInput').click()" 
+                                    class="border-2 border-dashed border-darkborder hover:border-brand-500/60 rounded-xl p-4 text-center bg-darkbg/50 cursor-pointer transition-all flex flex-col items-center justify-center group">
+                                    <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-500 group-hover:text-brand-400 transition-colors mb-1"></i>
+                                    <span class="text-xs font-bold text-slate-300 block">Click or Drag Photos</span>
+                                    <span class="text-[10px] text-slate-500">JPG, PNG up to 10MB</span>
+                                    <input type="file" id="fileInput" multiple accept="image/*" class="hidden" onchange="handleFileUpload(this)">
+                                </div>
+
+                                <!-- Voice Note Record Tool Simulation -->
+                                <div class="p-3 bg-darkbg border border-darkborder rounded-xl flex flex-col justify-between">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-microphone text-rose-400"></i> Voice Note
+                                        </span>
+                                        <span id="recordingStatus" class="text-[10px] text-slate-500">Ready</span>
+                                    </div>
+                                    <div class="my-2 flex items-center justify-center gap-2">
+                                        <button type="button" onclick="toggleVoiceRecord()" id="recordVoiceBtn" class="w-10 h-10 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all">
+                                            <i class="fa-solid fa-microphone text-sm"></i>
+                                        </button>
+                                        <div class="flex-1 h-6 bg-darkcard rounded-lg border border-darkborder flex items-center justify-center px-2">
+                                            <div id="audioWaveform" class="flex items-center gap-1 opacity-40">
+                                                <span class="w-1 h-3 bg-rose-400 rounded-full"></span>
+                                                <span class="w-1 h-5 bg-rose-400 rounded-full"></span>
+                                                <span class="w-1 h-2 bg-rose-400 rounded-full"></span>
+                                                <span class="w-1 h-4 bg-rose-400 rounded-full"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 text-center">Record call snippet or verbal complaint</p>
+                                </div>
+                            </div>
+
+                            <!-- Upload Previews Container -->
+                            <div id="previewContainer" class="hidden flex items-center gap-2 overflow-x-auto pt-2"></div>
+                        </div>
+
+                        <!-- Submit Action Bar -->
+                        <div class="pt-2 flex items-center justify-end gap-3">
+                            <button type="button" onclick="window.history.back()" class="px-5 py-2.5 rounded-xl bg-darkcard border border-darkborder hover:border-slate-600 text-slate-300 font-bold text-xs transition-all">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-7 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-brand-500/20 active:scale-[0.98] transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-check-circle text-sm"></i>
+                                <span>Record Complaint & Dispatch</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN: SMART AI ASSISTANT & LIVE CONTEXT (5 COLS) -->
+                    <div class="lg:col-span-5 space-y-4">
+                        
+                        <!-- AI Analysis & Match Card -->
+                        <div class="glass-card p-4 rounded-2xl border border-brand-500/30 relative overflow-hidden">
+                            <div class="absolute -right-8 -top-8 w-28 h-28 bg-brand-500/10 rounded-full blur-xl pointer-events-none"></div>
+
+                            <div class="flex items-center justify-between pb-3 border-b border-darkborder mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg bg-brand-500/20 border border-brand-500/40 text-brand-300 flex items-center justify-center text-xs font-bold">
+                                        ✨
+                                    </div>
+                                    <h3 class="text-xs font-extrabold text-white">Smart UrbanFix AI Assistant</h3>
+                                </div>
+                                <span class="text-[10px] bg-brand-500/20 text-brand-300 font-bold px-2 py-0.5 rounded-full border border-brand-500/30">
+                                    Live Analysis
+                                </span>
+                            </div>
+
+                            <!-- Live AI Classification Suggestions -->
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Detected Issue Intent</span>
+                                    <div id="aiIntentBox" class="p-2.5 rounded-xl bg-darkbg border border-darkborder text-xs text-slate-300 flex items-center justify-between">
+                                        <span id="aiIntentText" class="font-medium">Waiting for description text...</span>
+                                        <i class="fa-solid fa-robot text-brand-400 text-xs"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Resident Identity Match Badge -->
+                                <div id="residentMatchCard" class="p-3 rounded-xl bg-darkbg border border-darkborder space-y-1.5">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Linked Resident Profile</span>
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-300 font-bold text-xs flex items-center justify-center border border-brand-500/30">
+                                            HA
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-white">Hassan Ahmed</h4>
+                                            <p class="text-[10px] text-slate-400">House #12, Street 4, Block A • 0300 1234567</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Potential Duplicate Detector Widget -->
+                                <div class="p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1">
+                                    <div class="flex items-center justify-between text-amber-300 text-xs font-bold">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-solid fa-triangle-exclamation"></i> Duplicate Alert Check
+                                        </span>
+                                        <span class="text-[10px] bg-amber-500/20 px-1.5 py-0.5 rounded">1 Similar Ticket</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-300 mt-1">
+                                        <strong class="text-amber-200 font-mono">UF-2026-00001</strong> reported water issue in Block A 4 hours ago.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Interactive Map Location Picker Widget -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-map-location-dot text-brand-400"></i>
+                                    <span>Geographic Pin & Sector Map</span>
+                                </h3>
+                                <button type="button" onclick="recenterMap()" class="text-[10px] text-brand-300 hover:underline">Recenter Pin</button>
+                            </div>
+
+                            <!-- Map Visual Placeholder Container -->
+                            <div class="relative w-full h-44 rounded-xl border border-darkborder overflow-hidden bg-slate-900 group">
+                                <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=800&q=80" 
+                                    class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500">
+                                
+                                <!-- Center Map Pin -->
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div class="relative flex flex-col items-center">
+                                        <span class="px-2 py-0.5 rounded bg-darkbg/90 border border-brand-500/50 text-[10px] font-mono text-brand-300 font-bold shadow-lg mb-1">
+                                            Block A • Sector 4
+                                        </span>
+                                        <i class="fa-solid fa-location-dot text-rose-500 text-2xl drop-shadow-lg animate-bounce"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Overlay Controls -->
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <button type="button" onclick="showToast('Zoomed map view', 'info')" class="w-6 h-6 rounded bg-darkbg/80 border border-darkborder text-white text-xs flex items-center justify-center hover:bg-darkcard">
+                                        +
+                                    </button>
+                                    <button type="button" onclick="showToast('Zoomed out map view', 'info')" class="w-6 h-6 rounded bg-darkbg/80 border border-darkborder text-white text-xs flex items-center justify-center hover:bg-darkcard">
+                                        -
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Previous Complaints History by Resident -->
+                        <div class="glass-card p-4 rounded-2xl border border-darkborder space-y-2">
+                            <h3 class="text-xs font-bold text-white flex items-center justify-between">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-clock-rotate-left text-brand-400"></i>
+                                    <span>Caller's Recent Complaints</span>
+                                </span>
+                                <span class="text-[10px] text-slate-400">Total: 2</span>
+                            </h3>
+
+                            <div class="space-y-1.5 pt-1">
+                                <div class="p-2 rounded-xl bg-darkbg border border-darkborder flex items-center justify-between text-xs">
+                                    <div>
+                                        <span class="font-mono text-brand-300 text-[11px] font-bold">UF-2026-00001</span>
+                                        <p class="text-[10px] text-slate-400">No water in street</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                        Assigned
+                                    </span>
+                                </div>
+
+                                <div class="p-2 rounded-xl bg-darkbg border border-darkborder flex items-center justify-between text-xs">
+                                    <div>
+                                        <span class="font-mono text-slate-400 text-[11px] font-bold">UF-2025-00892</span>
+                                        <p class="text-[10px] text-slate-400">Streetlight dim</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                        Resolved
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- JAVASCRIPT INTERACTIONS -->
+    <script>
+        let isRecording = false;
+
+        // Channel Pill Selector
+        function selectChannel(channelName, btnElement) {
+            document.querySelectorAll('.channel-btn').forEach(btn => {
+                btn.className = "channel-btn p-2.5 rounded-xl border border-darkborder bg-darkbg text-slate-400 font-semibold text-xs hover:border-brand-500/40 flex items-center justify-center gap-2 transition-all";
+            });
+            btnElement.className = "channel-btn p-2.5 rounded-xl border border-brand-500 bg-brand-500/20 text-brand-300 font-bold text-xs flex items-center justify-center gap-2 transition-all";
+            document.getElementById('selectedChannel').value = channelName;
+            showToast(`Selected Intake Channel: ${channelName}`, 'info');
+        }
+
+        // Live Description NLP Analysis Simulation
+        function analyzeDescription(text) {
+            document.getElementById('charCounter').innerText = `${text.length} / 500 chars`;
+            const intentText = document.getElementById('aiIntentText');
+            const catSelect = document.getElementById('complaintCategory');
+            const aiBadge = document.getElementById('aiConfidenceBadge');
+            const lower = text.toLowerCase();
+
+            if (lower.length < 5) {
+                intentText.innerText = 'Waiting for description text...';
+                aiBadge.classList.add('hidden');
+                return;
+            }
+
+            if (lower.includes('water') || lower.includes('leak') || lower.includes('pipe') || lower.includes('tap')) {
+                intentText.innerText = 'Detected: Water Supply & Leakage Issue (98% confidence)';
+                catSelect.value = 'Water supply';
+                aiBadge.classList.remove('hidden');
+            } else if (lower.includes('light') || lower.includes('pole') || lower.includes('dark') || lower.includes('electric')) {
+                intentText.innerText = 'Detected: Streetlight / Electrical Failure (94% confidence)';
+                catSelect.value = 'Street lights';
+                aiBadge.classList.remove('hidden');
+            } else if (lower.includes('garbage') || lower.includes('trash') || lower.includes('waste') || lower.includes('clean')) {
+                intentText.innerText = 'Detected: Sanitation & Waste Management (91% confidence)';
+                catSelect.value = 'Sanitation';
+                aiBadge.classList.remove('hidden');
+            } else if (lower.includes('sewer') || lower.includes('drain') || lower.includes('overflow')) {
+                intentText.innerText = 'Detected: Sewage & Underground Drainage (96% confidence)';
+                catSelect.value = 'Sewage';
+                aiBadge.classList.remove('hidden');
+            } else {
+                intentText.innerText = 'Analyzing general municipal report...';
+                aiBadge.classList.add('hidden');
+            }
+        }
+
+        // Phone Lookup Simulation
+        function lookupResidentByPhone(phone) {
+            if (phone.length >= 7) {
+                showToast('Found Directory Match: Hassan Ahmed (House #12)', 'success');
+            }
+        }
+
+        function handleHouseSelect(val) {
+            if (val === 'house_12_a') {
+                document.getElementById('landmarkInput').value = "Street 4, Near Sector Park";
+                document.getElementById('sectorSelector').value = "Block A";
+            } else if (val === 'house_45_b') {
+                document.getElementById('landmarkInput').value = "Main Ave Corner";
+                document.getElementById('sectorSelector').value = "Block B";
+            }
+        }
+
+        // File Upload Handlers
+        function handleFileUpload(input) {
+            const container = document.getElementById('previewContainer');
+            container.classList.remove('hidden');
+            
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'relative w-14 h-14 rounded-lg overflow-hidden border border-darkborder shrink-0 group';
+                    imgDiv.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover">
+                        <button type="button" onclick="this.parentElement.remove()" class="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    `;
+                    container.appendChild(imgDiv);
+                }
+                reader.readAsDataURL(file);
+            });
+            showToast('Attached media photo evidence', 'info');
+        }
+
+        // Voice Note Simulation
+        function toggleVoiceRecord() {
+            const btn = document.getElementById('recordVoiceBtn');
+            const status = document.getElementById('recordingStatus');
+            const wave = document.getElementById('audioWaveform');
+
+            if (!isRecording) {
+                isRecording = true;
+                btn.className = "w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center transition-all animate-pulse";
+                status.innerText = "Recording 0:04...";
+                status.className = "text-[10px] text-rose-400 font-bold";
+                wave.classList.remove('opacity-40');
+                showToast('Recording voice note...', 'warning');
+            } else {
+                isRecording = false;
+                btn.className = "w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-all";
+                status.innerText = "Audio Attached (12s)";
+                status.className = "text-[10px] text-emerald-400 font-bold";
+                wave.classList.add('opacity-40');
+                showToast('Voice note attached to ticket', 'success');
+            }
+        }
+
+        // Form Submit Action
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const desc = document.getElementById('complaintDesc').value;
+            const channel = document.getElementById('selectedChannel').value;
+
+            showToast(`Complaint Ticket UF-2026-00006 recorded via ${channel}!`, 'success');
+
+            setTimeout(() => {
+                window.location.href = '#';
+            }, 1500);
+        }
+
+        function recenterMap() {
+            showToast('Map centered to Block A, Street 4 pin', 'info');
+        }
+
+        function switchNav(navName) {
+            showToast(`Navigating to ${navName}`, 'info');
+        }
+
+        function toggleLanguage() {
+            const btnText = document.getElementById('langBtnText');
+            if (btnText.innerText === 'اردو') {
+                btnText.innerText = 'English';
+                showToast('زبان تبدیل کی گئی (اردو)', 'info');
+            } else {
+                btnText.innerText = 'اردو';
+                showToast('Switched language to English', 'info');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgStyle = 'bg-slate-900 border-brand-500/40 text-slate-100';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bgStyle = 'bg-emerald-950/90 border-emerald-500 text-emerald-100';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgStyle = 'bg-amber-950/90 border-amber-500 text-amber-100';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border backdrop-blur-md shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-x-8 opacity-0 ${bgStyle}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-x-8', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

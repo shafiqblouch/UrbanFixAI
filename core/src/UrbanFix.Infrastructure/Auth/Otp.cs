@@ -34,6 +34,11 @@ public sealed class OtpOptions
     public int MaxPerHour { get; set; } = 5;
     /// <summary>Mixed into the stored hash so a leaked table cannot be reversed by trying all six-digit codes.</summary>
     public string Pepper { get; set; } = "";
+    /// <summary>
+    /// DEMO ONLY: when set, every code is this value and the cooldown and hourly limit are off, so a demo needs no text messages.
+    /// Anyone who knows a resident's number can then sign in as them, so startup refuses it outside Development.
+    /// </summary>
+    public string? FixedCode { get; set; }
 }
 
 public enum OtpRequestOutcome { Accepted, Throttled }
@@ -49,6 +54,7 @@ public sealed class OtpService(AppDbContext db, ISmsSender sms, AuthService auth
 
     private string NewCode()
     {
+        if (!string.IsNullOrEmpty(options.FixedCode)) return options.FixedCode;
         var max = (int)Math.Pow(10, options.CodeLength);
         return RandomNumberGenerator.GetInt32(max).ToString().PadLeft(options.CodeLength, '0');
     }
@@ -69,7 +75,7 @@ public sealed class OtpService(AppDbContext db, ISmsSender sms, AuthService auth
         var now = DateTimeOffset.UtcNow;
         var recent = await db.OtpChallenges.AsNoTracking().Where(c => c.Phone == phone && c.CreatedAt > now.AddHours(-1))
             .Select(c => c.CreatedAt).ToListAsync(ct);
-        if (recent.Count >= options.MaxPerHour || (recent.Count > 0 && now - recent.Max() < options.Cooldown)) return OtpRequestOutcome.Throttled;
+        if (string.IsNullOrEmpty(options.FixedCode) && (recent.Count >= options.MaxPerHour || (recent.Count > 0 && now - recent.Max() < options.Cooldown))) return OtpRequestOutcome.Throttled;
 
         var eligible = await EligibleAsync(phone, ct) is not null;
         var code = NewCode();

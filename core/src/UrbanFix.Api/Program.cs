@@ -15,6 +15,25 @@ using UrbanFix.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Hosted databases hand out one postgres:// URL (the owner login); derive both connection strings from it.
+// The app role is created by the migrator with Database:AppRolePassword.
+if (builder.Configuration["DATABASE_URL"] is { Length: > 0 } databaseUrl)
+{
+    var uri = new Uri(databaseUrl);
+    var user = Uri.UnescapeDataString(uri.UserInfo.Split(':')[0]);
+    var password = Uri.UnescapeDataString(uri.UserInfo.Split(':', 2)[1]);
+    string Conn(string u, string p) => new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host, Port = uri.Port > 0 ? uri.Port : 5432, Database = uri.AbsolutePath.TrimStart('/'),
+        Username = u, Password = p, SslMode = SslMode.Prefer,
+    }.ConnectionString;
+    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+    {
+        ["ConnectionStrings:Owner"] = Conn(user, password),
+        ["ConnectionStrings:App"] = Conn("urbanfix_app", builder.Configuration["Database:AppRolePassword"] ?? ""),
+    });
+}
+
 // Observability (FD-09): structured logs, traces, Sentry. All exporters are off unless configured.
 builder.Host.UseSerilog((ctx, services, lc) => lc
     .ReadFrom.Configuration(ctx.Configuration)
@@ -54,6 +73,8 @@ if (!builder.Environment.IsDevelopment() && builder.Configuration["Database:AppR
 
 if (!string.IsNullOrEmpty(builder.Configuration["Auth:DemoTotpCode"]) && !builder.Environment.IsDevelopment())
     throw new InvalidOperationException("Refusing to start outside Development with a fixed authenticator code (Auth:DemoTotpCode).");
+if (!string.IsNullOrEmpty(builder.Configuration["Otp:FixedCode"]) && !builder.Environment.IsDevelopment())
+    throw new InvalidOperationException("Refusing to start outside Development with a fixed phone code (Otp:FixedCode).");
 
 var app = builder.Build();
 

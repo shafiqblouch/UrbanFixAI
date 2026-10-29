@@ -372,13 +372,15 @@ public static class JobEndpoints
     private static async Task<IResult> SaveEvidenceAsync(byte[] bytes, Ctx x, string stage, AppDbContext db, IMediaProcessor processor, IObjectStorage storage, CancellationToken ct)
     {
         var result = await SaveMediaAsync(bytes, x.Complaint, x.Actor, db, processor, storage, ct, x.Job.Id, stage);
-        // Only a newly stored photo belongs on the timeline; a duplicate upload comes back as 200.
+        // Only a newly stored photo belongs on the timeline. A photo the complaint already holds (even the resident's own) comes back
+        // as 200 and is not stored again, so it would never count as this job's before/after photo: tell the technician instead.
         if (result is IStatusCodeHttpResult { StatusCode: 201 })
         {
             Log(db, x, "media", note: stage);
             await db.SaveChangesAsync(ct);
+            return result;
         }
-        return result;
+        return result is IStatusCodeHttpResult { StatusCode: 200 } ? Results.Conflict(new { error = "duplicate_photo" }) : result;
     }
 
     // Completion (JB-05, JB-06, JB-04) ---------------------------------------------------------------------------------------

@@ -8,11 +8,11 @@ export type MobileRole = (typeof MOBILE_ROLES)[number];
 
 export const isMobileRole = (role: string): role is MobileRole => (MOBILE_ROLES as readonly string[]).includes(role);
 
-export type TabId = "home" | "complaints" | "new" | "today" | "jobs" | "settings";
+export type TabId = "home" | "complaints" | "new" | "notices" | "today" | "jobs" | "settings";
 
 /** Bottom tabs per role (RA-01, TA-01). */
 export const tabsByRole: Record<MobileRole, TabId[]> = {
-  Resident: ["home", "complaints", "new", "settings"],
+  Resident: ["home", "complaints", "new", "notices", "settings"],
   Technician: ["today", "jobs", "settings"],
 };
 

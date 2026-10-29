@@ -99,7 +99,7 @@ class OpenRouterProvider:
         )
         try:
             body = json.loads(self._content(data).strip().strip("`").removeprefix("json").strip())
-            return SpeechResult(str(body["transcript"]), float(body["confidence"]), str(body["language"]), data.get("model", model))
+            return SpeechResult(str(body["transcript"]), float(body["confidence"]), str(body["language"]), data.get("model", model), str(body.get("translation_en") or ""))
         except (ValueError, KeyError, TypeError) as exc:
             raise ProviderError("Speech response was not the expected JSON") from exc
 

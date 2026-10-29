@@ -7,7 +7,41 @@ import { useServices } from "../services";
 import { useSession } from "../session";
 import { space } from "../theme";
 import { Banner, Button, Card, Choice, Screen, Txt } from "../ui";
+import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
+import { api, ok } from "../api";
+import { registerForPush, type PushState } from "../platform/push";
+import { ApiError } from "../api";
+
+/** Whether this phone gets push messages, with a button to turn them on and one to send a test (MA-04). */
+function PushCard() {
+  const t = useT();
+  const [state, setState] = useState<PushState>("off");
+  const [note, setNote] = useState<{ text: string; tone: "info" | "danger" }>();
+  const action = useAction();
+  // Asking quietly on open: if permission was already given this just re-registers the phone's current address.
+  useEffect(() => { void registerForPush(false).then(setState); }, []);
+  const enable = useCallback(() => void action.run(async () => setState(await registerForPush(true))), [action]);
+  const test = () => void action.run(async () => {
+    setNote(undefined);
+    try {
+      const r = await ok(api.POST("/me/push-test"));
+      setNote(r.sent > 0 ? { text: t("push.testSent"), tone: "info" } : { text: t("push.testFailed"), tone: "danger" });
+    } catch (e) {
+      setNote({ text: e instanceof ApiError && e.code === "no_push_device" ? t("push.testNone") : t("push.testFailed"), tone: "danger" });
+    }
+  });
+  return (
+    <Card>
+      <Txt bold>{t("push.title")}</Txt>
+      <Txt muted>{t(`push.${state}` as Key)}</Txt>
+      {note && <Banner tone={note.tone} text={note.text} />}
+      {state === "on"
+        ? <Button title={t("push.test")} variant="secondary" loading={action.busy} onPress={test} />
+        : state !== "unavailable" && state !== "denied" && <Button title={t("push.enable")} loading={action.busy} onPress={enable} />}
+    </Card>
+  );
+}
 
 /** Language, the role switcher, upload status and sign-out. */
 export function SettingsScreen() {
@@ -34,6 +68,8 @@ export function SettingsScreen() {
         </Card>
       )}
       {views.length === 1 && view && <Txt muted>{t("settings.view")}: {t(`role.${view.role}` as Key)} · {view.organizationName}</Txt>}
+
+      <PushCard />
 
       <Card>
         <Txt>{t("settings.queue", { count: waiting })}</Txt>

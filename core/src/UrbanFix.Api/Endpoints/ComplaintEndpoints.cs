@@ -15,7 +15,7 @@ namespace UrbanFix.Api.Endpoints;
 /// <summary>Complaint core (CP-01 to CP-07) and jobs (JB-01).</summary>
 public static class ComplaintEndpoints
 {
-    public sealed record CreateComplaint(string Description, string? Channel, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText, Guid? ReportedByUserId, string? ReporterPhone = null, string? AssetRef = null);
+    public sealed record CreateComplaint(string Description, string? Channel, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText, Guid? ReportedByUserId, string? ReporterPhone = null, string? AssetRef = null, bool MediaOnly = false);
     public sealed record CompleteLocation(Guid? HouseId, Guid? LocationId, string? LocationText);
     public sealed record Transition(ComplaintStatus To, string? Reason, Guid? MergedIntoId);
     public sealed record CreateJob(string? Instructions, Guid? AssignedTeamId);
@@ -119,7 +119,9 @@ public static class ComplaintEndpoints
         ComplaintIntake intake, CancellationToken ct)
     {
         var actor = await ActorAsync(principal, memberships, ct);
-        if (string.IsNullOrWhiteSpace(req.Description) || req.Description.Length > 4000) return Results.BadRequest(new { error = "invalid_description" });
+        // A photo- or voice-only complaint starts with the placeholder text; the photo or transcription job writes the real description once it has looked at the picture or listened.
+        var description = req.MediaOnly && string.IsNullOrWhiteSpace(req.Description) ? IntakeText.MediaOnly : req.Description;
+        if (string.IsNullOrWhiteSpace(description) || description.Length > 4000) return Results.BadRequest(new { error = "invalid_description" });
 
         var onBehalf = actor.Has(Permissions.ComplaintCreateBehalf);
         var channel = req.Channel ?? (onBehalf ? "phone" : "app");
@@ -164,7 +166,7 @@ public static class ComplaintEndpoints
         }
 
         var (made, error) = await intake.CreateAsync(new IntakeRequest(
-            actor.OrgId, channel, req.Description, req.CategoryId, req.HouseId, req.LocationId, req.LocationText, reporter, enteredBy,
+            actor.OrgId, channel, description, req.CategoryId, req.HouseId, req.LocationId, req.LocationText, reporter, enteredBy,
             reporterPhone, reporterVerified, holdForSender, assetRef, actor.UserId), ct);
         if (error is not null) return Results.BadRequest(new { error });
 
@@ -526,8 +528,8 @@ public static class ComplaintEndpoints
         media!.JobId = jobId;
         media.Stage = stage;
         db.ComplaintMedia.Add(media);
-        // Voice notes are transcribed in the background (AI-09).
-        if (media.Kind == "audio" && bus is not null) bus.Publish(new MediaAdded(actor.OrgId, media.Id, c.Id, media.Kind));
+        // Voice notes are transcribed (AI-09) and complaint photos interpreted (AI-08) in the background; job evidence photos are not.
+        if ((media.Kind == "audio" || (media.Kind == "image" && jobId is null)) && bus is not null) bus.Publish(new MediaAdded(actor.OrgId, media.Id, c.Id, media.Kind));
         await db.SaveChangesAsync(ct);
         return Results.Created($"/complaints/{c.Id}", ToMediaDto(media, storage));
     }

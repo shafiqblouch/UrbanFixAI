@@ -48,7 +48,7 @@ class FakeProvider:
             return VisionResult(self.vision_replies.pop(0), model, self.vision_usage)
         return VisionResult('{"same_location_likelihood": 0.7, "change_note": "The area appears to look different.", "confidence": 0.6}', model, self.vision_usage)
 
-    async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None) -> SpeechResult:
+    async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None, prompt_version: str = "v1") -> SpeechResult:
         self.audio_seen.append((audio, mime_type))
         if self.speech_replies:
             return self.speech_replies.pop(0)

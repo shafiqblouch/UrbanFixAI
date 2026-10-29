@@ -41,7 +41,7 @@ function Home() {
 function Routed({ onLocale }: { onLocale: (l: Locale) => void }) {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage onLocale={onLocale} />} />
       <Route element={<PeopleProvider><LookupProvider><LiveProvider><Shell onLocale={onLocale} /></LiveProvider></LookupProvider></PeopleProvider>}>
         <Route index element={<Home />} />
         <Route path="welcome" element={<WelcomePage />} />

@@ -14,6 +14,7 @@
     "plugins": [
       "expo-secure-store",
       "expo-font",
+      ["expo-notifications", { "color": "#0f766e" }],
       ["expo-image-picker", { "cameraPermission": "UrbanFix uses the camera to take photos of problems and of finished work." }],
       ["expo-audio", { "microphonePermission": "UrbanFix records a voice note when you choose to describe a problem by voice." }],
       ["expo-location", { "locationWhenInUsePermission": "UrbanFix adds your location to a complaint or a job note when you ask it to." }]

@@ -82,7 +82,7 @@ function ComplaintCard({ c, onPress }: { c: S["ComplaintDto"]; onPress: () => vo
   );
 }
 
-function useDate() {
+export function useDate() {
   const { locale } = useI18n();
   return (iso: string) => new Intl.DateTimeFormat(locale === "ur" ? "ur-PK-u-nu-latn" : "en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
 }
@@ -172,6 +172,7 @@ export function ComplaintDetailScreen({ route }: NativeStackScreenProps<RootStac
 
 /** Complaint form: words first, then optional photos, a voice note and a place. The words are sent at once; photos follow in the background (RA-02). */
 export function NewComplaintScreen() {
+  const p = usePalette();
   const t = useT();
   const nav = useNavigation<Nav>();
   const { receipts, drafts, queue, drain } = useServices();
@@ -225,7 +226,7 @@ export function NewComplaintScreen() {
       if (!(await isOnline())) throw Object.assign(new Error("offline"), { offline: true });
       return ok(api.POST("/complaints", { body: {
         description: description.trim(), channel: null, categoryId: null, houseId: null, locationId: landmark?.locationId ?? null, locationText: locationText || null, reportedByUserId: null,
-        reporterPhone: null, assetRef: asset.trim() || null,
+        reporterPhone: null, assetRef: asset.trim() || null, mediaOnly: description.trim() === "" && (photos.length > 0 || !!voice.note),
       } }));
     });
     if (!created) {
@@ -248,13 +249,13 @@ export function NewComplaintScreen() {
       {!online && <Banner text={t("offline")} />}
       {restored && <Banner tone="info" text={t("new.draftFound")} />}
       {restored && <Button title={t("retry")} variant="secondary" onPress={restore} />}
-      <Field label={t("new.describe")} hint={t("new.describeHint")} value={description} onChangeText={setDescription} multiline numberOfLines={5} maxLength={4000} />
+      <Field label={t("new.describe")} hint={photos.length > 0 || voice.note ? t("new.mediaOnlyHint") : t("new.describeHint")} value={description} onChangeText={setDescription} multiline numberOfLines={5} maxLength={4000} />
       <Field label={t("new.where")} hint={t("new.whereHint")} value={where} onChangeText={setWhere} />
       <Field label={t("new.asset")} hint={t("new.assetHint")} value={asset} onChangeText={setAsset} autoCapitalize="characters" maxLength={100} />
 
       <Field label={t("new.landmark")} value={landmark ? landmark.name : landmarkQuery} onChangeText={(v) => { setLandmark(undefined); setLandmarkQuery(v); }} />
       {!landmark && (landmarks.data ?? []).slice(0, 5).map((l) => (
-        <Pressable key={l.id} accessibilityRole="button" onPress={() => setLandmark(l)} style={{ minHeight: TOUCH, justifyContent: "center" }}><Txt color="#4338CA" bold>{l.name}</Txt></Pressable>
+        <Pressable key={l.id} accessibilityRole="button" onPress={() => setLandmark(l)} style={{ minHeight: TOUCH, justifyContent: "center" }}><Txt color={p.link} bold>{l.name}</Txt></Pressable>
       ))}
       <Button title={t("new.useLocation")} variant="secondary" onPress={() => void useMyLocation()} />
 
@@ -275,7 +276,7 @@ export function NewComplaintScreen() {
       {send.error && send.error.code !== "network" && <Banner tone="danger" text={errorText(t, send.error)} />}
       {danger && asked && <EmergencyPrompt onSend={() => void submit()} busy={send.busy} />}
       {!(danger && asked) && (
-        <Button title={t("new.submit")} onPress={() => { if (danger) setAsked(true); else void submit(); }} loading={send.busy} disabled={description.trim().length === 0} />
+        <Button title={t("new.submit")} onPress={() => { if (danger) setAsked(true); else void submit(); }} loading={send.busy} disabled={description.trim().length === 0 && photos.length === 0 && !voice.note} />
       )}
     </Screen>
   );

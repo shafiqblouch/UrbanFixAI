@@ -34,6 +34,7 @@ class SpeechResult:
     confidence: float
     language: str
     model: str
+    translation: str = ""
 
 
 @dataclass(frozen=True)
@@ -58,7 +59,7 @@ class VisionProvider(Protocol):
 
 class SpeechProvider(Protocol):
     # Audio carries no text to scrub; it is stripped of identity at the source by not sending any metadata.
-    async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None) -> SpeechResult: ...
+    async def transcribe(self, *, model: str, audio: bytes, mime_type: str, language_hint: str | None, prompt_version: str = "v1") -> SpeechResult: ...
 
 
 class EmbeddingProvider(Protocol):

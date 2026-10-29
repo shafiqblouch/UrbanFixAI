@@ -14,7 +14,7 @@ Push sends a notification to a person's phone or browser even when the app is cl
 ## What is not done, and why
 
 - **Nothing has been sent to the real FCM or to a real browser.** The FCM sender is tested against a stand-in that checks the sign-in and the message it receives; the browser sender is tested for the signature, the encryption and how it reads each answer. The acceptance test "a test push reaches the mobile app and the portal" needs the accounts and keys below, and a phone.
-- **The mobile app does not register for push yet** (MA-04). The server side is ready for it: the app asks the person's permission, gets an FCM token and posts it to `/me/push-devices`; a notification's `link` is sent as data so the app can open the right screen.
+- **The mobile app registers for push** (MA-04): Settings has a "Notifications on this phone" card that asks permission, gets the FCM token and posts it to `/me/push-devices`; tapping a notification opens its complaint or job (`mobile/src/pushLink.ts`). It has only been type-checked, unit-tested and bundled, never run on a phone. A real build needs the Firebase `google-services.json` for package `pk.urbanfix.app` set as `expo.android.googleServicesFile` in `mobile/app.json`, and a development or EAS build (Expo Go cannot receive FCM tokens).
 - The portal button has not been tried in a real browser, only built.
 
 ## What you need to do

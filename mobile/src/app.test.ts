@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { en, ur } from "./i18n/strings";
+import { targetFor } from "./pushLink";
 import { dueChip, isMobileRole, pickView, tabsByRole, todaysJobs, viewsOf } from "./roles";
 
 const membership = (role: string, org = "o1", name = "Green Society") => ({ id: `${role}-${org}`, organizationId: org, organizationName: name, role, departmentId: null, gateId: null });
@@ -9,7 +10,7 @@ const at = (minutes: number) => new Date(now.getTime() + minutes * 60_000).toISO
 describe("roles and the role switcher (DS-05)", () => {
   it("has app screens for residents and technicians only, with the tabs each needs", () => {
     expect(["Resident", "Technician", "Supervisor", "Manager", "Guard"].map(isMobileRole)).toEqual([true, true, false, false, false]);
-    expect(tabsByRole.Resident).toEqual(["home", "complaints", "new", "settings"]);
+    expect(tabsByRole.Resident).toEqual(["home", "complaints", "new", "notices", "settings"]);
     expect(tabsByRole.Technician).toEqual(["today", "jobs", "settings"]);
   });
 
@@ -65,5 +66,19 @@ describe("translations", () => {
     for (const key of Object.keys(ur) as (keyof typeof ur)[]) {
       if (!latinOk.has(key)) expect(ur[key], key).toMatch(/[؀-ۿ]/);
     }
+  });
+});
+
+describe("opening a tapped notification (MA-04)", () => {
+  const id = "3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b";
+  it("opens the complaint for a resident and the job for a technician", () => {
+    expect(targetFor(`/complaints/${id}`, "Resident")).toEqual({ name: "ComplaintDetail", params: { id } });
+    expect(targetFor(`/jobs/${id}`, "Technician")).toEqual({ name: "JobDetail", params: { id } });
+  });
+  it("sends a resident to the notices list for anything else, and a technician nowhere", () => {
+    expect(targetFor("/", "Resident")).toEqual({ name: "Tabs", params: { screen: "notices" } });
+    expect(targetFor(undefined, "Resident")).toEqual({ name: "Tabs", params: { screen: "notices" } });
+    expect(targetFor(`/jobs/${id}`, "Resident")).toEqual({ name: "Tabs", params: { screen: "notices" } });
+    expect(targetFor("/complaints/not-an-id", "Technician")).toBeUndefined();
   });
 });

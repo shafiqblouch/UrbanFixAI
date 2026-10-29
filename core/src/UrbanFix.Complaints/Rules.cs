@@ -9,7 +9,10 @@ public sealed record MediaAdded(Guid OrganizationId, Guid MediaId, Guid Complain
 public static class IntakeText
 {
     /// <summary>The description of a complaint sent as only a photo or a voice note; replaced by the transcript once a voice note is transcribed.</summary>
-    public const string MediaOnly = "Photo or voice message sent on WhatsApp, no written description.";
+    public const string MediaOnly = "Photo or voice message, no written description.";
+
+    /// <summary>Marks a description the AI wrote from a photo, so a voice note that arrives later can still lead it.</summary>
+    public const string SeenInPhoto = "(Seen in photo:";
 }
 
 /// <summary>The resident has not yet confirmed that finished work is fixed (CP-10).</summary>

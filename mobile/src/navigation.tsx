@@ -1,14 +1,18 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useRef } from "react";
 import { useColorScheme } from "react-native";
 import { useT } from "./i18n";
 import type { Key } from "./i18n/strings";
-import { isMobileRole, tabsByRole, type TabId } from "./roles";
+import { isMobileRole, tabsByRole, type MobileRole, type TabId } from "./roles";
 import { ComplaintDetailScreen, ComplaintsScreen, HomeScreen, NewComplaintScreen, ReceiptScreen, ReceiptsScreen } from "./screens/resident";
 import { CostsScreen, JobDetailScreen, JobsScreen, TodayScreen } from "./screens/technician";
 import { LoginScreen } from "./screens/LoginScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
+import { NoticesScreen, useUnreadNotices } from "./screens/notices";
+import { onNotificationTap } from "./platform/push";
+import { targetFor } from "./pushLink";
 import { useServices } from "./services";
 import { useSession } from "./session";
 import { Badge, Empty, Loading, Screen, Button } from "./ui";
@@ -26,13 +30,14 @@ export type RootStackParams = {
   Costs: { jobId: string; mode: "estimate" | "actuals" };
 };
 
+const navigationRef = createNavigationContainerRef<RootStackParams>();
 const Stack = createNativeStackNavigator<RootStackParams>();
 const Tab = createBottomTabNavigator();
 
 const screens: Record<TabId, React.ComponentType> = {
-  home: HomeScreen, complaints: ComplaintsScreen, new: NewComplaintScreen, today: TodayScreen, jobs: JobsScreen, settings: SettingsScreen,
+  home: HomeScreen, complaints: ComplaintsScreen, new: NewComplaintScreen, notices: NoticesScreen, today: TodayScreen, jobs: JobsScreen, settings: SettingsScreen,
 };
-const glyphs: Record<TabId, string> = { home: "⌂", complaints: "☰", new: "＋", today: "☀", jobs: "🔧", settings: "⚙" };
+const glyphs: Record<TabId, string> = { home: "⌂", complaints: "☰", new: "＋", notices: "✉", today: "☀", jobs: "🔧", settings: "⚙" };
 
 /** The bottom tabs for the current role (RA-01, TA-01). The upload backlog shows as a badge on settings. */
 function Tabs() {
@@ -40,15 +45,16 @@ function Tabs() {
   const { view } = useSession();
   const { waiting } = useServices();
   const p = usePalette();
+  const unread = useUnreadNotices();
   const tabs = tabsByRole[view!.role as keyof typeof tabsByRole];
   return (
-    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: p.primary, tabBarStyle: { minHeight: 64 }, tabBarLabelStyle: { fontSize: 13 }, headerStyle: { backgroundColor: p.surface }, headerTintColor: p.text }}>
+    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: p.primary, tabBarStyle: { minHeight: 64, backgroundColor: p.surfaceRaised, borderTopColor: p.borderSoft }, tabBarLabelStyle: { fontSize: 13, fontWeight: "600" }, tabBarInactiveTintColor: p.textMuted, headerStyle: { backgroundColor: p.primary }, headerTintColor: p.onPrimary, headerTitleStyle: { fontWeight: "700" } }}>
       {tabs.map((id) => (
         <Tab.Screen key={id} name={id} component={screens[id]}
           options={{
             title: t(`tab.${id}` as Key),
             tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 22 }}>{glyphs[id]}</Text>,
-            tabBarBadge: id === "settings" && waiting > 0 ? waiting : undefined,
+            tabBarBadge: id === "settings" && waiting > 0 ? waiting : id === "notices" && unread > 0 ? unread : undefined,
           }} />
       ))}
     </Tab.Navigator>
@@ -70,11 +76,21 @@ export function Navigation() {
   const t = useT();
   const { me, view, loading } = useSession();
   const scheme = useColorScheme();
+  const role = view?.role;
+  // Tapping a notification opens its screen. The stack only exists once the person is signed in, so a tap that arrives earlier waits.
+  const pending = useRef<string | undefined>(undefined);
+  const open = useCallback((link: string | undefined) => {
+    const target = isMobileRole(role ?? "") ? targetFor(link, role as MobileRole) : undefined;
+    if (!target || !navigationRef.isReady()) { pending.current = link; return; }
+    pending.current = undefined;
+    (navigationRef.navigate as (name: string, params: object) => void)(target.name, target.params);
+  }, [role]);
+  useEffect(() => onNotificationTap(open), [open]);
   if (loading) return <Screen><Loading /></Screen>;
 
   const signedIn = !!me?.organizationId;
   return (
-    <NavigationContainer theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
+    <NavigationContainer ref={navigationRef} onReady={() => { if (pending.current) open(pending.current); }} theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
         {!signedIn ? (
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />

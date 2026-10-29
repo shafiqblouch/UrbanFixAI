@@ -22,7 +22,7 @@ export function Txt({ children, size = "md", bold, muted, color, style, numberOf
       selectable={selectable}
       style={[
         { color: color ?? (muted ? p.textMuted : p.text), fontSize: urdu ? base * URDU_SCALE : base, textAlign: rtl ? "right" : "left", writingDirection: rtl ? "rtl" : "ltr" },
-        urdu ? { fontFamily: bold ? URDU_FONT_BOLD : URDU_FONT, lineHeight: base * URDU_SCALE * URDU_LINE_HEIGHT / 1.15 } : { fontWeight: bold ? "700" : "400" },
+        urdu ? { fontFamily: bold ? URDU_FONT_BOLD : URDU_FONT, lineHeight: base * URDU_SCALE * URDU_LINE_HEIGHT / 1.15 } : { fontWeight: bold ? "700" : "500" },
         style,
       ]}
     >
@@ -75,7 +75,7 @@ export function Button({ title, onPress, variant = "primary", loading, disabled,
 
 export function Card({ children, onPress, style }: { children: ReactNode; onPress?: () => void; style?: StyleProp<ViewStyle> }) {
   const p = usePalette();
-  const body = <View style={[{ backgroundColor: p.surfaceRaised, borderColor: p.border, borderWidth: 1, borderRadius: radius.lg, padding: space[4], gap: space[2] }, style]}>{children}</View>;
+  const body = <View style={[{ backgroundColor: p.surfaceRaised, borderColor: p.borderSoft, borderWidth: 1, borderRadius: radius.lg, padding: space[4], gap: space[2], shadowColor: "#102820", shadowOpacity: 0.07, shadowRadius: 10, shadowOffset: { width: 0, height: 3 }, elevation: 2 }, style]}>{children}</View>;
   return onPress ? <Pressable accessibilityRole="button" onPress={onPress} style={{ minHeight: TOUCH }}>{body}</Pressable> : body;
 }
 

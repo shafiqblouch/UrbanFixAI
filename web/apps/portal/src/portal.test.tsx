@@ -114,9 +114,9 @@ describe("app", () => {
   }
 
   it.each([
-    ["Manager", ["Dashboard", "Complaints", "Review queue", "New complaint", "Directory", "Jobs", "Reports", "Store", "Approvals", "Notices", "Configuration", "Audit log"]],
-    ["Supervisor", ["Dashboard", "Complaints", "Review queue", "New complaint", "Jobs", "Reports", "Store"]],
-    ["Office", ["Dashboard", "Complaints", "Review queue", "New complaint", "Directory"]],
+    ["Manager", ["Dashboard", "Complaints", "Review queue", "Directory", "Jobs", "Reports", "Store", "Approvals", "Notices", "Configuration", "Audit log"]],
+    ["Supervisor", ["Dashboard", "Complaints", "Review queue", "Jobs", "Reports", "Store"]],
+    ["Office", ["Dashboard", "Complaints", "Review queue", "Directory"]],
     ["Technician", ["My jobs"]],
   ])("shows a %s only their menus", async (role, labels) => {
     await mount(role);
@@ -381,12 +381,14 @@ describe("app", () => {
     render(<App />);
     const user = userEvent.setup();
 
-    expect((await screen.findAllByText("Rs 1,500.00")).length).toBeGreaterThan(0);
-    expect(screen.getByText("Repair charges to review")).toBeTruthy();
+    // The first tab the role has widgets for opens by itself; the others are one click away.
     expect(await screen.findByRole("img", { name: /7 reported and 0 resolved/ })).toBeTruthy();
     await user.click(screen.getByRole("button", { name: "Show as table" }));
     const row = (await screen.findByText("12 Oct")).closest("tr")!;
     expect(within(row).getByText("4")).toBeTruthy();
+    await user.click(screen.getByRole("tab", { name: /Finance and inventory/ }));
+    expect((await screen.findAllByText("Rs 1,500.00")).length).toBeGreaterThan(0);
+    expect(screen.getByText("Repair charges to review")).toBeTruthy();
   });
 
   it("downloads the summary for the chosen dates and lets a manager set who gets the monthly one (DB-04, DB-05)", async () => {
