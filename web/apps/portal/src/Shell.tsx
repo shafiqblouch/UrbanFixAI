@@ -29,7 +29,7 @@ const paths: Record<MenuId, string> = {
   directory: "/directory",
   charges: "/charges",
   reports: "/reports",
-  dashboard: "/dashboard", complaints: "/complaints", review: "/review", new: "/new", jobs: "/jobs", stock: "/stock", approvals: "/approvals", notices: "/notices", config: "/config", audit: "/audit",
+  dashboard: "/dashboard", complaints: "/complaints", map: "/map", review: "/review", new: "/new", jobs: "/jobs", stock: "/stock", approvals: "/approvals", notices: "/notices", config: "/config", audit: "/audit",
 };
 
 /** Screens that sit under the "System" heading; "New complaint" is the button above the menu instead of a menu entry. */

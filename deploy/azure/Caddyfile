@@ -1,0 +1,9 @@
+# Caddy gets and renews the HTTPS certificate for PUBLIC_HOST by itself (ports 80 and 443 must be open).
+{$PUBLIC_HOST} {
+	reverse_proxy core:8080
+}
+
+# Object storage on its own port so signed photo and audio links work over HTTPS.
+{$PUBLIC_HOST}:9000 {
+	reverse_proxy minio:9000
+}

@@ -241,6 +241,8 @@ public sealed class WhatsAppConversationService(
         var nearest = places.Select(p => (Place: p, Metres: DistanceMetres(latitude, longitude, p.Latitude!.Value, p.Longitude!.Value)))
             .Where(x => x.Metres <= PinMatchMetres).OrderBy(x => x.Metres).ThenByDescending(x => x.Place.Depth).FirstOrDefault();
 
+        complaint.Latitude = latitude;
+        complaint.Longitude = longitude;
         complaint.LocationText ??= $"WhatsApp pin {latitude:F5}, {longitude:F5}" + (string.IsNullOrWhiteSpace(name) ? "" : $" ({name})");
         if (nearest.Place is { } match && complaint.LocationId is null)
         {

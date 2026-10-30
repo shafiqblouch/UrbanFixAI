@@ -201,6 +201,7 @@ export function NewComplaintScreen() {
     if (!restored) return;
     setDescription(restored.description);
     setWhere(restored.locationText);
+    if (restored.latitude != null && restored.longitude != null) setPosition({ latitude: restored.latitude, longitude: restored.longitude });
     setRestored(undefined);
   };
 
@@ -227,6 +228,7 @@ export function NewComplaintScreen() {
       return ok(api.POST("/complaints", { body: {
         description: description.trim(), channel: null, categoryId: null, houseId: null, locationId: landmark?.locationId ?? null, locationText: locationText || null, reportedByUserId: null,
         reporterPhone: null, assetRef: asset.trim() || null, mediaOnly: description.trim() === "" && (photos.length > 0 || !!voice.note),
+        latitude: position?.latitude ?? null, longitude: position?.longitude ?? null,
       } }));
     });
     if (!created) {

@@ -1,5 +1,6 @@
 import { Alert, Button, Card, SelectField, Table, TextAreaField, TextField } from "@urbanfix/ui";
 import { useState } from "react";
+import { ComplaintLocationCard } from "../LocationMaps";
 import { DuplicatesCard } from "./Duplicates";
 import { FeedbackCard } from "./Feedback";
 import { Link, useParams } from "react-router-dom";
@@ -54,6 +55,8 @@ export function ComplaintDetailPage() {
                     {c.statusReason && <><dt>{t("reason")}</dt><dd>{c.statusReason}</dd></>}
                   </dl>
                 </Card>
+
+                {(c.latitude != null || c.channel === "app" || c.channel === "whatsapp") && <ComplaintLocationCard complaint={c} />}
 
                 <FeedbackCard complaint={c} feedback={d.feedback} canGive={c.reportedByUserId === me?.userId} onSaved={refresh} />
 

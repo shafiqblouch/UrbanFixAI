@@ -8,6 +8,7 @@ import { useAction, useLoad } from "../hooks";
 import { useFormat, useT, type Key } from "../i18n";
 import { useLookups } from "../lookups";
 import { canAssign } from "../roles";
+import { JobMapCard } from "../LocationMaps";
 import { ApprovalNote, ChargeableCard, ComparisonCard, MaterialsCard } from "./JobExtras";
 import { useSession } from "../session";
 
@@ -25,6 +26,9 @@ export function JobDetailPage() {
   const noteText = (note: string) => (note.startsWith("user:") ? nameOf(note.slice(5)) : note.startsWith("team:") ? teamName(note.slice(5)) : note);
   const detail = useLoad(() => ok(api.GET("/jobs/{id}", { params: { path: { id } } })), [id]);
   const items = useLoad(() => ok(api.GET("/price-items", {})).catch(() => []), []);
+  // The complaint's pin; a role that may not read the complaint simply gets no pin on the job map.
+  const complaintId = detail.data?.job.complaintId;
+  const complaint = useLoad(async () => (complaintId ? ok(api.GET("/complaints/{id}", { params: { path: { id: complaintId } } })).then((c) => c.complaint).catch(() => null) : null), [complaintId]);
 
   return (
     <Async state={detail}>
@@ -81,6 +85,8 @@ export function JobDetailPage() {
                 </Card>
 
                 <MaterialsCard job={job} canRequest={mine} />
+
+                <JobMapCard job={d} complaint={complaint.data ?? undefined} />
 
                 <Card title={t("job.timeline")}>
                   <ol className="timeline">

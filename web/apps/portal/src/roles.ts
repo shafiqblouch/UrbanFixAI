@@ -1,20 +1,20 @@
 import type { S } from "./api";
 
 export type Role = S["Role"];
-export type MenuId = "platform" | "directory" | "charges" | "reports" | "dashboard" | "complaints" | "review" | "new" | "jobs" | "stock" | "approvals" | "notices" | "config" | "audit";
+export type MenuId = "platform" | "directory" | "charges" | "reports" | "dashboard" | "complaints" | "map" | "review" | "new" | "jobs" | "stock" | "approvals" | "notices" | "config" | "audit";
 
 /** Which screens each role sees (WP-01). The server enforces the same rules; this only decides what to show. */
 export const menusByRole: Record<Role, MenuId[]> = {
-  Manager: ["dashboard", "complaints", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "config", "audit"],
-  Supervisor: ["dashboard", "complaints", "review", "new", "jobs", "reports", "stock"],
-  Office: ["dashboard", "complaints", "review", "new", "directory"],
+  Manager: ["dashboard", "complaints", "map", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "config", "audit"],
+  Supervisor: ["dashboard", "complaints", "map", "review", "new", "jobs", "reports", "stock"],
+  Office: ["dashboard", "complaints", "map", "review", "new", "directory"],
   Committee: ["dashboard", "complaints", "reports", "approvals", "notices", "audit"],
   Technician: ["jobs"],
   Resident: ["complaints", "new", "notices"],
   Accounts: ["dashboard", "charges", "reports"],
   Guard: [],
   // A platform person inside a society during a support session: the read-only views only (PA-05).
-  Support: ["dashboard", "complaints", "reports", "audit"],
+  Support: ["dashboard", "complaints", "map", "reports", "audit"],
   PlatformAdmin: ["platform"],
 };
 

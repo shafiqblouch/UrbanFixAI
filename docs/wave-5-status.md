@@ -104,8 +104,12 @@ All are English and Urdu and covered by portal tests with a stubbed API. **None 
 - `auto_routing` defaults to on so existing societies keep working.
 - Support access is limited to 120 minutes and needs a reason of at least 10 characters.
 
+## Mobile TA-09 (technician materials request)
+
+Done. On a job that is theirs and still being worked, the technician opens **Materials** from the job screen and sees what the store holds (with on-hand quantities), what has already been issued to this job, and a list of their own requests with status. They pick items and quantities, add an optional note and send; the storekeeper fulfils or rejects (portal Store screen). Open requests can be cancelled. Uses the existing endpoints (`GET /stock`, `GET /stock/jobs/{id}/materials`, `POST`/`GET /stock/requests`, cancel). English and Urdu; request-building rules are in `mobile/src/materials.ts` with tests. tsc clean, 87 vitest pass, Android bundle exports. **Not run on a device.**
+
 ## Not done
 
-- Mobile app screens and push registration (notices feed RA-09, MA-04), and the technician materials request on mobile.
+- Push registration on real FCM/APNs (MA-04 is built but needs google-services.json + a dev build and real accounts).
 - Real accounts for FCM, browser push keys, and the first real SMS/email gateways remain with you.
 - Posting charges to bills waits for billing (Phase 3).

@@ -772,3 +772,20 @@ a:hover { color: var(--uf-primary-strong); }
   .rq-keys { display: none; }
   .rq-search { min-inline-size: 0; flex: 1; }
 }
+
+/* Map view: Leaflet draws the tiles; these are our dots, coloured like the status chips. */
+.map-view { inline-size: 100%; border-radius: var(--uf-radius-md); border: 1px solid var(--uf-border-soft); overflow: hidden; z-index: 0; }
+.map-view .leaflet-popup-content { font-family: var(--uf-font-latin); font-size: var(--uf-font-size-sm); line-height: 1.4; }
+.map-view .leaflet-popup-content a { display: inline-block; margin-block-start: 6px; }
+.map-pin { display: grid; place-items: center; inline-size: 22px; block-size: 22px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 1px 4px rgb(0 0 0 / 45%); color: #fff; font-size: 11px; font-weight: 700; box-sizing: border-box; }
+.map-pin--info { background: var(--uf-info); }
+.map-pin--warn { background: #d97706; }
+.map-pin--good { background: var(--uf-success); }
+.map-pin--bad { background: var(--uf-danger); }
+.map-pin--neutral { background: var(--uf-neutral); }
+.map-pin--tech { background: var(--uf-primary-strong); border-radius: 6px; transform: rotate(45deg); }
+.map-legend { display: flex; flex-wrap: wrap; gap: var(--uf-space-3); margin: 0; padding: 0; list-style: none; font-size: var(--uf-font-size-sm); }
+.map-legend li { display: inline-flex; align-items: center; gap: var(--uf-space-1); }
+.map-legend .map-pin { inline-size: 14px; block-size: 14px; border-width: 2px; }
+.check { display: inline-flex; align-items: center; gap: var(--uf-space-2); min-block-size: 44px; }
+.map-pin--step { background: var(--uf-primary); }

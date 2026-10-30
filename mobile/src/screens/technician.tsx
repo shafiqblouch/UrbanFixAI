@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Image, View } from "react-native";
 import { ApiError, api, ok, transcribeVoice, type S } from "../api";
 import { amountOf, emptyLine, fromServer, KINDS, problemWith, toInput, totalOf, type Line } from "../costs";
+import { emptyRequestLine, requestBody, requestIsValid, type RequestLine } from "../materials";
 import { errorText, useAction, useLoad } from "../hooks";
 import { useI18n, useT } from "../i18n";
 import type { Key } from "../i18n/strings";
@@ -151,9 +152,11 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
     void drain();
   }
 
+  // Starting and finishing the work always record where the technician was, so the manager's map can show it; notes only when ticked.
+  const fixOrUndefined = async () => { const fix = await currentPosition(); return "latitude" in fix ? fix : undefined; };
+
   const addNote = () => act.run(async () => {
-    const fix = withGps ? await currentPosition() : undefined;
-    const at = fix && "latitude" in fix ? fix : undefined;
+    const at = withGps ? await fixOrUndefined() : undefined;
     await ok(api.POST("/jobs/{id}/updates", { ...path, body: { note: note.trim(), latitude: at?.latitude ?? null, longitude: at?.longitude ?? null, checklistDone: null } }));
     setNote("");
     refresh();
@@ -184,10 +187,12 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
       )}
 
       {job.status === "Open" && <Button title={t("job.accept")} loading={act.busy} onPress={() => void act.run(async () => { await ok(api.POST("/jobs/{id}/accept", path)); refresh(); })} />}
-      {job.status === "Accepted" && <Button title={t("job.start")} loading={act.busy} onPress={() => void act.run(async () => { await ok(api.POST("/jobs/{id}/start", { ...path, body: { note: null, latitude: null, longitude: null } })); refresh(); })} />}
+      {job.status === "Accepted" && <Button title={t("job.start")} loading={act.busy} onPress={() => void act.run(async () => { const at = await fixOrUndefined(); await ok(api.POST("/jobs/{id}/start", { ...path, body: { note: null, latitude: at?.latitude ?? null, longitude: at?.longitude ?? null } })); refresh(); })} />}
 
       {["Open", "Accepted"].includes(job.status) && <Button title={t("job.estimate")} variant="secondary" onPress={() => nav.navigate("Costs", { jobId: id, mode: "estimate" })} />}
       {d.estimate && <Txt muted>{t("job.estimateSaved", { version: d.estimate.version, total: d.estimate.total.toFixed(2) })}</Txt>}
+
+      {["Accepted", "InProgress"].includes(job.status) && <Button title={t("job.materials")} variant="secondary" onPress={() => nav.navigate("Materials", { jobId: id })} />}
 
       {["Accepted", "InProgress"].includes(job.status) && (
         <Card>
@@ -223,7 +228,7 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
           <Button title={t("job.costs")} variant="secondary" onPress={() => nav.navigate("Costs", { jobId: id, mode: "actuals" })} />
           {blockers.length > 0 && <Banner text={[t("job.notReady"), ...blockers.map((m) => `• ${t(`job.missing.${m}` as Key)}`)].join("\n")} />}
           <Button title={t("job.complete")} loading={act.busy} disabled={blockers.length > 0}
-            onPress={() => void act.run(async () => { await ok(api.POST("/jobs/{id}/complete", { ...path, body: { note: note.trim() || null } })); setMessage(t("job.completed")); refresh(); })} />
+            onPress={() => void act.run(async () => { const at = await fixOrUndefined(); await ok(api.POST("/jobs/{id}/complete", { ...path, body: { note: note.trim() || null, latitude: at?.latitude ?? null, longitude: at?.longitude ?? null } })); setMessage(t("job.completed")); refresh(); })} />
         </>
       )}
 
@@ -313,6 +318,96 @@ export function CostsScreen({ route }: NativeStackScreenProps<RootStackParams, "
         <Button title={mode === "estimate" ? t("cost.saveEstimate") : t("cost.saveCosts")} onPress={() => void save()} loading={act.busy} disabled={!valid} />
         <Button title={t("back")} variant="ghost" onPress={() => nav.goBack()} />
       </View>
+    </Screen>
+  );
+}
+
+const requestTone: Record<string, "success" | "warning" | "danger" | "neutral"> = {
+  Open: "warning", Fulfilled: "success", Rejected: "danger", Cancelled: "neutral",
+};
+
+/** What the store holds, what has been issued to this job, and asking for more materials (TA-09). */
+export function MaterialsScreen({ route }: NativeStackScreenProps<RootStackParams, "Materials">) {
+  const t = useT();
+  const nav = useNavigation<Nav>();
+  const { number } = useI18n();
+  const { jobId } = route.params;
+  const stock = useLoad(() => ok(api.GET("/stock", {})), []);
+  const issued = useLoad(() => ok(api.GET("/stock/jobs/{jobId}/materials", { params: { path: { jobId } } })), [jobId]);
+  const requests = useLoad(() => ok(api.GET("/stock/requests", { params: { query: { jobId } } })), [jobId]);
+  const act = useAction();
+  const cancelAct = useAction();
+  const [lines, setLines] = useState<RequestLine[]>([emptyRequestLine()]);
+  const [note, setNote] = useState("");
+  const [message, setMessage] = useState<string>();
+
+  if (!stock.data) return <Screen>{stock.error ? <Banner text={errorText(t, stock.error)} /> : <Loading />}</Screen>;
+  const items = stock.data;
+  const byId = new Map(items.map((i) => [i.itemId, i]));
+  const set = (i: number, patch: Partial<RequestLine>) => { setMessage(undefined); setLines((ls) => ls.map((l, n) => (n === i ? { ...l, ...patch } : l))); };
+
+  const send = () => act.run(async () => {
+    await ok(api.POST("/stock/requests", { body: { jobId, note: note.trim() || null, lines: requestBody(lines) } }));
+    setLines([emptyRequestLine()]);
+    setNote("");
+    setMessage(t("mat.sent"));
+    requests.reload();
+  });
+
+  const cancel = (id: string) => cancelAct.run(async () => {
+    await ok(api.POST("/stock/requests/{id}/cancel", { params: { path: { id } } }));
+    setMessage(t("mat.cancelled"));
+    requests.reload();
+  });
+
+  return (
+    <Screen>
+      <Txt size="xl" bold>{t("mat.title")}</Txt>
+
+      <Card>
+        <Txt bold>{t("mat.issued")}</Txt>
+        {issued.data && issued.data.length > 0
+          ? issued.data.map((m) => <Txt key={m.itemId}>{t("mat.issuedLine", { item: m.item, used: number(m.used), issued: number(m.issued), unit: m.unit })}</Txt>)
+          : <Txt muted>{t("mat.noneIssued")}</Txt>}
+      </Card>
+
+      {items.length === 0 ? <Banner text={t("mat.empty")} /> : (
+        <Card>
+          <Txt bold>{t("mat.open")}</Txt>
+          {lines.map((l, i) => {
+            const picked = l.itemId ? byId.get(l.itemId) : undefined;
+            return (
+              <View key={i} style={{ gap: space[1] }}>
+                <Choice label={t("mat.item")} value={l.itemId || undefined}
+                  options={items.map((it) => ({ value: it.itemId, label: `${it.item} (${number(it.onHand)} ${it.unit})` }))}
+                  onChange={(id) => set(i, { itemId: id })} />
+                {picked && <Txt size="sm" muted>{t("mat.onHand", { qty: number(picked.onHand), unit: picked.unit })}</Txt>}
+                <Field label={t("mat.quantity")} value={l.quantity} onChangeText={(v) => set(i, { quantity: v })} keyboardType="decimal-pad" />
+                {lines.length > 1 && <Button title={t("cost.remove")} variant="ghost" onPress={() => setLines((ls) => ls.filter((_, n) => n !== i))} />}
+              </View>
+            );
+          })}
+          <Button title={t("mat.addLine")} variant="secondary" onPress={() => setLines((ls) => [...ls, emptyRequestLine()])} />
+          <Field label={t("mat.note")} value={note} onChangeText={setNote} multiline numberOfLines={2} />
+          {act.error && <Banner tone="danger" text={errorText(t, act.error)} />}
+          <Button title={t("mat.send")} loading={act.busy} disabled={!requestIsValid(lines)} onPress={() => void send()} />
+        </Card>
+      )}
+
+      <Card>
+        <Txt bold>{t("mat.requests")}</Txt>
+        {requests.data && requests.data.length > 0 ? requests.data.map((r) => (
+          <View key={r.id} style={{ gap: space[1], marginTop: space[2] }}>
+            <Row><Txt bold style={{ flex: 1 }}>{new Date(r.createdAt).toLocaleDateString()}</Txt><Chip label={t(`mat.status.${r.status}` as Key)} tone={requestTone[r.status] ?? "neutral"} /></Row>
+            {r.lines.map((ln) => <Txt key={ln.itemId}>{ln.item}: {number(ln.quantity)} {ln.unit}</Txt>)}
+            {r.status === "Rejected" && r.decisionNote && <Txt muted>{t("mat.refused", { reason: r.decisionNote })}</Txt>}
+            {r.status === "Open" && <Button title={t("mat.cancel")} variant="ghost" loading={cancelAct.busy} onPress={() => void cancel(r.id)} />}
+          </View>
+        )) : <Txt muted>{t("mat.noneRequested")}</Txt>}
+      </Card>
+
+      {message && <Banner tone="success" text={message} />}
+      <Button title={t("back")} variant="ghost" onPress={() => nav.goBack()} />
     </Screen>
   );
 }

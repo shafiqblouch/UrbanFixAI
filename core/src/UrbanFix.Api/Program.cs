@@ -111,6 +111,7 @@ app.MapAdminEndpoints();
 app.MapSetupEndpoints();
 app.MapComplaintEndpoints();
 app.MapJobEndpoints();
+app.MapMapEndpoints();
 app.MapRoutingEndpoints();
 app.MapDashboardEndpoints();
 app.MapPricingEndpoints();

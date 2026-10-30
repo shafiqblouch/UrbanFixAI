@@ -1,0 +1,77 @@
+# One-VM test deployment. Run from this folder: `docker compose up -d --build`. Settings come from .env (see .env.example).
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: urbanfix
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: urbanfix
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urbanfix"]
+      interval: 5s
+      retries: 20
+
+  minio:
+    # Dev-grade S3-compatible store (the same frozen image the local stack uses).
+    image: bitnamilegacy/minio:latest
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
+      MINIO_DEFAULT_BUCKETS: urbanfix-media
+    volumes: [miniodata:/bitnami/minio/data]
+
+  ai:
+    build: ../../ai
+    restart: unless-stopped
+    environment:
+      AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+
+  core:
+    build:
+      context: ../../core
+      args:
+        SIXLABORS_LICENSE_KEY: ${SIXLABORS_LICENSE_KEY:-}
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      PORT: "8080"
+      # Development enables the demo sign-in (code 123456); the API refuses fixed codes in any other environment.
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Owner: Host=postgres;Port=5432;Database=urbanfix;Username=urbanfix;Password=${DB_PASSWORD}
+      ConnectionStrings__App: Host=postgres;Port=5432;Database=urbanfix;Username=urbanfix_app;Password=${APP_ROLE_PASSWORD}
+      Database__AppRolePassword: ${APP_ROLE_PASSWORD}
+      Database__MigrateOnStartup: "true"
+      Bootstrap__PlatformAdminEmail: admin@urbanfix.local
+      Bootstrap__PlatformAdminPassword: ${ADMIN_PASSWORD}
+      Ai__BaseUrl: http://ai:8000
+      Ai__ServiceToken: ${AI_SERVICE_TOKEN}
+      Storage__ServiceUrl: http://minio:9000
+      # Phones fetch photos and audio through signed links, so those must use the public address.
+      Storage__PublicUrl: https://${PUBLIC_HOST}:9000
+      Storage__AccessKey: ${STORAGE_ACCESS_KEY}
+      Storage__SecretKey: ${STORAGE_SECRET_KEY}
+      Storage__Bucket: urbanfix-media
+      DataProtection__KeyPath: /keys
+    volumes: [keys:/keys]
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [core, minio]
+    ports: ["80:80", "443:443", "9000:9000"]
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+
+volumes:
+  pgdata:
+  miniodata:
+  keys:
+  caddydata:

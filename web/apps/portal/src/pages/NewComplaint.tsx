@@ -78,7 +78,7 @@ export function NewComplaintPage() {
         description, channel: staff ? channel : null, categoryId: categoryId || null, houseId: houseId || null,
         locationId: houseId ? null : locationId || null, locationText: locationText || null, reportedByUserId: staff ? reporterId || null : null,
         // A caller who is not picked from the house is matched by number; unknown numbers follow the society's policy (CP-08).
-        reporterPhone: staff && !reporterId ? callerPhone.trim() || null : null, assetRef: assetRef.trim() || null,
+        reporterPhone: staff && !reporterId ? callerPhone.trim() || null : null, latitude: null, longitude: null, assetRef: assetRef.trim() || null,
         // With only a photo or voice note, the AI reads or listens and writes the description and category.
         mediaOnly: description.trim() === "" && hasMedia,
       } }));

@@ -13,6 +13,7 @@ import { ConfigPage } from "./pages/Config";
 import { DashboardPage } from "./pages/Dashboard";
 import { JobDetailPage } from "./pages/JobDetail";
 import { JobsPage } from "./pages/Jobs";
+import { MapPage } from "./pages/MapPage";
 import { LoginPage } from "./pages/Login";
 import { NewComplaintPage } from "./pages/NewComplaint";
 import { NoticesPage } from "./pages/Notices";
@@ -48,6 +49,7 @@ function Routed({ onLocale }: { onLocale: (l: Locale) => void }) {
         <Route path="dashboard" element={<Guard menu="dashboard"><DashboardPage /></Guard>} />
         <Route path="complaints" element={<Guard menu="complaints"><ComplaintsPage /></Guard>} />
         <Route path="complaints/:id" element={<Guard menu="complaints"><ComplaintDetailPage /></Guard>} />
+        <Route path="map" element={<Guard menu="map"><MapPage /></Guard>} />
         <Route path="review" element={<Guard menu="review"><ReviewQueuePage /></Guard>} />
         <Route path="new" element={<Guard menu="new"><NewComplaintPage /></Guard>} />
         <Route path="jobs" element={<Guard menu="jobs"><JobsPage /></Guard>} />

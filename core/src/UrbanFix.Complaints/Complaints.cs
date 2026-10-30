@@ -25,6 +25,9 @@ public class Complaint : IAudited
     public Guid? HouseId { get; set; }
     public Guid? LocationId { get; set; }
     public string? LocationText { get; set; }
+    /// <summary>Where the reporter was when they sent it (app GPS fix or WhatsApp pin); drawn on the portal map.</summary>
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
     public Guid? ReportedByUserId { get; set; }
     public Guid? EnteredByUserId { get; set; }
     public string Priority { get; set; } = "Normal";

@@ -22,7 +22,7 @@ public static class JobEndpoints
     public sealed record AssignJob(Guid? TeamId, Guid? UserId);
     public sealed record StartWork(string? Note, double? Latitude, double? Longitude);
     public sealed record AddUpdate(string? Note, double? Latitude, double? Longitude, int[]? ChecklistDone);
-    public sealed record CompleteJob(string? Note);
+    public sealed record CompleteJob(string? Note, double? Latitude = null, double? Longitude = null);
     public sealed record ReasonRequest(string? Reason);
     public sealed record CostLineInput(string Kind, Guid? PriceItemId, string? Description, decimal Quantity, string? Unit, decimal? UnitRate);
     public sealed record SaveEstimate(string? Note, IReadOnlyList<CostLineInput> Lines);
@@ -400,7 +400,7 @@ public static class JobEndpoints
         if (missing.Count > 0) return Results.UnprocessableEntity(new { error = "evidence_missing", missing });
 
         x.Job.CompletionNote = note;
-        MoveJob(db, bus, x, JobStatus.PendingVerification, note);
+        MoveJob(db, bus, x, JobStatus.PendingVerification, note, req.Latitude, req.Longitude);
 
         // What the store issued against what the technician says was used: differences are flagged for the supervisor (JC-07).
         var off = (await MaterialsReport.ForJobAsync(db, id, ct)).Where(m => m.Flagged).ToList();

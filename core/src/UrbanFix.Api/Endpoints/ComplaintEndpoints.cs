@@ -15,7 +15,7 @@ namespace UrbanFix.Api.Endpoints;
 /// <summary>Complaint core (CP-01 to CP-07) and jobs (JB-01).</summary>
 public static class ComplaintEndpoints
 {
-    public sealed record CreateComplaint(string Description, string? Channel, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText, Guid? ReportedByUserId, string? ReporterPhone = null, string? AssetRef = null, bool MediaOnly = false);
+    public sealed record CreateComplaint(string Description, string? Channel, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText, Guid? ReportedByUserId, string? ReporterPhone = null, string? AssetRef = null, bool MediaOnly = false, double? Latitude = null, double? Longitude = null);
     public sealed record CompleteLocation(Guid? HouseId, Guid? LocationId, string? LocationText);
     public sealed record Transition(ComplaintStatus To, string? Reason, Guid? MergedIntoId);
     public sealed record CreateJob(string? Instructions, Guid? AssignedTeamId);
@@ -27,7 +27,7 @@ public static class ComplaintEndpoints
         Guid? HouseId, Guid? LocationId, string? LocationText, string? Language, string AiStatus, string? AiCategoryKey, string? AiSummary,
         float? AiConfidence, string? HoldReason, string? StatusReason, Guid? ReportedByUserId, Guid? EnteredByUserId, Guid? MergedIntoId,
         DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt, bool SafetyFlag = false, DateTimeOffset? DueAt = null, DateTimeOffset? RespondBy = null, bool AutoRouted = false,
-        string? ReporterPhone = null, bool ReporterVerified = true, string? AssetRef = null, bool AutoConfirmed = false, string? AiModel = null, Guid? IncidentId = null);
+        string? ReporterPhone = null, bool ReporterVerified = true, string? AssetRef = null, bool AutoConfirmed = false, string? AiModel = null, Guid? IncidentId = null, double? Latitude = null, double? Longitude = null);
     public sealed record VerifyReporter(Guid? UserId);
     public sealed record SaveFeedback(int Rating, bool ConfirmedFixed, string? Comment);
     public sealed record FeedbackDto(int Rating, bool ConfirmedFixed, string? Comment, DateTimeOffset UpdatedAt);
@@ -139,6 +139,10 @@ public static class ComplaintEndpoints
             if (reporter is { } r && !await db.Users.AnyAsync(u => u.Id == r, ct)) return Results.BadRequest(new { error = "reporter_not_found" });
         }
 
+        if ((req.Latitude is null) != (req.Longitude is null) || req.Latitude is < -90 or > 90 || req.Longitude is < -180 or > 180)
+            return Results.BadRequest(new { error = "invalid_coordinates" });
+        var (lat, lon) = (req.Latitude, req.Longitude);
+
         var assetRef = string.IsNullOrWhiteSpace(req.AssetRef) ? null : req.AssetRef.Trim();
         if (assetRef is { Length: > 100 }) return Results.BadRequest(new { error = "invalid_asset_ref" });
 
@@ -167,7 +171,7 @@ public static class ComplaintEndpoints
 
         var (made, error) = await intake.CreateAsync(new IntakeRequest(
             actor.OrgId, channel, description, req.CategoryId, req.HouseId, req.LocationId, req.LocationText, reporter, enteredBy,
-            reporterPhone, reporterVerified, holdForSender, assetRef, actor.UserId), ct);
+            reporterPhone, reporterVerified, holdForSender, assetRef, actor.UserId, lat, lon), ct);
         if (error is not null) return Results.BadRequest(new { error });
 
         var complaint = made!.Complaint;
@@ -599,7 +603,7 @@ public static class ComplaintEndpoints
     internal static ComplaintDto ToDto(Complaint c) => new(
         c.Id, c.Reference, c.Status, c.Channel, c.Description, c.CategoryId, c.Priority, c.HouseId, c.LocationId, c.LocationText, c.Language,
         c.AiStatus, c.AiCategoryKey, c.AiSummary, c.AiConfidence, c.HoldReason, c.StatusReason, c.ReportedByUserId, c.EnteredByUserId, c.MergedIntoId,
-        c.CreatedAt, c.UpdatedAt, c.SafetyFlag, c.DueAt, c.RespondBy, c.AutoRouted, c.ReporterPhone, c.ReporterVerified, c.AssetRef, c.AutoConfirmed, c.AiModel, c.IncidentId);
+        c.CreatedAt, c.UpdatedAt, c.SafetyFlag, c.DueAt, c.RespondBy, c.AutoRouted, c.ReporterPhone, c.ReporterVerified, c.AssetRef, c.AutoConfirmed, c.AiModel, c.IncidentId, c.Latitude, c.Longitude);
 
     internal static JobDto ToDto(Job j) => new(j.Id, j.Number, j.SequenceNo, j.Status, j.Instructions, j.AssignedTeamId, j.CreatedAt, j.ComplaintId, j.AssignedUserId, j.EvidenceRule, j.RequiresCosts, j.Chargeable, j.ChargeHouseId);
 

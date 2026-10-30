@@ -279,6 +279,7 @@ public class WhatsAppFlowTests(TestApp app)
         Assert.Contains("Location noted", pinned[0].Text);
         var detail = (await chat.DetailAsync(reference)).Complaint;
         Assert.Equal((ComplaintStatus.New, place!.Id, null), (detail.Status, detail.LocationId, detail.HoldReason));
+        Assert.Equal((24.8607, 67.0011), (detail.Latitude!.Value, detail.Longitude!.Value), new PinComparer());
     }
 
     [Fact]
@@ -293,6 +294,7 @@ public class WhatsAppFlowTests(TestApp app)
         var detail = (await chat.DetailAsync(reference)).Complaint;
         Assert.Equal(ComplaintStatus.OnHold, detail.Status);
         Assert.Contains("WhatsApp pin", detail.LocationText);
+        Assert.NotNull(detail.Latitude); // kept for the map even though no known place matched
 
         var address = await chat.Text(from, "Street 4, house 12");
         Assert.Contains("confirm the place", address[0].Text);
@@ -499,4 +501,11 @@ public class WhatsAppFlowTests(TestApp app)
         var stored = await chat.Scalar<long>("SELECT count(*) FROM whatsapp_messages WHERE organization_id = @o AND direction = 'out' AND wa_id = @w AND status = 'sent' AND wa_message_id IS NOT NULL", ("w", from));
         Assert.Equal(replies.Count, stored);
     }
+}
+
+/// <summary>A pin is drawn on a map, so a metre or two does not matter.</summary>
+internal sealed class PinComparer : IEqualityComparer<(double, double)>
+{
+    public bool Equals((double, double) a, (double, double) b) => Math.Abs(a.Item1 - b.Item1) < 0.0005 && Math.Abs(a.Item2 - b.Item2) < 0.0005;
+    public int GetHashCode((double, double) x) => 0;
 }

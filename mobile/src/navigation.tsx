@@ -7,7 +7,7 @@ import { useT } from "./i18n";
 import type { Key } from "./i18n/strings";
 import { isMobileRole, tabsByRole, type MobileRole, type TabId } from "./roles";
 import { ComplaintDetailScreen, ComplaintsScreen, HomeScreen, NewComplaintScreen, ReceiptScreen, ReceiptsScreen } from "./screens/resident";
-import { CostsScreen, JobDetailScreen, JobsScreen, TodayScreen } from "./screens/technician";
+import { CostsScreen, JobDetailScreen, JobsScreen, MaterialsScreen, TodayScreen } from "./screens/technician";
 import { LoginScreen } from "./screens/LoginScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { NoticesScreen, useUnreadNotices } from "./screens/notices";
@@ -28,6 +28,7 @@ export type RootStackParams = {
   Receipts: undefined;
   JobDetail: { id: string };
   Costs: { jobId: string; mode: "estimate" | "actuals" };
+  Materials: { jobId: string };
 };
 
 const navigationRef = createNavigationContainerRef<RootStackParams>();
@@ -104,6 +105,7 @@ export function Navigation() {
             <Stack.Screen name="Receipts" component={ReceiptsScreen} options={{ title: t("receipt.list") }} />
             <Stack.Screen name="JobDetail" component={JobDetailScreen} options={{ title: t("tab.jobs") }} />
             <Stack.Screen name="Costs" component={CostsScreen} options={{ title: t("cost.title") }} />
+            <Stack.Screen name="Materials" component={MaterialsScreen} options={{ title: t("mat.title") }} />
           </>
         )}
       </Stack.Navigator>

@@ -1166,6 +1166,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: components["schemas"]["NullableOfComplaintStatus"];
+                    q?: string;
+                    categoryId?: string;
+                    departmentId?: string;
+                    locationId?: string;
+                    priority?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MapDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/dashboard/summary": {
         parameters: {
             query?: never;
@@ -1873,7 +1917,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    status?: components["schemas"]["NullableOfComplaintStatus2"];
+                    status?: components["schemas"]["NullableOfComplaintStatus"];
                     q?: string;
                     categoryId?: string;
                     departmentId?: string;
@@ -5915,7 +5959,7 @@ export interface paths {
                 query?: {
                     format?: string;
                     lang?: string;
-                    status?: components["schemas"]["NullableOfComplaintStatus2"];
+                    status?: components["schemas"]["NullableOfComplaintStatus"];
                     q?: string;
                     categoryId?: string;
                     departmentId?: string;
@@ -7052,11 +7096,46 @@ export interface components {
              * @default null
              */
             incidentId: string | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            latitude: number | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            longitude: number | null;
+        };
+        ComplaintPin: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            status: components["schemas"]["ComplaintStatus"];
+            priority: string;
+            description: string;
+            locationText: string | null;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            /** Format: date-time */
+            createdAt: string;
         };
         /** @enum {unknown} */
         ComplaintStatus: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged";
         CompleteJob: {
             note: string | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            latitude: number | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            longitude: number | null;
         };
         CompleteLocation: {
             /** Format: uuid */
@@ -7173,6 +7252,16 @@ export interface components {
             assetRef: string | null;
             /** @default false */
             mediaOnly: boolean;
+            /**
+             * Format: double
+             * @default null
+             */
+            latitude: number | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            longitude: number | null;
         };
         CreatedDto: {
             /** Format: uuid */
@@ -7450,7 +7539,7 @@ export interface components {
             warnings: string[];
         };
         HistoryDto: {
-            from: components["schemas"]["NullableOfComplaintStatus"];
+            from: components["schemas"]["NullableOfComplaintStatus2"];
             to: components["schemas"]["ComplaintStatus"];
             /** Format: uuid */
             actorUserId: string | null;
@@ -7642,6 +7731,12 @@ export interface components {
         MakeSummary: {
             period: string;
         };
+        MapDto: {
+            complaints: components["schemas"]["ComplaintPin"][];
+            technicians: components["schemas"]["TechnicianPin"][];
+            /** Format: int32 */
+            complaintsWithoutPosition: number;
+        };
         MaterialLine: {
             /** Format: uuid */
             itemId: string;
@@ -7801,9 +7896,9 @@ export interface components {
             /** Format: date-time */
             readAt: string | null;
         };
-        /** @enum {unknown|null} */
-        NullableOfComplaintStatus: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged" | null;
         /** @enum {unknown} */
+        NullableOfComplaintStatus: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged" | null;
+        /** @enum {unknown|null} */
         NullableOfComplaintStatus2: "New" | "OnHold" | "UnderReview" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected" | "Merged" | null;
         NullableOfJsonElement: unknown;
         OnboardingDto: {
@@ -8484,6 +8579,25 @@ export interface components {
             /** Format: uuid */
             userId: string;
             isSupervisor: boolean;
+        };
+        TechnicianPin: {
+            /** Format: uuid */
+            jobId: string;
+            jobNumber: string;
+            jobStatus: string;
+            /** Format: uuid */
+            complaintId: string;
+            reference: string;
+            /** Format: uuid */
+            userId: string | null;
+            technicianName: string | null;
+            kind: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            /** Format: date-time */
+            at: string;
         };
         TestResultDto: {
             /** Format: int32 */

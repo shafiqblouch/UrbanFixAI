@@ -1069,6 +1069,88 @@
         }
       }
     },
+    "/map": {
+      "get": {
+        "tags": [
+          "Map"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/NullableOfComplaintStatus"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "departmentId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "locationId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/dashboard/summary": {
       "get": {
         "tags": [
@@ -1679,7 +1761,7 @@
             "name": "status",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/NullableOfComplaintStatus2"
+              "$ref": "#/components/schemas/NullableOfComplaintStatus"
             }
           },
           {
@@ -5512,7 +5594,7 @@
             "name": "status",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/NullableOfComplaintStatus2"
+              "$ref": "#/components/schemas/NullableOfComplaintStatus"
             }
           },
           {
@@ -7288,6 +7370,66 @@
             "format": "uuid",
             "default": null,
             "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "default": null,
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "default": null,
+            "nullable": true
+          }
+        }
+      },
+      "ComplaintPin": {
+        "required": [
+          "id",
+          "reference",
+          "status",
+          "priority",
+          "description",
+          "locationText",
+          "latitude",
+          "longitude",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ComplaintStatus"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "locationText": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -7312,6 +7454,18 @@
         "properties": {
           "note": {
             "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "default": null,
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "default": null,
             "nullable": true
           }
         }
@@ -7685,6 +7839,18 @@
           "mediaOnly": {
             "type": "boolean",
             "default": false
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "default": null,
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "default": null,
+            "nullable": true
           }
         }
       },
@@ -8625,7 +8791,7 @@
         "type": "object",
         "properties": {
           "from": {
-            "$ref": "#/components/schemas/NullableOfComplaintStatus"
+            "$ref": "#/components/schemas/NullableOfComplaintStatus2"
           },
           "to": {
             "$ref": "#/components/schemas/ComplaintStatus"
@@ -9259,6 +9425,32 @@
           }
         }
       },
+      "MapDto": {
+        "required": [
+          "complaints",
+          "technicians",
+          "complaintsWithoutPosition"
+        ],
+        "type": "object",
+        "properties": {
+          "complaints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComplaintPin"
+            }
+          },
+          "technicians": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TechnicianPin"
+            }
+          },
+          "complaintsWithoutPosition": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "MaterialLine": {
         "required": [
           "itemId",
@@ -9759,8 +9951,7 @@
           "Rejected",
           "Merged",
           null
-        ],
-        "nullable": true
+        ]
       },
       "NullableOfComplaintStatus2": {
         "enum": [
@@ -9774,7 +9965,8 @@
           "Rejected",
           "Merged",
           null
-        ]
+        ],
+        "nullable": true
       },
       "NullableOfJsonElement": {
         "nullable": true
@@ -11973,6 +12165,65 @@
           }
         }
       },
+      "TechnicianPin": {
+        "required": [
+          "jobId",
+          "jobNumber",
+          "jobStatus",
+          "complaintId",
+          "reference",
+          "userId",
+          "technicianName",
+          "kind",
+          "latitude",
+          "longitude",
+          "at"
+        ],
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jobNumber": {
+            "type": "string"
+          },
+          "jobStatus": {
+            "type": "string"
+          },
+          "complaintId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "technicianName": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "TestResultDto": {
         "required": [
           "sent",
@@ -12593,6 +12844,9 @@
     },
     {
       "name": "Setup"
+    },
+    {
+      "name": "Map"
     },
     {
       "name": "Dashboard"

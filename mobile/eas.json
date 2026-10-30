@@ -4,7 +4,7 @@
     "preview": {
       "distribution": "internal",
       "android": { "buildType": "apk" },
-      "env": { "EXPO_PUBLIC_API_URL": "https://REPLACE-WITH-CORE-SPACE-URL.hf.space" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://REPLACE-WITH-AZURE-HOST" }
     }
   }
 }

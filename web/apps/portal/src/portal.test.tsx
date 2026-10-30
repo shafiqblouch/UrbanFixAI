@@ -20,9 +20,9 @@ vi.stubGlobal("fetch", fetchMock);
 
 describe("role menus (WP-01)", () => {
   it("gives every role exactly the screens it should see", () => {
-    expect(menusFor("Manager")).toEqual(["dashboard", "complaints", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "config", "audit"]);
-    expect(menusFor("Supervisor")).toEqual(["dashboard", "complaints", "review", "new", "jobs", "reports", "stock"]);
-    expect(menusFor("Office")).toEqual(["dashboard", "complaints", "review", "new", "directory"]);
+    expect(menusFor("Manager")).toEqual(["dashboard", "complaints", "map", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "config", "audit"]);
+    expect(menusFor("Supervisor")).toEqual(["dashboard", "complaints", "map", "review", "new", "jobs", "reports", "stock"]);
+    expect(menusFor("Office")).toEqual(["dashboard", "complaints", "map", "review", "new", "directory"]);
     expect(menusFor("Committee")).toEqual(["dashboard", "complaints", "reports", "approvals", "notices", "audit"]);
     expect(menusFor("Technician")).toEqual(["jobs"]);
     expect(menusFor("Resident")).toEqual(["complaints", "new", "notices"]);
@@ -114,9 +114,9 @@ describe("app", () => {
   }
 
   it.each([
-    ["Manager", ["Dashboard", "Complaints", "Review queue", "Directory", "Jobs", "Reports", "Store", "Approvals", "Notices", "Configuration", "Audit log"]],
-    ["Supervisor", ["Dashboard", "Complaints", "Review queue", "Jobs", "Reports", "Store"]],
-    ["Office", ["Dashboard", "Complaints", "Review queue", "Directory"]],
+    ["Manager", ["Dashboard", "Complaints", "Map", "Review queue", "Directory", "Jobs", "Reports", "Store", "Approvals", "Notices", "Configuration", "Audit log"]],
+    ["Supervisor", ["Dashboard", "Complaints", "Map", "Review queue", "Jobs", "Reports", "Store"]],
+    ["Office", ["Dashboard", "Complaints", "Map", "Review queue", "Directory"]],
     ["Technician", ["My jobs"]],
   ])("shows a %s only their menus", async (role, labels) => {
     await mount(role);

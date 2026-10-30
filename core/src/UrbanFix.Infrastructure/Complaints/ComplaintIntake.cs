@@ -9,7 +9,7 @@ namespace UrbanFix.Infrastructure.Complaints;
 /// <summary>A complaint ready to be stored. Who may send it, and what to do with an unknown phone number, are decided before this point.</summary>
 public sealed record IntakeRequest(
     Guid OrganizationId, string Channel, string Description, Guid? CategoryId, Guid? HouseId, Guid? LocationId, string? LocationText,
-    Guid? ReporterUserId, Guid? EnteredByUserId, string? ReporterPhone, bool ReporterVerified, bool HoldForSender, string? AssetRef, Guid? ActorUserId);
+    Guid? ReporterUserId, Guid? EnteredByUserId, string? ReporterPhone, bool ReporterVerified, bool HoldForSender, string? AssetRef, Guid? ActorUserId, double? Latitude = null, double? Longitude = null);
 
 public sealed record IntakeResult(Complaint Complaint, bool NeedsLocation);
 
@@ -65,6 +65,7 @@ public sealed class ComplaintIntake(AppDbContext db, NumberGenerator numbers, IE
             LocationText = string.IsNullOrWhiteSpace(req.LocationText) ? null : req.LocationText.Trim(),
             ReportedByUserId = req.ReporterUserId,
             EnteredByUserId = req.EnteredByUserId,
+            Latitude = req.Latitude, Longitude = req.Longitude,
             ReporterPhone = req.ReporterPhone, ReporterVerified = req.ReporterVerified, AssetRef = req.AssetRef,
         };
 
