@@ -3,7 +3,18 @@
 Everything (Postgres, file storage, AI service, API and an HTTPS proxy) runs in Docker Compose on one Ubuntu VM.
 Files: `deploy/azure/docker-compose.yml`, `Caddyfile`, `.env.example`.
 
-## 1. Create the VM (Azure portal)
+## Fastest path: one script in Azure Cloud Shell
+
+Instead of steps 1 to 4, open the Azure portal, click the **Cloud Shell** icon (`>_`, top bar), choose **Bash**, and run:
+
+```
+export OPENROUTER_API_KEY=<a new key>
+curl -fsSL https://raw.githubusercontent.com/shafiqblouch/UrbanFixAI/wave-3-to-5-complete/deploy/azure/create-vm.sh | bash
+```
+
+It creates the resource group, a static public IP with a DNS name, the VM, the open ports (80, 443, 9000), installs Docker, generates all passwords and starts the stack. It prints the address, how to follow the setup log and how to read the generated passwords. If your subscription lacks the default size or region, run it with `SIZE=Standard_B2ms LOC=northeurope` in front.
+
+## 1. Create the VM by hand (Azure portal)
 
 1. **Create a resource > Virtual machine.**
    - Image: **Ubuntu Server 22.04 LTS**. Size: **Standard_B2s** (2 vCPU, 4 GB; the build needs about 3 GB, so do not go smaller; a B2ms is more comfortable).
