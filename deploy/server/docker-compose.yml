@@ -1,0 +1,92 @@
+# UrbanFix — whole stack on one Linux server (portal + core API + AI API + Postgres + storage).
+# Run from this folder on the server:  docker compose up -d --build
+# All settings come from .env (see .env.example). First build takes a while (it compiles the .NET API and the portal).
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: urbanfix
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: urbanfix
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urbanfix"]
+      interval: 5s
+      retries: 20
+
+  minio:
+    # S3-compatible object store for complaint photos and audio.
+    image: bitnamilegacy/minio:latest
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
+      MINIO_DEFAULT_BUCKETS: urbanfix-media
+    volumes: [miniodata:/bitnami/minio/data]
+
+  ai:
+    # FastAPI service (triage, vision, speech). Stateless; talks to OpenRouter.
+    build: ../../ai
+    restart: unless-stopped
+    environment:
+      AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+
+  core:
+    # .NET 9 API. Runs the DB migration on startup and creates the admin account.
+    build:
+      context: ../../core
+      args:
+        SIXLABORS_LICENSE_KEY: ${SIXLABORS_LICENSE_KEY:-}
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      PORT: "8080"
+      # Development enables the demo sign-in (phone/email code 123456). Switch to Production for real auth
+      # (requires an SMS/TOTP provider) — see README.
+      ASPNETCORE_ENVIRONMENT: ${CORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Owner: Host=postgres;Port=5432;Database=urbanfix;Username=urbanfix;Password=${DB_PASSWORD}
+      ConnectionStrings__App: Host=postgres;Port=5432;Database=urbanfix;Username=urbanfix_app;Password=${APP_ROLE_PASSWORD}
+      Database__AppRolePassword: ${APP_ROLE_PASSWORD}
+      Database__MigrateOnStartup: "true"
+      Bootstrap__PlatformAdminEmail: ${ADMIN_EMAIL:-admin@urbanfix.local}
+      Bootstrap__PlatformAdminPassword: ${ADMIN_PASSWORD}
+      Ai__BaseUrl: http://ai:8000
+      Ai__ServiceToken: ${AI_SERVICE_TOKEN}
+      Storage__ServiceUrl: http://minio:9000
+      # Phones and the portal fetch photos/audio through signed links, so these must use the public address.
+      Storage__PublicUrl: https://${PUBLIC_HOST}:9000
+      Storage__AccessKey: ${STORAGE_ACCESS_KEY}
+      Storage__SecretKey: ${STORAGE_SECRET_KEY}
+      Storage__Bucket: urbanfix-media
+      DataProtection__KeyPath: /keys
+    volumes: [keys:/keys]
+
+  web:
+    # nginx serving the built portal; proxies /api (REST + SignalR) to core, so there is no CORS to configure.
+    build: ../../web
+    restart: unless-stopped
+    depends_on: [core]
+    environment:
+      PORT: "10000"
+      CORE_HOSTPORT: core:8080
+
+  caddy:
+    # Terminates HTTPS for PUBLIC_HOST and gets/renews a Let's Encrypt certificate automatically.
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [web, minio]
+    ports: ["80:80", "443:443", "9000:9000"]
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+
+volumes:
+  pgdata:
+  miniodata:
+  keys:
+  caddydata:

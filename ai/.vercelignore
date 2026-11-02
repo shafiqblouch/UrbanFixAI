@@ -1,0 +1,12 @@
+# Keep the serverless bundle small: ship only app/ (+ api/, requirements.txt). None of
+# these are imported at runtime, and eval/cache can be large.
+tests/
+eval/
+spike/
+Dockerfile
+.env
+.env.*
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+**/__pycache__/

@@ -14,7 +14,19 @@ Everything below is done in the browser. Do the steps in order; each gives a val
 2. **Connect** button > **Session pooler** > copy the connection string (`postgresql://postgres.<ref>:<password>@aws-...pooler.supabase.com:5432/postgres`). Use the session pooler: the direct host is IPv6 only. Put your password in; URL-encode special characters (`@` becomes `%40`).
 3. **Storage** > New bucket named `urbanfix-media` (private). Then **Storage > S3 Connection**: note the endpoint URL and region, and create an access key pair.
 
-## 2. Hugging Face: AI service
+## 2. AI service
+
+The AI service is stateless FastAPI (no database, no WebSockets, no background jobs), so the easiest free home is **Vercel's Python runtime — no Docker**. Hugging Face (Docker) still works and is kept below as an alternative.
+
+### 2a. Vercel (recommended, no Docker)
+
+1. vercel.com/new > import the repo, branch `wave-3-to-5-complete`, **Root Directory `ai`**. Vercel detects the Python app from `ai/requirements.txt` and `ai/api/index.py`; the `ai/vercel.json` routes every request to it. Leave build/output settings at their defaults.
+2. **Settings > Environment Variables**, add: `AI_SERVICE_TOKEN` (any long random string) and `OPENROUTER_API_KEY` (a new key). Do **not** set `OTEL_EXPORTER_OTLP_ENDPOINT` or `SENTRY_DSN` — those pull in extra packages that are deliberately left out of `requirements.txt`.
+3. Deploy. Its URL is `https://<project>.vercel.app`; `/health` returns `{"status":"ok","service":"ai"}` and `/docs` shows the API. (The `/v1/*` routes need the `Authorization: Bearer <AI_SERVICE_TOKEN>` header, so they 401 in a plain browser — that is correct.)
+
+Note: Vercel Hobby functions cap at 60 s per request (set in `vercel.json`); the app's own provider timeout is 30 s, so this is comfortable. A cold start adds a second or two on the first call after idle.
+
+### 2b. Hugging Face (Docker alternative)
 
 1. huggingface.co > New Space > SDK **Docker** > blank, name `urbanfix-ai`, visibility Public (private also works).
 2. Upload the two files from `deploy/hf-ai/` (README.md and Dockerfile) with **Files > Add file**.
@@ -34,8 +46,8 @@ Everything below is done in the browser. Do the steps in order; each gives a val
 | `Database__MigrateOnStartup` | `true` |
 | `Bootstrap__PlatformAdminEmail` | `admin@urbanfix.local` |
 | `Bootstrap__PlatformAdminPassword` | a new strong password |
-| `Ai__BaseUrl` | the AI Space URL from step 2 |
-| `Ai__ServiceToken` | the same value as the AI Space's `AI_SERVICE_TOKEN` |
+| `Ai__BaseUrl` | the AI service URL from step 2 (Vercel `https://<project>.vercel.app` or the HF Space) |
+| `Ai__ServiceToken` | the same value as the AI service's `AI_SERVICE_TOKEN` |
 | `Storage__ServiceUrl` | Supabase S3 endpoint |
 | `Storage__Region` | the S3 region Supabase shows |
 | `Storage__AccessKey`, `Storage__SecretKey`, `Storage__Bucket` | from step 1 |

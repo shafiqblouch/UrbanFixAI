@@ -1,0 +1,12 @@
+# Caddy gets and renews the HTTPS certificate for PUBLIC_HOST automatically (ports 80 and 443 must be open,
+# and PUBLIC_HOST must be a real hostname that resolves to this server — see README for the IP-only tip).
+
+# Portal + API on the main origin. The web container serves the SPA and proxies /api to the core service.
+{$PUBLIC_HOST} {
+	reverse_proxy web:10000
+}
+
+# Object storage on its own port so signed photo/audio links work over HTTPS.
+{$PUBLIC_HOST}:9000 {
+	reverse_proxy minio:9000
+}

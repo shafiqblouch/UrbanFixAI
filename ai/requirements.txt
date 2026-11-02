@@ -1,0 +1,10 @@
+# Vercel's Python runtime installs from this file. Only the packages the app imports at
+# runtime are listed: uvicorn is omitted (Vercel serves the ASGI app itself), and the
+# OpenTelemetry/Sentry packages are too (app/telemetry.py imports them lazily and only when
+# OTEL_EXPORTER_OTLP_ENDPOINT / SENTRY_DSN are set, which they are not on Vercel) to keep the
+# serverless bundle small and cold starts fast. The pinned versions mirror pyproject.toml.
+fastapi>=0.115
+pydantic>=2.8
+httpx>=0.27
+pillow>=10
+python-multipart>=0.0.9
