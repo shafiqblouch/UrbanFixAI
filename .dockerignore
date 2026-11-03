@@ -1,0 +1,10 @@
+# Used when the build context is the repo root (deploy/server core.Dockerfile). Keeps the context small.
+**/node_modules/
+**/bin/
+**/obj/
+**/dist/
+.git/
+*.docx
+web/e2e/
+**/.venv/
+**/__pycache__/
