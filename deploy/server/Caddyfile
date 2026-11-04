@@ -5,17 +5,21 @@
 # /certs/fullchain.pem = leaf + intermediate;  /certs/privkey.key = matching EC private key.
 # When the team rotates the cert, replace those two files and `docker compose restart caddy`.
 
-# Portal + API on the main origin. The web container serves the SPA and proxies /api to the core service.
+# Portal, API and media all on the one origin — same host, cert and Cloudflare proxy as everything else,
+# so NO separate media hostname, DNS record or port is needed (the custom port 9000 was never reachable).
 {$PUBLIC_HOST} {
-	reverse_proxy web:10000
 	tls /certs/fullchain.pem /certs/privkey.key
-}
 
-# Object storage on its own hostname (still port 443), because the provider firewall/Cloudflare does not
-# forward custom ports like 9000. MEDIA_HOST must be a single-label subdomain of the wildcard cert's domain
-# (e.g. urbanfix-media.vitonta.com — *.vitonta.com does NOT cover media.urbanfix.vitonta.com). Signed photo/audio
-# links are generated for this host, and Caddy forwards the Host header unchanged so MinIO's SigV4 check passes.
-{$MEDIA_HOST} {
-	reverse_proxy minio:9000
-	tls /certs/fullchain.pem /certs/privkey.key
+	# Complaint photos/audio: signed links live under the storage bucket path (/urbanfix-media/<key>) and go
+	# straight to MinIO, with the path preserved. Signed for this same host, so MinIO's SigV4 Host check passes.
+	# Keep this prefix in step with Storage__Bucket.
+	@media path /urbanfix-media/*
+	handle @media {
+		reverse_proxy minio:9000
+	}
+
+	# Everything else is the portal: the web container serves the SPA and proxies /api to the core service.
+	handle {
+		reverse_proxy web:10000
+	}
 }

@@ -12,10 +12,10 @@ Everything needed to (re)deploy the whole stack to the Linux server and to build
 | Repo on server | `~/UrbanFixAI` (branch `wave-3-to-5-complete`) |
 | Stack folder | `~/UrbanFixAI/deploy/server` |
 | Portal / API | `https://urbanfix.vitonta.com` |
-| Media (photos/audio) | `https://urbanfix-media.vitonta.com` (own hostname, still 443) |
+| Media (photos/audio) | `https://urbanfix.vitonta.com/urbanfix-media/...` (same host, path → MinIO) |
 | Mobile API URL (baked into APK) | `https://urbanfix.vitonta.com/api` |
 
-This is a **shared** server: a host `nginx` owns port **80** (another app) and another container uses **5215**. Our stack therefore uses **443 only** (portal, API and media all share it — Caddy routes by hostname) — it never touches port 80, and no longer needs a custom media port.
+This is a **shared** server: a host `nginx` owns port **80** (another app) and another container uses **5215**. Our stack therefore uses **443 only** (portal, API and media all share the one host — Caddy serves the SPA/API and routes the `/urbanfix-media/*` path to MinIO) — it never touches port 80, needs no custom media port, and needs no extra DNS record.
 
 ---
 
@@ -30,18 +30,17 @@ This provider's firewall blocks inbound 443 from Let's Encrypt's validators, so 
 
 ## 1. DNS configuration — REQUIRED (this is what makes HTTPS and the mobile app work)
 
-Both names must point **straight at the server** so the browser reaches our Caddy (which serves the DigiCert cert above). If a record is proxied through Cloudflare (orange cloud), you get **Error 522** because the provider firewall blocks Cloudflare from reaching origin 443 — this is the single most common failure.
+Only one name is needed: `urbanfix`. Media is served from this same host under `/urbanfix-media/*`, so there is **no second DNS record**. The name must point **straight at the server** so the browser reaches our Caddy (which serves the DigiCert cert above). If the record is proxied through Cloudflare (orange cloud), you can get **Error 522** when the provider firewall blocks Cloudflare from reaching origin 443 — this is the single most common failure.
 
-In the **Cloudflare dashboard → `vitonta.com` → DNS**, set exactly these two records:
+In the **Cloudflare dashboard → `vitonta.com` → DNS**, set exactly this record:
 
 | Type | Name | Content | Proxy status | TTL |
 |---|---|---|---|---|
 | **A** | `urbanfix` | `46.250.243.215` | **DNS only (grey cloud)** | Auto |
-| **A** | `urbanfix-media` | `46.250.243.215` | **DNS only (grey cloud)** | Auto |
 
-And **delete** any `AAAA` (IPv6) record for either name (the server is IPv4-only; a leftover proxied AAAA re-introduces the 522).
+And **delete** any `AAAA` (IPv6) record for `urbanfix` (the server is IPv4-only; a leftover proxied AAAA re-introduces the 522).
 
-> The grey cloud is mandatory on both records. Media now lives on its own hostname on **443** (not a custom port), so there is no more `:9000` to open — but the cert and the firewall still require DNS-only. The media host must stay a **single-label** subdomain of `vitonta.com` (`urbanfix-media`, not `media.urbanfix`) so the `*.vitonta.com` wildcard cert covers it.
+> Grey cloud is the documented, cert-safe setup. Because media now shares this host on 443, whatever proxy setting makes the portal work also makes media work — there is no longer a separate media host or `:9000` to open.
 
 Verify from your PC (should print `46.250.243.215`, not a `104.x` Cloudflare address):
 
@@ -52,7 +51,7 @@ nslookup urbanfix.vitonta.com 1.1.1.1
 ### Why the mobile APK depends on this DNS
 
 - The APK is built with `EXPO_PUBLIC_API_URL=https://urbanfix.vitonta.com/api`. Android requires a **valid, trusted TLS certificate** on that host — which only exists once the DNS is grey-cloud and Caddy has issued the cert.
-- Media (photos/voice notes) come back as signed links on `https://urbanfix-media.vitonta.com` (port 443). The phone and portal fetch those directly, so that host must resolve to the server and serve real HTTPS — again, grey cloud.
+- Media (photos/voice notes) come back as signed links on `https://urbanfix.vitonta.com/urbanfix-media/...` (the same host). The phone and portal fetch those directly, so that host must resolve and serve real HTTPS — nothing extra beyond the one record above.
 - Change the hostname later ⇒ you must **rebuild the APK** (the URL is compiled in).
 
 ---
@@ -66,14 +65,14 @@ ssh shafiq@46.250.243.215
 sudo apt-get update && sudo apt-get install -y git        # if git missing
 git clone -b wave-3-to-5-complete https://github.com/shafiqblouch/UrbanFixAI.git
 cd UrbanFixAI/deploy/server
-cp .env.example .env && nano .env                          # fill PUBLIC_HOST, MEDIA_HOST + secrets
+cp .env.example .env && nano .env                          # fill PUBLIC_HOST + secrets
 # one-time: let your user run docker without sudo
 sudo usermod -aG docker $USER && newgrp docker
 docker compose up -d --build
 docker compose logs -f core                                # watch the DB migration finish
 ```
 
-`.env` must have `PUBLIC_HOST=urbanfix.vitonta.com`, `MEDIA_HOST=urbanfix-media.vitonta.com` and a real `OPENROUTER_API_KEY` (left blank = AI features off, everything else works).
+`.env` must have `PUBLIC_HOST=urbanfix.vitonta.com` and a real `OPENROUTER_API_KEY` (left blank = AI features off, everything else works).
 
 ---
 
@@ -123,11 +122,10 @@ Sign in on the phone with a demo account: any phone number / email and code **`1
 ```powershell
 # DNS points at the server (not Cloudflare) — check both names:
 nslookup urbanfix.vitonta.com 1.1.1.1
-nslookup urbanfix-media.vitonta.com 1.1.1.1
 # API is healthy (expects: ready):
 curl.exe https://urbanfix.vitonta.com/api/health/ready
-# Media host is reachable over HTTPS (expects HTTP 200):
-curl.exe https://urbanfix-media.vitonta.com/minio/health/live
+# Media path routes to MinIO (expects an XML error like AccessDenied/NoSuchKey, NOT the SPA HTML):
+curl.exe https://urbanfix.vitonta.com/urbanfix-media/
 # Portal loads:
 start https://urbanfix.vitonta.com
 ```
@@ -151,7 +149,7 @@ docker compose logs --tail=50 core    # migration done, "ready"
 | HTTPS cert never issues / `caddy` logs ACME errors | Port 443 unreachable, or DNS not pointing at server | Confirm grey cloud; confirm nothing else holds 443; wait a minute for retry |
 | Portal loads but API 502/timeout | `core` not healthy | `docker compose logs core` — usually the DB migration; see below |
 | Migration fails on first start | DB role/extension perms | Check `core` logs; `postgres` owner creates the app role + `vector` ext automatically |
-| Photos/audio broken in app or portal | `urbanfix-media.vitonta.com` not resolving/grey-cloud, or its DNS record missing | Add the `urbanfix-media` A record (DNS only), `docker compose restart caddy`; verify `curl https://urbanfix-media.vitonta.com/minio/health/live` |
+| Photos/audio broken in app or portal | Media path not routing to MinIO, or signed-URL host wrong | Check `curl https://urbanfix.vitonta.com/urbanfix-media/` returns MinIO XML (not SPA HTML); confirm `Storage__PublicUrl=https://urbanfix.vitonta.com` and the Caddy `/urbanfix-media/*` handler; `docker compose restart caddy` |
 | `docker: permission denied` | user not in docker group | `sudo usermod -aG docker $USER && newgrp docker` |
 | AI triage/vision/speech does nothing | `OPENROUTER_API_KEY` blank | Set it in `.env`, `docker compose up -d` |
 | Build error `safety-terms.json not found` | old Dockerfile/context | Ensure `core.Dockerfile` + `context: ../..` (already fixed on this branch) |
