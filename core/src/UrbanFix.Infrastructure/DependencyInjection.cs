@@ -73,6 +73,11 @@ public static class DependencyInjection
         services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(
             new BasicAWSCredentials(storage.AccessKey, storage.SecretKey),
             new AmazonS3Config { ServiceURL = storage.ServiceUrl, ForcePathStyle = true, AuthenticationRegion = storage.Region }));
+        // Download links are signed for the browser-facing host (PublicUrl) when set, so SigV4's signed Host matches
+        // what the browser sends through the proxy; otherwise they are signed for the same endpoint used for IO.
+        services.AddSingleton(new DownloadUrlSigner(new AmazonS3Client(
+            new BasicAWSCredentials(storage.AccessKey, storage.SecretKey),
+            new AmazonS3Config { ServiceURL = storage.PublicUrl ?? storage.ServiceUrl, ForcePathStyle = true, AuthenticationRegion = storage.Region })));
         services.AddScoped<IObjectStorage, ObjectStorage>();
 
         // Complaints: numbering, media, AI enrichment ---------------------------------------------------

@@ -25,6 +25,17 @@ public sealed record GeoPoint(double Latitude, double Longitude);
 
 public sealed record StoredObject(string Key, GeoPoint? Location, DateTimeOffset? CapturedAt);
 
+/// <summary>
+/// Signs download links with a client pointed at the browser-facing storage host (<see cref="StorageOptions.PublicUrl"/>).
+/// SigV4 signs the <c>Host</c> header, so a link has to be signed for the host the browser will actually call. Signing
+/// for the internal host (<c>minio:9000</c>) and swapping the string afterwards yields links MinIO rejects with
+/// <c>SignatureDoesNotMatch</c>. The reverse proxy forwards the public Host upstream unchanged, so the signature matches.
+/// </summary>
+public sealed class DownloadUrlSigner(IAmazonS3 signingClient)
+{
+    public string Sign(GetPreSignedUrlRequest request) => signingClient.GetPreSignedURL(request);
+}
+
 public interface IObjectStorage
 {
     /// <summary>Stores an image after reading location/time from EXIF; the stored copy has no EXIF or other metadata.</summary>
@@ -44,7 +55,7 @@ public interface IObjectStorage
     Task DeleteAsync(string key, CancellationToken ct);
 }
 
-public sealed class ObjectStorage(IAmazonS3 s3, StorageOptions options, ITenantContext tenant) : IObjectStorage
+public sealed class ObjectStorage(IAmazonS3 s3, StorageOptions options, ITenantContext tenant, DownloadUrlSigner signer) : IObjectStorage
 {
     public async Task<StoredObject> PutImageAsync(Stream image, CancellationToken ct)
     {
@@ -98,15 +109,14 @@ public sealed class ObjectStorage(IAmazonS3 s3, StorageOptions options, ITenantC
             throw new UnauthorizedAccessException("Object belongs to another organization");
 
         var expires = lifetime is { } l && l < options.MaxUrlLifetime ? l : options.MaxUrlLifetime;
-        var url = s3.GetPreSignedURL(new GetPreSignedUrlRequest
+        // Signed against the public host (see DownloadUrlSigner); the scheme and host come from that client's endpoint.
+        return signer.Sign(new GetPreSignedUrlRequest
         {
             BucketName = options.Bucket,
             Key = key,
             Verb = HttpVerb.GET,
             Expires = DateTime.UtcNow.Add(expires),
-            Protocol = options.ServiceUrl.StartsWith("https", StringComparison.OrdinalIgnoreCase) ? Protocol.HTTPS : Protocol.HTTP,
         });
-        return options.PublicUrl is { } pub ? url.Replace(options.ServiceUrl.TrimEnd('/'), pub.TrimEnd('/')) : url;
     }
 
     public async Task<Stream> OpenReadAsync(string key, CancellationToken ct)

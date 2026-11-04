@@ -59,7 +59,8 @@ services:
       Ai__ServiceToken: ${AI_SERVICE_TOKEN}
       Storage__ServiceUrl: http://minio:9000
       # Phones and the portal fetch photos/audio through signed links, so these must use the public address.
-      Storage__PublicUrl: https://${PUBLIC_HOST}:9000
+      # Served on 443 under its own hostname (MEDIA_HOST) because the firewall/Cloudflare blocks custom ports like 9000.
+      Storage__PublicUrl: https://${MEDIA_HOST:-urbanfix-media.vitonta.com}
       Storage__AccessKey: ${STORAGE_ACCESS_KEY}
       Storage__SecretKey: ${STORAGE_SECRET_KEY}
       Storage__Bucket: urbanfix-media
@@ -83,9 +84,12 @@ services:
     image: caddy:2
     restart: unless-stopped
     depends_on: [web, minio]
-    ports: ["443:443", "9000:9000"]
+    # Both the portal and the media host share 443; Caddy routes them by hostname (SNI). No custom port is published.
+    ports: ["443:443"]
     environment:
       PUBLIC_HOST: ${PUBLIC_HOST}
+      # Default keeps Caddy parsing (and the portal up) even if .env omits MEDIA_HOST; override in .env to change it.
+      MEDIA_HOST: ${MEDIA_HOST:-urbanfix-media.vitonta.com}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ${CERTS_DIR:-/home/shafiq/certs}:/certs:ro

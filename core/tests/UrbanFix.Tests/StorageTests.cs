@@ -58,7 +58,8 @@ public class StorageTests(MinioFixture minio) : IClassFixture<MinioFixture>
     {
         var tenant = new TenantContext();
         tenant.Set(org, null);
-        return new ObjectStorage(minio.S3, minio.Options, tenant);
+        // No PublicUrl in tests, so links are signed against the same minio endpoint used for IO.
+        return new ObjectStorage(minio.S3, minio.Options, tenant, new DownloadUrlSigner(minio.S3));
     }
 
     private static MemoryStream PhotoWithGpsExif()
