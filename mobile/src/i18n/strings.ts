@@ -105,6 +105,10 @@ export const en = {
   "complaint.reopen": "Not fixed yet",
   "complaint.reason": "What is still wrong?",
   "complaint.cached": "Showing the saved copy.",
+  "complaint.evidence": "Your photos and voice note",
+  "complaint.voicePlay": "Play voice note",
+  "complaint.voicePause": "Pause",
+  "complaint.voiceHeard": "Heard: {text}",
 
   "today.title": "Today's jobs",
   "today.none": "No jobs for today.",
@@ -376,6 +380,10 @@ export const ur: Record<Key, string> = {
   "complaint.reopen": "ابھی حل نہیں ہوا",
   "complaint.reason": "ابھی کیا مسئلہ باقی ہے؟",
   "complaint.cached": "محفوظ کردہ نقل دکھائی جا رہی ہے۔",
+  "complaint.evidence": "آپ کی تصاویر اور آواز کا نوٹ",
+  "complaint.voicePlay": "آواز کا نوٹ سنیں",
+  "complaint.voicePause": "روکیں",
+  "complaint.voiceHeard": "سنا گیا: {text}",
 
   "today.title": "آج کے کام",
   "today.none": "آج کوئی کام نہیں۔",

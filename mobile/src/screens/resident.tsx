@@ -1,7 +1,8 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { api, ok, type S } from "../api";
 import { errorText, useAction, useLoad, usePolling } from "../hooks";
 import { useI18n, useT } from "../i18n";
@@ -142,6 +143,8 @@ export function ComplaintDetailScreen({ route }: NativeStackScreenProps<RootStac
       <Card><Txt>{d.complaint.description}</Txt>{d.complaint.statusReason && <Txt muted>{d.complaint.statusReason}</Txt>}</Card>
       <Txt size="sm" muted>{t("complaint.updated", { time: f(updatedAt) })}</Txt>
 
+      <MediaCard media={d.media} />
+
       <MissingInfoCard complaint={d.complaint} onAnswered={detail.reload} />
 
       {d.allowedNext.includes("Closed") && (
@@ -167,6 +170,44 @@ export function ComplaintDetailScreen({ route }: NativeStackScreenProps<RootStac
         <Card key={i}><StatusChip status={h.to} /><Txt size="sm" muted>{f(h.occurredAt)}</Txt>{h.reason && <Txt>{h.reason}</Txt>}</Card>
       ))}
     </Screen>
+  );
+}
+
+/** A playable voice note, with the text the AI heard when it has been transcribed (AI-09). */
+function VoiceNote({ media }: { media: S["MediaDto"] }) {
+  const t = useT();
+  const player = useAudioPlayer(media.url);
+  const status = useAudioPlayerStatus(player);
+  const toggle = async () => {
+    if (status.playing) { player.pause(); return; }
+    await setAudioModeAsync({ playsInSilentMode: true }); // plays even when the ringer is on silent
+    if (status.duration > 0 && status.currentTime >= status.duration - 0.05) await player.seekTo(0); // replay once it has finished
+    player.play();
+  };
+  return (
+    <View style={{ gap: space[1] }}>
+      <Button title={status.playing ? t("complaint.voicePause") : t("complaint.voicePlay")} variant="secondary" onPress={() => void toggle()} />
+      {media.transcript && media.transcriptStatus === "done" && <Txt muted>{t("complaint.voiceHeard", { text: media.transcript })}</Txt>}
+    </View>
+  );
+}
+
+/** The resident's own photos and voice note on a complaint, so they can see and hear what they sent (RA-03). */
+function MediaCard({ media }: { media: S["MediaDto"][] }) {
+  const t = useT();
+  const images = media.filter((m) => m.kind === "image");
+  const audio = media.filter((m) => m.kind === "audio");
+  if (images.length === 0 && audio.length === 0) return null;
+  return (
+    <Card>
+      <Txt bold>{t("complaint.evidence")}</Txt>
+      {audio.map((m) => <VoiceNote key={m.id} media={m} />)}
+      {images.length > 0 && (
+        <Row wrap gap={space[2]}>
+          {images.map((m) => <Image key={m.id} accessibilityIgnoresInvertColors source={{ uri: m.thumbUrl ?? m.url }} style={{ width: 96, height: 96, borderRadius: 8 }} />)}
+        </Row>
+      )}
+    </Card>
   );
 }
 
