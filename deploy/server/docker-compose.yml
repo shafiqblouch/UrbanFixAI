@@ -76,10 +76,10 @@ services:
       CORE_HOSTPORT: core:8080
 
   caddy:
-    # Terminates HTTPS for PUBLIC_HOST and gets/renews a Let's Encrypt certificate automatically.
-    # Port 80 is intentionally NOT published (a host nginx may own it on a shared server), so Caddy
-    # obtains the certificate via the TLS-ALPN-01 challenge on 443. This requires PUBLIC_HOST to resolve
-    # straight to this server (DNS-only / grey cloud, not a proxy that terminates TLS itself).
+    # Terminates HTTPS for PUBLIC_HOST using the DigiCert wildcard certificate for *.vitonta.com
+    # (mounted read-only from CERTS_DIR). ACME is not used here because the provider firewall blocks
+    # inbound 443 from Let's Encrypt's validators. Port 80 is intentionally NOT published (a host nginx
+    # owns it on this shared server).
     image: caddy:2
     restart: unless-stopped
     depends_on: [web, minio]
@@ -88,6 +88,7 @@ services:
       PUBLIC_HOST: ${PUBLIC_HOST}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${CERTS_DIR:-/home/shafiq/certs}:/certs:ro
       - caddydata:/data
 
 volumes:

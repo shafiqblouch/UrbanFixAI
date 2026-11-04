@@ -1,23 +1,18 @@
-# Caddy gets and renews the HTTPS certificate for PUBLIC_HOST automatically.
-# Port 80 is not published on this host (a host nginx may own it), so we force the TLS-ALPN-01 challenge,
-# which runs over 443. PUBLIC_HOST must resolve directly to this server (DNS-only / grey cloud) for it to work.
+# HTTPS for PUBLIC_HOST using the DigiCert wildcard certificate for *.vitonta.com,
+# supplied by the hosting/network team and mounted read-only at /certs.
+# We bind the cert explicitly instead of using ACME, because this provider's firewall
+# blocks inbound 443 from Let's Encrypt's validators (ACME TLS-ALPN/HTTP challenges time out).
+# /certs/fullchain.pem = leaf + intermediate;  /certs/privkey.key = matching EC private key.
+# When the team rotates the cert, replace those two files and `docker compose restart caddy`.
 
 # Portal + API on the main origin. The web container serves the SPA and proxies /api to the core service.
 {$PUBLIC_HOST} {
 	reverse_proxy web:10000
-	tls {
-		issuer acme {
-			disable_http_challenge
-		}
-	}
+	tls /certs/fullchain.pem /certs/privkey.key
 }
 
 # Object storage on its own port so signed photo/audio links work over HTTPS.
 {$PUBLIC_HOST}:9000 {
 	reverse_proxy minio:9000
-	tls {
-		issuer acme {
-			disable_http_challenge
-		}
-	}
+	tls /certs/fullchain.pem /certs/privkey.key
 }

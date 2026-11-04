@@ -19,9 +19,18 @@ This is a **shared** server: a host `nginx` owns port **80** (another app) and a
 
 ---
 
+## 0b. TLS certificate — explicit DigiCert wildcard (NOT Let's Encrypt)
+
+This provider's firewall blocks inbound 443 from Let's Encrypt's validators, so ACME (TLS-ALPN) can never issue a cert here. Instead Caddy serves a **DigiCert wildcard certificate for `*.vitonta.com`** supplied by the hosting/network team.
+
+- Cert + key are mounted read-only into the caddy container from **`/home/shafiq/certs/`** (`fullchain.pem` = leaf+intermediate, `privkey.key`). The Caddyfile binds them with `tls /certs/fullchain.pem /certs/privkey.key` — there is no ACME.
+- **Renewal (current cert expires 2027-03-06):** when the team issues a new cert, replace the two files in `/home/shafiq/certs/` and run `docker compose restart caddy`. If Caddy crash-loops with `failed to find any PEM data`, re-emit clean PEM: `openssl x509 -in leaf.crt -out leaf.pem && openssl x509 -in intermediate.crt -out int.pem && cat leaf.pem int.pem > fullchain.pem && openssl pkey -in team.key -out privkey.key` (ensures a newline between certs and a PKCS#8 key).
+
+---
+
 ## 1. DNS configuration — REQUIRED (this is what makes HTTPS and the mobile app work)
 
-The server gets its certificate with the **TLS-ALPN challenge on port 443**, which only works if the name points **straight at the server**. If the record is proxied through Cloudflare (orange cloud), you get **Error 522** and no certificate — this is the single most common failure.
+The name must point **straight at the server** so the browser reaches our Caddy (which serves the DigiCert cert above). If the record is proxied through Cloudflare (orange cloud), you get **Error 522** and the media port `:9000` breaks — this is the single most common failure.
 
 In the **Cloudflare dashboard → `vitonta.com` → DNS**, set exactly this:
 
