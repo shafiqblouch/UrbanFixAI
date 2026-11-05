@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { api, ok, type S } from "../api";
-import { errorText, useAction, useLoad, usePolling } from "../hooks";
+import { errorText, useAction, useLoad, usePolling, useRefetchOnFocus } from "../hooks";
 import { useI18n, useT } from "../i18n";
 import type { Key } from "../i18n/strings";
 import type { Draft, Receipt } from "../offline/store";
@@ -42,6 +42,7 @@ export function HomeScreen() {
   const { waiting } = useServices();
   const online = useOnline();
   const recent = useLoad(() => ok(api.GET("/complaints", { params: { query: { limit: 3 } } })), []);
+  useRefetchOnFocus(recent.reload); // refresh the recent list on return instead of only at login
   const p = usePalette();
 
   const actions: { label: string; glyph: string; go: () => void }[] = [
@@ -94,6 +95,7 @@ export function ComplaintsScreen() {
   const nav = useNavigation<Nav>();
   const { receipts } = useServices();
   const list = useLoad(() => ok(api.GET("/complaints", { params: { query: { limit: 50 } } })), []);
+  useRefetchOnFocus(list.reload); // the resident's complaint list stays current on return
   const [saved, setSaved] = useState<Receipt[]>([]);
   useEffect(() => { void receipts.list().then(setSaved); }, [receipts]);
 

@@ -81,31 +81,84 @@ function Section({ title, empty, children }: { title: string; empty: boolean; ch
 
 // Houses -------------------------------------------------------------------------------------------------------
 
+const LEVELS: Record<string, string[]> = { society: ["sector", "street", "block", "house"], building: ["building", "floor", "unit"] };
+const HOUSE_STATUSES = ["occupied", "vacant", "under_construction"] as const;
+const RELATIONS = ["owner", "tenant", "family"] as const;
+
 function Houses() {
   const t = useT();
   const f = useFormat();
+  const { role } = useSession();
   const label = useHouseLabel();
+  const { locations } = useLookups();
   const houses = useLoad(() => ok(api.GET("/houses")), []);
+  const settings = useLoad(() => ok(api.GET("/organization/settings")), []);
   const [open, setOpen] = useState<S["HouseDto"]>();
+  const [adding, setAdding] = useState(false);
+
+  // Houses attach to the leaf place of the society's template (e.g. a "house"); offer only leaves without a record yet.
+  const leafKind = (LEVELS[settings.data?.locationTemplate ?? "society"] ?? LEVELS.society).at(-1);
+  const taken = new Set((houses.data ?? []).map((h) => h.locationId));
+  const vacant = locations.filter((l) => l.kind === leafKind && l.isActive && !taken.has(l.id));
+
   return (
     <Async state={houses}>
-      {(rows) => rows.length === 0 ? <EmptyState title={t("directory.noHouses")} /> : (
-        <>
-          <Table
-            caption={t("directory.houses")}
-            rows={rows}
-            rowKey={(h) => h.id}
-            columns={[
-              { key: "label", header: t("house"), render: (h) => <strong>{label(h)}</strong> },
-              { key: "status", header: t("status"), render: (h) => t(`directory.houseStatus.${h.status}` as Key) },
-              { key: "size", header: t("directory.plot"), numeric: true, render: (h) => (h.plotSizeSqYd == null ? "—" : f.number(h.plotSizeSqYd)) },
-              { key: "who", header: t("directory.residents"), render: (h) => <Button variant="ghost" onClick={() => setOpen(h)}>{t("directory.showResidents")}</Button> },
-            ]}
-          />
+      {(rows) => (
+        <div className="stack">
+          {canConfigure(role) && <div className="row wrap"><Button onClick={() => setAdding(true)}>{t("directory.addHouse")}</Button></div>}
+          {rows.length === 0 ? <EmptyState title={t("directory.noHouses")} /> : (
+            <Table
+              caption={t("directory.houses")}
+              rows={rows}
+              rowKey={(h) => h.id}
+              columns={[
+                { key: "label", header: t("house"), render: (h) => <strong>{label(h)}</strong> },
+                { key: "status", header: t("status"), render: (h) => t(`directory.houseStatus.${h.status}` as Key) },
+                { key: "size", header: t("directory.plot"), numeric: true, render: (h) => (h.plotSizeSqYd == null ? "—" : f.number(h.plotSizeSqYd)) },
+                { key: "who", header: t("directory.residents"), render: (h) => <Button variant="ghost" onClick={() => setOpen(h)}>{t("directory.showResidents")}</Button> },
+              ]}
+            />
+          )}
           <Residents house={open} label={open ? label(open) : ""} onClose={() => setOpen(undefined)} />
-        </>
+          <AddHouseSheet open={adding} vacant={vacant} onClose={() => setAdding(false)} onSaved={() => { setAdding(false); houses.reload(); }} />
+        </div>
       )}
     </Async>
+  );
+}
+
+/** Attach a house record to an existing house-level place, so residents can then be linked to it (OR-06). */
+function AddHouseSheet({ open, vacant, onClose, onSaved }: { open: boolean; vacant: S["LocationDto"][]; onClose: () => void; onSaved: () => void }) {
+  const t = useT();
+  const label = useHouseLabel();
+  const action = useAction();
+  const [form, setForm] = useState({ locationId: "", status: "occupied", plot: "" });
+  const [loaded, setLoaded] = useState<boolean>();
+  if (open !== loaded) { setLoaded(open); setForm({ locationId: "", status: "occupied", plot: "" }); }
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    void action.run(async () => {
+      await ok(api.POST("/houses", { body: { locationId: form.locationId, status: form.status, plotSizeSqYd: form.plot ? Number(form.plot) : null, houseCategory: null } }));
+      onSaved();
+    });
+  };
+  return (
+    <Sheet open={open} title={t("directory.addHouse")} onClose={onClose}>
+      {vacant.length === 0 ? (
+        <EmptyState title={t("directory.noVacantPlaces")} />
+      ) : (
+        <form className="stack" onSubmit={submit}>
+          <SelectField label={t("directory.place")} hint={t("directory.placeHint")} placeholder={t("choose")} value={form.locationId} required
+            onChange={(e) => setForm({ ...form, locationId: e.target.value })}
+            options={vacant.map((l) => ({ value: l.id, label: label({ locationPath: l.path }) }))} />
+          <SelectField label={t("status")} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
+            options={HOUSE_STATUSES.map((s) => ({ value: s, label: t(`directory.houseStatus.${s}` as Key) }))} />
+          <TextField type="number" min="0" step="any" label={t("directory.plot")} value={form.plot} onChange={(e) => setForm({ ...form, plot: e.target.value })} />
+          <ErrorNote error={action.error} />
+          <div className="row"><Button type="submit" loading={action.busy} disabled={form.locationId === ""}>{t("save")}</Button><Button type="button" variant="ghost" onClick={onClose}>{t("cancel")}</Button></div>
+        </form>
+      )}
+    </Sheet>
   );
 }
 
@@ -114,7 +167,21 @@ function Residents({ house, label, onClose }: { house: S["HouseDto"] | undefined
   const f = useFormat();
   const links = useLoad(() => (house ? ok(api.GET("/houses/{houseId}/residents", { params: { path: { houseId: house.id } } })) : Promise.resolve([])), [house?.id]);
   const action = useAction();
+  const blank = { name: "", phone: "", relation: "owner" };
+  const [form, setForm] = useState(blank);
   const end = (id: string) => action.run(async () => { await ok(api.POST("/resident-links/{id}/end", { params: { path: { id } }, body: { toDate: null } })); links.reload(); });
+  const add = (e: FormEvent) => {
+    e.preventDefault();
+    if (!house) return;
+    void action.run(async () => {
+      await ok(api.POST("/houses/{houseId}/residents", {
+        params: { path: { houseId: house.id } },
+        body: { userId: null, name: form.name, phone: form.phone, relation: form.relation, fromDate: null, email: null },
+      }));
+      setForm(blank);
+      links.reload();
+    });
+  };
   return (
     <Sheet open={house !== undefined} title={label} onClose={onClose}>
       <ErrorNote error={action.error} />
@@ -130,7 +197,17 @@ function Residents({ house, label, onClose }: { house: S["HouseDto"] | undefined
           </ul>
         )}
       </Async>
-      <p className="muted">{t("directory.addResidentsByImport")}</p>
+      <form className="stack" onSubmit={add}>
+        <h3>{t("directory.addResident")}</h3>
+        <p className="muted">{t("directory.addResidentHint")}</p>
+        <div className="queue__fields">
+          <TextField label={t("name")} value={form.name} required onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <TextField label={t("directory.phone")} hint={t("directory.phoneHint")} value={form.phone} required onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <SelectField label={t("directory.relation")} value={form.relation} onChange={(e) => setForm({ ...form, relation: e.target.value })}
+            options={RELATIONS.map((r) => ({ value: r, label: t(`charges.relation.${r}` as Key) }))} />
+        </div>
+        <div className="row"><Button type="submit" loading={action.busy} disabled={form.name.trim() === "" || form.phone.trim() === ""}>{t("directory.addResident")}</Button></div>
+      </form>
     </Sheet>
   );
 }

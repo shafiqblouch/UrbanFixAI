@@ -1,4 +1,4 @@
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { ApiError } from "./api";
@@ -51,6 +51,21 @@ export function errorText(t: T, error: ApiError): string {
   const key = `error.${error.code}` as Key;
   const text = t(key);
   return text === key ? t("error") : text;
+}
+
+/**
+ * Reloads whenever the screen comes back into focus, so a list is fresh on return instead of showing what it held
+ * when it first mounted (React Navigation keeps screens mounted, so `useLoad([])` would otherwise only run once).
+ * `useLoad` already fetches on mount, so the first focus is skipped to avoid a duplicate initial request.
+ */
+export function useRefetchOnFocus(reload: () => void) {
+  const first = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (first.current) { first.current = false; return; }
+      reload();
+    }, [reload]),
+  );
 }
 
 /**

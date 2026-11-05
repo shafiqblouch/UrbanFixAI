@@ -172,7 +172,7 @@ function TechnicianCard({ job, onDone }: { job: S["JobDto"]; onDone: () => void 
             <div className="row wrap">
               <Button variant="secondary" disabled={!note.trim()} loading={action.busy}
                 onClick={() => void call(() => ok(api.POST("/jobs/{id}/updates", { ...path, body: { note, latitude: null, longitude: null, checklistDone: null } })))}>{t("job.addNote")}</Button>
-              <Button loading={action.busy} onClick={() => void call(() => ok(api.POST("/jobs/{id}/complete", { ...path, body: { note: note || null } })))}>{t("job.complete")}</Button>
+              <Button loading={action.busy} onClick={() => void call(() => ok(api.POST("/jobs/{id}/complete", { ...path, body: { note: note || null, latitude: null, longitude: null } })))}>{t("job.complete")}</Button>
               <Button variant="danger" onClick={() => { action.clear(); setDialog("cannot"); }}>{t("job.cannot")}</Button>
             </div>
           </>

@@ -1,0 +1,6 @@
+# esbuild (pulled in only by vitest, used for tests) ships a build script that pnpm 10+
+# refuses to run silently. It is not needed for the Expo/Metro APK bundle, so tell pnpm not to
+# run it (false) instead of erroring. pnpm 11 (used by EAS Build) reads this "allowBuilds" map
+# from here, not from the package.json "pnpm" field.
+allowBuilds:
+  esbuild: false

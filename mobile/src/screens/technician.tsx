@@ -5,7 +5,7 @@ import { Image, View } from "react-native";
 import { ApiError, api, ok, transcribeVoice, type S } from "../api";
 import { amountOf, emptyLine, fromServer, KINDS, problemWith, toInput, totalOf, type Line } from "../costs";
 import { emptyRequestLine, requestBody, requestIsValid, type RequestLine } from "../materials";
-import { errorText, useAction, useLoad } from "../hooks";
+import { errorText, useAction, useLoad, useRefetchOnFocus } from "../hooks";
 import { useI18n, useT } from "../i18n";
 import type { Key } from "../i18n/strings";
 import { checklistProgress, completionBlockers } from "../jobRules";
@@ -58,6 +58,7 @@ export function TodayScreen() {
   const t = useT();
   const nav = useNavigation<Nav>();
   const jobs = useLoad(() => ok(api.GET("/jobs", { params: { query: { mine: true, limit: 100 } } })), []);
+  useRefetchOnFocus(jobs.reload); // new or reassigned jobs show on return without re-login
   const today = useMemo(() => todaysJobs(jobs.data ?? [], new Date()), [jobs.data]);
   const { waiting } = useServices();
   if (jobs.loading && !jobs.data) return <Screen><Loading /></Screen>;
@@ -76,6 +77,7 @@ export function JobsScreen() {
   const t = useT();
   const nav = useNavigation<Nav>();
   const jobs = useLoad(() => ok(api.GET("/jobs", { params: { query: { mine: true, limit: 100 } } })), []);
+  useRefetchOnFocus(jobs.reload); // the full job list stays current on return
   if (jobs.loading && !jobs.data) return <Screen><Loading /></Screen>;
   const list = [...(jobs.data ?? [])].sort((a, b) => new Date(b.job.createdAt).getTime() - new Date(a.job.createdAt).getTime());
   return (

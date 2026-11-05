@@ -8111,7 +8111,8 @@
         "properties": {
           "userId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "relation": {
             "type": "string"
@@ -8119,6 +8120,21 @@
           "fromDate": {
             "type": "string",
             "format": "date",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "default": null,
             "nullable": true
           }
         }

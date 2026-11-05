@@ -7335,10 +7335,16 @@ export interface components {
         };
         CreateResidentLink: {
             /** Format: uuid */
-            userId: string;
+            userId: string | null;
             relation: string;
             /** Format: date */
             fromDate: string | null;
+            /** @default null */
+            name: string | null;
+            /** @default null */
+            phone: string | null;
+            /** @default null */
+            email: string | null;
         };
         CreateTeam: {
             /** Format: uuid */

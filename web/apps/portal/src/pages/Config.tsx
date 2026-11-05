@@ -7,8 +7,8 @@ import { useT, type Key } from "../i18n";
 import { useLookups } from "../lookups";
 import { AutoRoute, Escalation, Places, Prices, Sla, Society } from "./ConfigMore";
 
-type Tab = "society" | "places" | "departments" | "teams" | "categories" | "routing" | "sla" | "escalation" | "autoRoute" | "prices";
-const TABS: Tab[] = ["society", "places", "departments", "teams", "categories", "routing", "sla", "escalation", "autoRoute", "prices"];
+type Tab = "society" | "places" | "departments" | "teams" | "staff" | "categories" | "routing" | "sla" | "escalation" | "autoRoute" | "prices";
+const TABS: Tab[] = ["society", "places", "departments", "teams", "staff", "categories", "routing", "sla", "escalation", "autoRoute", "prices"];
 
 /** Departments, teams, categories with evidence rules and checklists, and routing rules (WP-13). Changes apply from the next complaint. */
 export function ConfigPage() {
@@ -31,6 +31,7 @@ export function ConfigPage() {
       {tab === "prices" && <Prices />}
       {tab === "departments" && <Departments />}
       {tab === "teams" && <Teams />}
+      {tab === "staff" && <Staff />}
       {tab === "categories" && <Categories />}
       {tab === "routing" && <Routing />}
     </>
@@ -102,6 +103,77 @@ function Teams() {
           <Button type="submit" loading={action.busy} disabled={!departmentId}>{t("add")}</Button>
         </form>
         <ErrorNote error={action.error} />
+      </Card>
+    </div>
+  );
+}
+
+// Staff: technicians (plumber, electrician, sanitation…) and other workers (ID-04, WP-13) ----------------------
+
+const STAFF_ROLES = ["Technician", "Supervisor", "Office", "Accounts", "Committee", "Guard", "Manager"] as const;
+
+/** Registers worker accounts and lists them. Technicians are the trades that do jobs; their trade is the department they belong to. */
+function Staff() {
+  const t = useT();
+  const { departments } = useLookups();
+  const action = useAction();
+  const members = useLoad(() => ok(api.GET("/members")), []);
+  const deptName = (id: string | null) => (id ? departments.find((d) => d.id === id)?.name ?? "—" : "—");
+  const blank = { displayName: "", email: "", phone: "", password: "", role: "Technician", departmentId: "" };
+  const [form, setForm] = useState(blank);
+  const set = (patch: Partial<typeof blank>) => setForm((f) => ({ ...f, ...patch }));
+
+  const register = () => action.run(async () => {
+    await ok(api.POST("/members", {
+      body: {
+        email: form.email.trim(), displayName: form.displayName.trim(), password: form.password,
+        role: form.role as S["Role"], departmentId: form.departmentId || null, gateId: null, phone: form.phone.trim() || null,
+      },
+    }));
+    setForm(blank);
+    members.reload();
+  });
+  const deactivate = (m: S["MemberDto"]) => action.run(async () => {
+    await ok(api.DELETE("/members/{membershipId}", { params: { path: { membershipId: m.membershipId } } }));
+    members.reload();
+  });
+
+  return (
+    <div className="stack">
+      <Card title={t("config.staff")}>
+        <Async state={members}>
+          {(rows) => {
+            const staff = rows.filter((m) => m.role !== "Resident");
+            return staff.length === 0 ? <p className="muted">{t("config.noStaff")}</p> : (
+              <Table caption={t("config.staff")} rows={staff} rowKey={(m) => m.membershipId}
+                columns={[
+                  { key: "n", header: t("name"), render: (m) => <strong>{m.displayName}</strong> },
+                  { key: "r", header: t("config.workerRole"), render: (m) => t(`role.${m.role}` as Key) },
+                  { key: "d", header: t("config.trade"), render: (m) => deptName(m.departmentId) },
+                  { key: "p", header: t("directory.phone"), render: (m) => m.phone ?? "—" },
+                  { key: "e", header: t("email"), render: (m) => m.email },
+                  { key: "a", header: t("status"), render: (m) => (m.isActive
+                    ? <Button variant="ghost" onClick={() => void deactivate(m)} loading={action.busy}>{t("config.deactivate")}</Button>
+                    : <span className="muted">{t("inactive")}</span>) },
+                ]} />
+            );
+          }}
+        </Async>
+      </Card>
+      <Card title={t("config.registerWorker")}>
+        <form className="stack form" onSubmit={(e) => { e.preventDefault(); void register(); }}>
+          <p className="muted">{t("config.registerWorkerHint")}</p>
+          <TextField label={t("name")} value={form.displayName} required onChange={(e) => set({ displayName: e.target.value })} />
+          <SelectField label={t("config.workerRole")} value={form.role} onChange={(e) => set({ role: e.target.value })}
+            options={STAFF_ROLES.map((r) => ({ value: r, label: t(`role.${r}` as Key) }))} />
+          <SelectField label={t("config.trade")} placeholder={t("config.tradeNone")} hint={t("config.tradeHint")} value={form.departmentId} onChange={(e) => set({ departmentId: e.target.value })}
+            options={departments.filter((d) => d.isActive).map((d) => ({ value: d.id, label: d.name }))} />
+          <TextField type="email" label={t("email")} value={form.email} required onChange={(e) => set({ email: e.target.value })} />
+          <TextField label={t("directory.phone")} value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
+          <TextField type="password" label={t("config.tempPassword")} hint={t("config.tempPasswordHint")} value={form.password} required onChange={(e) => set({ password: e.target.value })} />
+          <ErrorNote error={action.error} />
+          <div className="row"><Button type="submit" loading={action.busy} disabled={form.displayName.trim() === "" || form.email.trim() === "" || form.password === ""}>{t("config.registerWorker")}</Button></div>
+        </form>
       </Card>
     </div>
   );

@@ -28,7 +28,8 @@ public static class SetupEndpoints
     public sealed record HouseDto(Guid Id, Guid LocationId, string LocationPath, decimal? PlotSizeSqYd, string? HouseCategory, string Status);
     public sealed record CreateHouse(Guid LocationId, decimal? PlotSizeSqYd, string? HouseCategory, string? Status);
     public sealed record ResidentLinkDto(Guid Id, Guid HouseId, Guid UserId, string Relation, DateOnly FromDate, DateOnly? ToDate);
-    public sealed record CreateResidentLink(Guid UserId, string Relation, DateOnly? FromDate);
+    /// <summary>Link an existing person (<c>UserId</c>) to a house, or create one from <c>Name</c> + <c>Phone</c> (the manual "add resident" form); the CSV import is the bulk path.</summary>
+    public sealed record CreateResidentLink(Guid? UserId, string Relation, DateOnly? FromDate, string? Name = null, string? Phone = null, string? Email = null);
     public sealed record EndResidentLink(DateOnly? ToDate);
 
     public sealed record LandmarkDto(Guid Id, string Name, string? NameUr, string[] Aliases, Guid? LocationId, double? Latitude, double? Longitude, bool IsActive);
@@ -276,19 +277,48 @@ public static class SetupEndpoints
             Results.Ok((await db.ResidentLinks.AsNoTracking().Where(r => r.HouseId == houseId).OrderByDescending(r => r.FromDate).ToListAsync(ct)).Select(ToDto)))
             .WithTags("Setup").Produces<List<ResidentLinkDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
 
-        app.MapPost("/houses/{houseId:guid}/residents", async (Guid houseId, CreateResidentLink req, AppDbContext db, ITenantContext tenant, CancellationToken ct) =>
+        app.MapPost("/houses/{houseId:guid}/residents", async (Guid houseId, CreateResidentLink req, AppDbContext db, ITenantContext tenant, PasswordService passwords, CancellationToken ct) =>
         {
             if (!Relations.Contains(req.Relation)) return Results.BadRequest(new { error = "invalid_relation" });
             if (!await db.Houses.AnyAsync(h => h.Id == houseId, ct)) return Results.NotFound();
             var org = tenant.OrganizationId!.Value;
 
-            // A linked person is a resident of this organization: give them the Resident role if they have none yet.
-            if (!await db.Memberships.AnyAsync(m => m.UserId == req.UserId && m.IsActive, ct))
+            // Resolve the person: an existing user by id, or create/find one from name + phone (the manual "add resident" form).
+            Guid userId;
+            if (req.UserId is { } existingId)
             {
-                if (!await db.Users.AnyAsync(u => u.Id == req.UserId, ct)) return Results.BadRequest(new { error = "user_not_found" });
-                db.Memberships.Add(new Membership { OrganizationId = org, UserId = req.UserId, Role = Role.Resident });
+                if (!await db.Users.AnyAsync(u => u.Id == existingId, ct)) return Results.BadRequest(new { error = "user_not_found" });
+                userId = existingId;
             }
-            var link = new ResidentLink { OrganizationId = org, HouseId = houseId, UserId = req.UserId, Relation = req.Relation, FromDate = req.FromDate ?? DateOnly.FromDateTime(DateTime.UtcNow) };
+            else
+            {
+                if (string.IsNullOrWhiteSpace(req.Name)) return Results.BadRequest(new { error = "name_required" });
+                if (PhoneNumber.Normalize(req.Phone ?? "") is not { } phone) return Results.BadRequest(new { error = "invalid_phone" });
+                var email = req.Email?.Trim().ToLowerInvariant();
+                if (!string.IsNullOrEmpty(email) && !email.Contains('@')) return Results.BadRequest(new { error = "invalid_email" });
+
+                var user = await db.Users.FromSql($"SELECT * FROM find_user_by_phone({phone})").SingleOrDefaultAsync(ct);
+                if (user is null)
+                {
+                    if (!string.IsNullOrEmpty(email) && await db.Users.FromSql($"SELECT * FROM find_user_for_login({email})").AnyAsync(ct))
+                        return Results.Conflict(new { error = "email_taken" });
+                    // Residents sign in with a code sent to their phone, so the password is random and nobody knows it.
+                    user = new User
+                    {
+                        DisplayName = req.Name.Trim(), Phone = phone,
+                        Email = !string.IsNullOrEmpty(email) ? email : $"{phone.TrimStart('+')}@phone.urbanfix.invalid",
+                        PasswordHash = passwords.Hash(Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24)) + "aA1!"),
+                    };
+                    db.Users.Add(user);
+                    await db.SaveChangesAsync(ct); // a user must exist before its membership and link
+                }
+                userId = user.Id;
+            }
+
+            // A linked person is a resident of this organization: give them the Resident role if they have none yet.
+            if (!await db.Memberships.AnyAsync(m => m.UserId == userId && m.IsActive, ct))
+                db.Memberships.Add(new Membership { OrganizationId = org, UserId = userId, Role = Role.Resident });
+            var link = new ResidentLink { OrganizationId = org, HouseId = houseId, UserId = userId, Relation = req.Relation, FromDate = req.FromDate ?? DateOnly.FromDateTime(DateTime.UtcNow) };
             db.ResidentLinks.Add(link);
             return await SaveOrConflict(db, ct, () => Results.Created($"/resident-links/{link.Id}", ToDto(link)), "house_already_has_current_" + req.Relation);
         }).WithTags("Setup").Produces<ResidentLinkDto>(201).RequireAuthorization(AuthPolicies.For(Permissions.HouseLink));

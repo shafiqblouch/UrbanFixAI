@@ -360,6 +360,33 @@ public class SetupTests(TestApp app)
         Assert.Equal(HttpStatusCode.Created, (await office.Client.PostAsJsonAsync($"/houses/{house.Id}/residents", new CreateResidentLink(id, "owner", null))).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await office.Client.PostAsJsonAsync("/locations", new CreateLocation(null, "block", "Nope", null, null, null))).StatusCode);
     }
+
+    [Fact]
+    public async Task A_single_resident_can_be_added_by_name_and_phone_without_an_import()
+    {
+        var (org, m, house) = await OrgWithHouse();
+        var office = await app.AddMemberAsync(m, org, Role.Office);
+        var phone = "+9230" + Random.Shared.NextInt64(10_000_000, 99_999_999);
+
+        // Office adds a brand-new person from just name + phone + relation (the manual "add resident" form).
+        var link = await Ok<ResidentLinkDto>(await office.Client.PostAsJsonAsync(
+            $"/houses/{house.Id}/residents", new CreateResidentLink(null, "owner", null, Name: "Ali Khan", Phone: phone)));
+        Assert.Equal("owner", link.Relation);
+
+        // They now exist as an active Resident, reachable on that phone.
+        var members = await m.Client.GetFromJsonAsync<List<AdminEndpoints.MemberDto>>("/members");
+        Assert.Contains(members!, x => x.UserId == link.UserId && x.Role == Role.Resident && x.IsActive && x.Phone == phone);
+
+        // The same phone reuses the one person rather than creating a second.
+        await Ok<ResidentLinkDto>(await office.Client.PostAsJsonAsync(
+            $"/houses/{house.Id}/residents", new CreateResidentLink(null, "family", null, Name: "Ali Khan", Phone: phone)));
+        Assert.Single((await m.Client.GetFromJsonAsync<List<AdminEndpoints.MemberDto>>("/members"))!, x => x.Phone == phone);
+
+        // Name and a valid phone are both required on the manual path.
+        Assert.Equal(HttpStatusCode.BadRequest, (await office.Client.PostAsJsonAsync($"/houses/{house.Id}/residents", new CreateResidentLink(null, "owner", null, Phone: phone))).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await office.Client.PostAsJsonAsync($"/houses/{house.Id}/residents", new CreateResidentLink(null, "owner", null, Name: "No Phone"))).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await office.Client.PostAsJsonAsync($"/houses/{house.Id}/residents", new CreateResidentLink(null, "owner", null, Name: "Bad", Phone: "12"))).StatusCode);
+    }
 }
 
 [Collection("db")]
