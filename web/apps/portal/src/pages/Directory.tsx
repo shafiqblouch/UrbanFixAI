@@ -99,7 +99,8 @@ function Houses() {
   // Houses attach to the leaf place of the society's template (e.g. a "house"); offer only leaves without a record yet.
   const leafKind = (LEVELS[settings.data?.locationTemplate ?? "society"] ?? LEVELS.society).at(-1);
   const taken = new Set((houses.data ?? []).map((h) => h.locationId));
-  const vacant = locations.filter((l) => l.kind === leafKind && l.isActive && !taken.has(l.id));
+  const leaves = locations.filter((l) => l.kind === leafKind && l.isActive);
+  const vacant = leaves.filter((l) => !taken.has(l.id));
 
   return (
     <Async state={houses}>
@@ -120,7 +121,7 @@ function Houses() {
             />
           )}
           <Residents house={open} label={open ? label(open) : ""} onClose={() => setOpen(undefined)} />
-          <AddHouseSheet open={adding} vacant={vacant} onClose={() => setAdding(false)} onSaved={() => { setAdding(false); houses.reload(); }} />
+          <AddHouseSheet open={adding} vacant={vacant} hasLeaves={leaves.length > 0} onClose={() => setAdding(false)} onSaved={() => { setAdding(false); houses.reload(); }} />
         </div>
       )}
     </Async>
@@ -128,7 +129,7 @@ function Houses() {
 }
 
 /** Attach a house record to an existing house-level place, so residents can then be linked to it (OR-06). */
-function AddHouseSheet({ open, vacant, onClose, onSaved }: { open: boolean; vacant: S["LocationDto"][]; onClose: () => void; onSaved: () => void }) {
+function AddHouseSheet({ open, vacant, hasLeaves, onClose, onSaved }: { open: boolean; vacant: S["LocationDto"][]; hasLeaves: boolean; onClose: () => void; onSaved: () => void }) {
   const t = useT();
   const label = useHouseLabel();
   const action = useAction();
@@ -145,7 +146,7 @@ function AddHouseSheet({ open, vacant, onClose, onSaved }: { open: boolean; vaca
   return (
     <Sheet open={open} title={t("directory.addHouse")} onClose={onClose}>
       {vacant.length === 0 ? (
-        <EmptyState title={t("directory.noVacantPlaces")} />
+        <EmptyState title={t(hasLeaves ? "directory.noVacantPlaces" : "directory.noLeafPlaces")} />
       ) : (
         <form className="stack" onSubmit={submit}>
           <SelectField label={t("directory.place")} hint={t("directory.placeHint")} placeholder={t("choose")} value={form.locationId} required
