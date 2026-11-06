@@ -19,7 +19,8 @@ public static class RoutingEndpoints
     public sealed record QueueItemDto(ComplaintDto Complaint, Guid? SuggestedCategoryId, string? SuggestedPriority, Guid? SuggestedTeamId, string? SuggestedTeamName);
     public sealed record SuggestionDto(
         Guid Id, string Task, string Status, int Attempt, string? CategoryKey, string? Summary, string? Language, string? LocationText,
-        bool? NeedsMoreInfo, float? Confidence, string? Model, string? PromptVersion, string? Error, DateTimeOffset CreatedAt);
+        bool? NeedsMoreInfo, float? Confidence, string? Model, string? PromptVersion, string? Error, DateTimeOffset CreatedAt,
+        float? Plausibility = null, string? PlausibilityReason = null);
     public sealed record SaveSla(Guid? CategoryId, string Priority, int RespondHours, int ResolveHours, bool? BusinessHoursOnly, bool? IsActive);
     public sealed record SlaDto(Guid Id, Guid? CategoryId, string Priority, int RespondHours, int ResolveHours, bool BusinessHoursOnly, bool IsActive);
     public sealed record SaveAutoRoute(bool Enabled, float? Threshold);
@@ -118,7 +119,7 @@ public static class RoutingEndpoints
         g.MapGet("/review-queue", ReviewQueueAsync).Produces<List<QueueItemDto>>(200).RequireAuthorization(triage);
         g.MapGet("/complaints/{id:guid}/ai-suggestions", async (Guid id, AppDbContext db, CancellationToken ct) =>
             Results.Ok(await db.AiSuggestions.AsNoTracking().Where(s => s.ComplaintId == id).OrderBy(s => s.CreatedAt)
-                .Select(s => new SuggestionDto(s.Id, s.Task, s.Status, s.Attempt, s.CategoryKey, s.Summary, s.Language, s.LocationText, s.NeedsMoreInfo, s.Confidence, s.Model, s.PromptVersion, s.Error, s.CreatedAt))
+                .Select(s => new SuggestionDto(s.Id, s.Task, s.Status, s.Attempt, s.CategoryKey, s.Summary, s.Language, s.LocationText, s.NeedsMoreInfo, s.Confidence, s.Model, s.PromptVersion, s.Error, s.CreatedAt, s.Plausibility, s.PlausibilityReason))
                 .ToListAsync(ct)))
             .Produces<List<SuggestionDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
         g.MapPost("/complaints/{id:guid}/triage", TriageAsync).Produces<ComplaintEndpoints.ComplaintDto>(200).RequireAuthorization(triage);

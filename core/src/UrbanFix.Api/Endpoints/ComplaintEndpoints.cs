@@ -27,7 +27,8 @@ public static class ComplaintEndpoints
         Guid? HouseId, Guid? LocationId, string? LocationText, string? Language, string AiStatus, string? AiCategoryKey, string? AiSummary,
         float? AiConfidence, string? HoldReason, string? StatusReason, Guid? ReportedByUserId, Guid? EnteredByUserId, Guid? MergedIntoId,
         DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt, bool SafetyFlag = false, DateTimeOffset? DueAt = null, DateTimeOffset? RespondBy = null, bool AutoRouted = false,
-        string? ReporterPhone = null, bool ReporterVerified = true, string? AssetRef = null, bool AutoConfirmed = false, string? AiModel = null, Guid? IncidentId = null, double? Latitude = null, double? Longitude = null);
+        string? ReporterPhone = null, bool ReporterVerified = true, string? AssetRef = null, bool AutoConfirmed = false, string? AiModel = null, Guid? IncidentId = null, double? Latitude = null, double? Longitude = null,
+        float? AiPlausibility = null, string? AiPlausibilityReason = null);
     public sealed record VerifyReporter(Guid? UserId);
     public sealed record SaveFeedback(int Rating, bool ConfirmedFixed, string? Comment);
     public sealed record FeedbackDto(int Rating, bool ConfirmedFixed, string? Comment, DateTimeOffset UpdatedAt);
@@ -603,7 +604,8 @@ public static class ComplaintEndpoints
     internal static ComplaintDto ToDto(Complaint c) => new(
         c.Id, c.Reference, c.Status, c.Channel, c.Description, c.CategoryId, c.Priority, c.HouseId, c.LocationId, c.LocationText, c.Language,
         c.AiStatus, c.AiCategoryKey, c.AiSummary, c.AiConfidence, c.HoldReason, c.StatusReason, c.ReportedByUserId, c.EnteredByUserId, c.MergedIntoId,
-        c.CreatedAt, c.UpdatedAt, c.SafetyFlag, c.DueAt, c.RespondBy, c.AutoRouted, c.ReporterPhone, c.ReporterVerified, c.AssetRef, c.AutoConfirmed, c.AiModel, c.IncidentId, c.Latitude, c.Longitude);
+        c.CreatedAt, c.UpdatedAt, c.SafetyFlag, c.DueAt, c.RespondBy, c.AutoRouted, c.ReporterPhone, c.ReporterVerified, c.AssetRef, c.AutoConfirmed, c.AiModel, c.IncidentId, c.Latitude, c.Longitude,
+        c.AiPlausibility, c.AiPlausibilityReason);
 
     internal static JobDto ToDto(Job j) => new(j.Id, j.Number, j.SequenceNo, j.Status, j.Instructions, j.AssignedTeamId, j.CreatedAt, j.ComplaintId, j.AssignedUserId, j.EvidenceRule, j.RequiresCosts, j.Chargeable, j.ChargeHouseId);
 

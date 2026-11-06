@@ -1,13 +1,44 @@
 // Native versions of the shared components (DS-02): same tokens, same wording, mirrored for right-to-left in JavaScript.
 import { useState, type ReactNode } from "react";
 import {
-  ActivityIndicator, Pressable, ScrollView, StyleSheet, Text as RNText, TextInput, View, type StyleProp, type TextInputProps, type TextStyle, type ViewStyle,
+  ActivityIndicator, Pressable, ScrollView, StyleSheet, Text as RNText, TextInput, View, type ColorValue, type StyleProp, type TextInputProps, type TextStyle, type ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useI18n } from "../i18n";
-import { fontSize, radius, space, TOUCH, URDU_FONT, URDU_FONT_BOLD, URDU_LINE_HEIGHT, URDU_SCALE, usePalette } from "../theme";
+import { brandGradient, fontSize, radius, space, TOUCH, URDU_FONT, URDU_FONT_BOLD, URDU_LINE_HEIGHT, URDU_SCALE, usePalette } from "../theme";
 
 type Size = keyof typeof fontSize;
+
+/** Parse "#rrggbb" into its red, green and blue bytes. */
+function hexRgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+/** Blend between two hex colours. `t` runs 0 → `from`, 1 → `to`. */
+function mix(from: string, to: string, t: number): string {
+  const a = hexRgb(from), b = hexRgb(to);
+  const c = a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+}
+
+/**
+ * A smooth two-colour gradient with no native dependency: a strip of thin bands whose
+ * colour steps from one end to the other, so it works in Expo Go and on low-end phones.
+ */
+export function Gradient({ colors = brandGradient, horizontal = true, style, children, steps = 28 }: {
+  colors?: readonly [string, string]; horizontal?: boolean; style?: StyleProp<ViewStyle>; children?: ReactNode; steps?: number;
+}) {
+  const bands: ColorValue[] = Array.from({ length: steps }, (_, i) => mix(colors[0], colors[1], i / (steps - 1)));
+  return (
+    <View style={[{ overflow: "hidden" }, style]}>
+      <View style={[StyleSheet.absoluteFill, { flexDirection: horizontal ? "row" : "column" }]}>
+        {bands.map((c, i) => <View key={i} style={{ flex: 1, backgroundColor: c }} />)}
+      </View>
+      {children}
+    </View>
+  );
+}
 
 export function Txt({ children, size = "md", bold, muted, color, style, numberOfLines, selectable }: {
   children: ReactNode; size?: Size; bold?: boolean; muted?: boolean; color?: string; style?: StyleProp<TextStyle>; numberOfLines?: number; selectable?: boolean;
@@ -59,6 +90,20 @@ export function Button({ title, onPress, variant = "primary", loading, disabled,
     ghost: { bg: "transparent", fg: p.link, border: "transparent" },
   }[variant];
   const off = disabled || loading;
+  const inner = loading ? <ActivityIndicator color={colors.fg} /> : <Txt bold color={colors.fg} style={{ textAlign: "center" }}>{title}</Txt>;
+  // The primary action is a bright teal→blue pill, the app's signature look.
+  if (variant === "primary") {
+    return (
+      <Pressable
+        accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? title} accessibilityState={{ disabled: !!off, busy: !!loading }}
+        disabled={off} onPress={onPress}
+        style={({ pressed }) => [styles.pill, { opacity: off ? 0.6 : pressed ? 0.9 : 1 }]}
+      >
+        <Gradient style={StyleSheet.absoluteFill} />
+        <View style={styles.pillInner}>{inner}</View>
+      </Pressable>
+    );
+  }
   return (
     <Pressable
       accessibilityRole="button"
@@ -68,7 +113,7 @@ export function Button({ title, onPress, variant = "primary", loading, disabled,
       onPress={onPress}
       style={({ pressed }) => [styles.button, { backgroundColor: colors.bg, borderColor: colors.border, opacity: off ? 0.6 : pressed ? 0.85 : 1 }]}
     >
-      {loading ? <ActivityIndicator color={colors.fg} /> : <Txt bold color={colors.fg} style={{ textAlign: "center" }}>{title}</Txt>}
+      {inner}
     </Pressable>
   );
 }
@@ -173,4 +218,6 @@ export function Badge({ count }: { count: number }) {
 
 const styles = StyleSheet.create({
   button: { minHeight: TOUCH, minWidth: TOUCH, borderRadius: radius.md, borderWidth: 2, paddingHorizontal: space[4], justifyContent: "center", alignItems: "center" },
+  pill: { minHeight: TOUCH, minWidth: TOUCH, borderRadius: radius.pill, overflow: "hidden", justifyContent: "center", alignItems: "center", shadowColor: "#0C6A86", shadowOpacity: 0.25, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3 },
+  pillInner: { paddingHorizontal: space[5], paddingVertical: space[2], justifyContent: "center", alignItems: "center" },
 });

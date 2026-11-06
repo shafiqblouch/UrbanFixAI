@@ -36,7 +36,7 @@ class Settings:
     embedding_model: str = "fake-embed-1"
 
     # Pinned prompt versions (files under app/prompts/<name>/<version>.txt).
-    prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v3", "photo_interpretation": "v1", "speech_transcription": "v2", "photo_comparison": "v1"})
+    prompt_versions: dict[str, str] = field(default_factory=lambda: {"complaint_understanding": "v4", "photo_interpretation": "v1", "speech_transcription": "v2", "photo_comparison": "v1"})
 
     # Used once if the primary model's provider call fails (AI-01 picked a second vendor on purpose).
     llm_fallback_model: str = ""

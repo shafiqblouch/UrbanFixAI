@@ -738,6 +738,13 @@ a:hover { color: var(--uf-primary-strong); }
 .rq-aibox p { margin: 2px 0 0; color: var(--uf-text-muted); font-size: var(--uf-font-size-sm); }
 .rq-aibox p strong { color: var(--uf-on-primary-soft); }
 .rq-aibox__pct { margin-inline-start: auto; padding: 3px 10px; border-radius: var(--uf-radius-md); background: color-mix(in srgb, var(--uf-primary) 20%, transparent); border: 1px solid color-mix(in srgb, var(--uf-primary) 40%, transparent); color: var(--uf-on-primary-soft); font-size: var(--uf-font-size-xs); font-weight: 800; white-space: nowrap; }
+
+/* Possible prank / test / abuse: the AI's plausibility judgement is below the threshold (AI-05). */
+.rq-fake { display: inline-flex; align-items: center; gap: 3px; padding: 1px 7px; border-radius: var(--uf-radius-sm); background: var(--uf-warning-bg); color: var(--uf-warning); border: 1px solid color-mix(in srgb, var(--uf-warning) 40%, transparent); font-size: var(--uf-font-size-xs); font-weight: 700; white-space: nowrap; }
+.rq-fakebox { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: var(--uf-radius-md); background: color-mix(in srgb, var(--uf-warning-bg) 55%, var(--uf-surface-raised)); border: 1px solid color-mix(in srgb, var(--uf-warning) 40%, transparent); }
+.rq-fakebox__icon { display: inline-grid; place-items: center; inline-size: 30px; block-size: 30px; border-radius: var(--uf-radius-md); background: color-mix(in srgb, var(--uf-warning) 22%, transparent); color: var(--uf-warning); flex: none; }
+.rq-fakebox h4 { margin: 0; font-size: var(--uf-font-size-sm); font-weight: 800; color: var(--uf-warning); }
+.rq-fakebox p { margin: 2px 0 0; color: var(--uf-text-muted); font-size: var(--uf-font-size-sm); }
 .rq-box { display: flex; flex-direction: column; gap: 8px; padding: var(--uf-space-3) var(--uf-space-4); border-radius: var(--uf-radius-md); background: var(--uf-surface-raised); border: 1px solid var(--uf-border-soft); }
 .rq-box--edit { border-color: color-mix(in srgb, var(--uf-primary) 35%, transparent); }
 .rq-box__label { color: var(--uf-text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -789,3 +796,84 @@ a:hover { color: var(--uf-primary-strong); }
 .map-legend .map-pin { inline-size: 14px; block-size: 14px; border-width: 2px; }
 .check { display: inline-flex; align-items: center; gap: var(--uf-space-2); min-block-size: 44px; }
 .map-pin--step { background: var(--uf-primary); }
+
+/* ===========================================================================
+ * Brand theme: a teal → blue gradient on the app's signature chrome, matching
+ * the mobile app. Web-local (no shared-token change), so the green semantic
+ * colours (success / warning / danger) and dark mode are untouched.
+ * ======================================================================== */
+.uf-root {
+  --uf-brand-1: #12B6A6; --uf-brand-2: #1C7CD6;
+  --uf-brand-grad: linear-gradient(90deg, var(--uf-brand-1), var(--uf-brand-2));
+  --uf-brand-grad-135: linear-gradient(135deg, var(--uf-brand-1), var(--uf-brand-2));
+}
+
+/* Top bar: the gradient header, with its controls turned to read on it. */
+.shell__header { background: var(--uf-brand-grad); border-block-end: 0; box-shadow: 0 2px 12px rgba(12, 90, 134, 0.22); }
+.shell__header .icon-btn { color: rgba(255, 255, 255, 0.92); }
+.shell__header .icon-btn:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.shell__header .icon-btn--box { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.28); }
+.shell__header .icon-btn--box:hover { border-color: rgba(255, 255, 255, 0.6); }
+.shell__search .uf-field__input { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.28); color: #fff; }
+.shell__search .uf-field__input::placeholder { color: rgba(255, 255, 255, 0.78); }
+.shell__search .uf-field__input:hover { border-color: rgba(255, 255, 255, 0.5); }
+.shell__search .uf-field__input:focus { border-color: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25); }
+.shell__search-icon { color: rgba(255, 255, 255, 0.85); }
+.shell__kbd { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.28); color: rgba(255, 255, 255, 0.9); }
+.shell__header .pill-btn { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.28); color: #fff; }
+.shell__header .pill-btn:hover { border-color: rgba(255, 255, 255, 0.6); }
+.shell__header .pill-btn .uf-icon { color: #fff; }
+.shell__date { color: rgba(255, 255, 255, 0.9); border-inline-start-color: rgba(255, 255, 255, 0.3); }
+.shell__header .icon-btn__badge { box-shadow: 0 0 0 2px var(--uf-brand-2); }
+
+/* Primary actions: bright gradient pills (the "Download Demand Note" look). */
+.uf-btn--primary { background: var(--uf-brand-grad); border-color: transparent; color: #fff; box-shadow: 0 6px 16px rgba(12, 90, 134, 0.24); }
+.uf-btn--primary:not(:disabled):hover { background: var(--uf-brand-grad); color: #fff; filter: brightness(1.06); box-shadow: 0 8px 20px rgba(12, 90, 134, 0.34); }
+.shell__new { background: var(--uf-brand-grad); box-shadow: 0 4px 12px rgba(12, 90, 134, 0.28); }
+
+/* Sidebar identity + the current screen. */
+.logo-mark { background: var(--uf-brand-grad-135); color: #fff; }
+.avatar { background: var(--uf-brand-grad-135); color: #fff; }
+.shell .uf-sidebar .uf-nav__item[aria-current="page"] { background: var(--uf-brand-grad); color: #fff; box-shadow: 0 4px 12px rgba(28, 124, 214, 0.3); }
+.shell .uf-sidebar .uf-nav__item[aria-current="page"]:hover { background: var(--uf-brand-grad); color: #fff; }
+.shell .uf-sidebar .uf-nav__item[aria-current="page"] .uf-badge { background: #fff; color: var(--uf-brand-2); }
+:root[data-theme="dark"] .shell .uf-sidebar .uf-nav__item[aria-current="page"] { border-color: transparent; }
+
+/* Dashboard tiles, progress and active tabs pick up the brand gradient. */
+.uf-kpi--indigo, .uf-kpi--coral, .uf-kpi--teal, .uf-kpi--amber { background: var(--uf-brand-grad-135); }
+.uf-progress__fill, .dash-stage__fill { background: var(--uf-brand-grad); }
+.shell .tab--active { background: var(--uf-brand-2); color: #fff; }
+
+/* Complaint progress: a connected rail with a status dot per step, like the
+ * mobile timeline — green done, orange active (latest), red rejected. */
+.timeline { gap: 0; }
+.timeline__step { position: relative; display: flex; flex-direction: column; gap: 2px; margin-inline-start: 7px; padding-inline-start: var(--uf-space-5); padding-block-end: var(--uf-space-4); border-inline-start: 2px solid var(--uf-border-soft); }
+.timeline__step:last-child { border-inline-start-color: transparent; padding-block-end: 0; }
+.timeline__marker { position: absolute; inset-inline-start: -9px; inset-block-start: 1px; display: grid; place-items: center; inline-size: 16px; block-size: 16px; border-radius: 50%; background: var(--uf-border); color: #fff; font-size: 10px; font-weight: 800; box-shadow: 0 0 0 3px var(--uf-surface-raised); }
+.timeline__step--done .timeline__marker { background: #1FB573; }
+.timeline__step--done .timeline__marker::before { content: "\2713"; }
+.timeline__step--active .timeline__marker { background: #F7901E; }
+.timeline__step--active .timeline__marker::before { content: ""; inline-size: 5px; block-size: 5px; border-radius: 50%; background: #fff; }
+.timeline__step--danger .timeline__marker { background: #E0493B; }
+.timeline__step--danger .timeline__marker::before { content: "\2715"; font-size: 9px; }
+
+/* Login entry screen: shift its brand accents to the same teal → blue. */
+.login { --uf-primary: #15b5c9; --uf-link: #5ee0e8; --uf-focus-ring: #38bdf8; }
+.login__hero {
+  background-color: #052a3a;
+  background-image:
+    radial-gradient(at 10% 10%, rgba(18, 182, 166, 0.38) 0, transparent 50%),
+    radial-gradient(at 90% 20%, rgba(28, 124, 214, 0.32) 0, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(3, 32, 54, 0.9) 0, transparent 50%),
+    radial-gradient(at 80% 90%, rgba(18, 182, 166, 0.22) 0, transparent 50%);
+}
+.login__brand-sub, .login__badge, .login__points li::before, .login__sample-icon, .login__sample-bar b, .login__sample-ok, .login__lang .uf-icon, .login__social .uf-icon, .login__link { color: #67e8f9; }
+.login__badge { background: rgba(28, 124, 214, 0.12); border-color: rgba(28, 124, 214, 0.35); }
+.login__points li::before { background: rgba(18, 182, 166, 0.2); border-color: rgba(56, 189, 248, 0.4); }
+.login__tagline-accent { background: linear-gradient(90deg, #5eead4, #38bdf8, #a5f3fc); -webkit-background-clip: text; background-clip: text; }
+.login__sample-track span { background: linear-gradient(90deg, #12b6a6, #38bdf8); }
+.login__submit { background: linear-gradient(90deg, #12b6a6, #1c7cd6); color: #fff; box-shadow: 0 8px 22px rgba(22, 120, 180, 0.3); }
+.login__submit:not(:disabled):hover { box-shadow: 0 10px 26px rgba(22, 120, 180, 0.45); }
+.login .logo-mark { background: linear-gradient(135deg, #12b6a6, #1c7cd6); color: #fff; box-shadow: 0 6px 18px rgba(22, 120, 180, 0.32); }
+.login__tab--on { background: #1c7cd6; color: #fff; box-shadow: 0 6px 16px rgba(28, 124, 214, 0.32); }
+.login__input input:focus { border-color: #38bdf8; box-shadow: 0 0 0 1px #38bdf8; }

@@ -45,15 +45,19 @@ public class PriorityRulesUnitTests
     public void Safety_terms_are_found_in_english_and_urdu(string? text, bool expected) => Assert.Equal(expected, SafetyTerms.IsSafety(text));
 
     [Theory]
-    [InlineData(true, 0.9f, 0.95f, "High", false, false, true, null)]
-    [InlineData(false, 0.9f, 0.99f, "High", false, false, true, "auto_route_off")]
-    [InlineData(true, 0.9f, 0.89f, "High", false, false, true, "below_threshold")]
-    [InlineData(true, 0.9f, null, "High", false, false, true, "no_confidence")]
-    [InlineData(true, 0.9f, 0.99f, "High", false, true, true, "category_set_by_person")]
-    [InlineData(true, 0.9f, 0.99f, "High", false, false, false, "no_matching_rule")]
-    [InlineData(true, 0.9f, 0.99f, "Safety", true, false, true, "safety")]
-    public void Auto_routing_needs_every_condition(bool on, float threshold, float? confidence, string priority, bool safety, bool byPerson, bool team, string? why) =>
-        Assert.Equal(why, AutoRoutePolicy.WhyQueued(on, threshold, confidence, priority, safety, byPerson, team));
+    [InlineData(true, 0.9f, 0.95f, 1f, "High", false, false, true, null)]
+    [InlineData(false, 0.9f, 0.99f, 1f, "High", false, false, true, "auto_route_off")]
+    [InlineData(true, 0.9f, 0.89f, 1f, "High", false, false, true, "below_threshold")]
+    [InlineData(true, 0.9f, null, 1f, "High", false, false, true, "no_confidence")]
+    [InlineData(true, 0.9f, 0.99f, 1f, "High", false, true, true, "category_set_by_person")]
+    [InlineData(true, 0.9f, 0.99f, 1f, "High", false, false, false, "no_matching_rule")]
+    [InlineData(true, 0.9f, 0.99f, 1f, "Safety", true, false, true, "safety")]
+    // A confident, auto-route-enabled category is still held back when the complaint may not be genuine.
+    [InlineData(true, 0.9f, 0.99f, 0.3f, "High", false, false, true, "low_plausibility")]
+    // Unknown plausibility (AI off, or an older complaint) does not block routing.
+    [InlineData(true, 0.9f, 0.99f, null, "High", false, false, true, null)]
+    public void Auto_routing_needs_every_condition(bool on, float threshold, float? confidence, float? plausibility, string priority, bool safety, bool byPerson, bool team, string? why) =>
+        Assert.Equal(why, AutoRoutePolicy.WhyQueued(on, threshold, confidence, plausibility, priority, safety, byPerson, team));
 
     [Fact]
     public void Elapsed_hours_deadline_is_a_plain_addition()
@@ -185,6 +189,28 @@ public class PriorityRulesTests(TestApp app)
             var third = await Complain(s, "No water, I think");
             await Enrich(s, third.Id);
             Assert.Equal(ComplaintStatus.New, (await Detail(s, third.Id))!.Complaint.Status);
+        }
+        finally { ai.Reply = previous; }
+    }
+
+    [Fact]
+    public async Task A_possibly_fake_complaint_is_never_auto_routed_even_when_confident()
+    {
+        var s = await Society.CreateAsync(app);
+        var team = await NewTeam(s, "Water crew");
+        (await s.Manager.Client.PostAsJsonAsync("/routing-rules", new SaveRule("water", s.CategoryId, null, team.Id, null, null))).EnsureSuccessStatusCode();
+        (await s.Manager.Client.PutAsJsonAsync($"/categories/{s.CategoryId}/auto-route", new SaveAutoRoute(true, 0.85f))).EnsureSuccessStatusCode();
+        var ai = app.Services.GetRequiredService<FakeAiClient>();
+
+        var previous = ai.Reply;
+        ai.Reply = previous with { Confidence = 0.99f, Plausibility = 0.2f, PlausibilityReason = "reads like a test message" };
+        try
+        {
+            var c = await Complain(s, "No water since morning");
+            await Enrich(s, c.Id);
+            var d = (await Detail(s, c.Id))!.Complaint;
+            // Confident and in an auto-route category, but held for a person because it may not be genuine.
+            Assert.Equal((ComplaintStatus.New, false), (d.Status, d.AutoRouted));
         }
         finally { ai.Reply = previous; }
     }

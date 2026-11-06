@@ -24,7 +24,7 @@ public sealed class AiOptions
 
 public sealed record AiCategory(string Key, string Label, string? Description);
 
-public sealed record AiUnderstanding(string Category, string Summary, string? LocationText, string Language, float Confidence, bool NeedsMoreInfo, string Model, string PromptVersion, AiUsage? Usage = null);
+public sealed record AiUnderstanding(string Category, string Summary, string? LocationText, string Language, float Confidence, bool NeedsMoreInfo, string Model, string PromptVersion, float Plausibility = 1f, string? PlausibilityReason = null, AiUsage? Usage = null);
 
 public sealed record AiComparison(float SameLocationLikelihood, string ChangeNote, bool NeedsMoreInfo, float Confidence, bool Degraded, string Model, string PromptVersion, AiUsage? Usage = null);
 
@@ -63,6 +63,8 @@ public sealed class HttpAiClient(HttpClient http) : IAiBackend
         [property: JsonPropertyName("needs_more_info")] bool NeedsMoreInfo,
         [property: JsonPropertyName("model")] string Model,
         [property: JsonPropertyName("prompt_version")] string PromptVersion,
+        [property: JsonPropertyName("plausibility")] float Plausibility = 1f,
+        [property: JsonPropertyName("plausibility_reason")] string? PlausibilityReason = null,
         [property: JsonPropertyName("usage")] UsageBody? Usage = null);
 
     private sealed record TranscriptResponse(
@@ -159,7 +161,7 @@ public sealed class HttpAiClient(HttpClient http) : IAiBackend
         using var response = await http.PostAsJsonAsync("/v1/complaints/understand", body, ct);
         response.EnsureSuccessStatusCode();
         var r = (await response.Content.ReadFromJsonAsync<Response>(ct))!;
-        return new AiUnderstanding(r.Category, r.Summary, r.LocationText, r.Language, r.Confidence, r.NeedsMoreInfo, r.Model, r.PromptVersion, Usage(r.Usage));
+        return new AiUnderstanding(r.Category, r.Summary, r.LocationText, r.Language, r.Confidence, r.NeedsMoreInfo, r.Model, r.PromptVersion, r.Plausibility, r.PlausibilityReason, Usage(r.Usage));
     }
 }
 
@@ -213,6 +215,8 @@ public sealed class ComplaintEnrichmentJob(
             complaint.AiCategoryKey = result.Category;
             complaint.AiSummary = result.Summary;
             complaint.AiConfidence = result.Confidence;
+            complaint.AiPlausibility = result.Plausibility;
+            complaint.AiPlausibilityReason = result.PlausibilityReason;
             complaint.AiModel = result.Model;
             complaint.AiPromptVersion = result.PromptVersion;
             complaint.Language = result.Language;
@@ -234,7 +238,8 @@ public sealed class ComplaintEnrichmentJob(
             {
                 OrganizationId = organizationId, ComplaintId = complaintId, Status = "done", Attempt = retries + 1,
                 CategoryKey = result.Category, Summary = result.Summary, Language = result.Language, LocationText = result.LocationText,
-                NeedsMoreInfo = result.NeedsMoreInfo, Confidence = result.Confidence, Model = result.Model, PromptVersion = result.PromptVersion,
+                NeedsMoreInfo = result.NeedsMoreInfo, Confidence = result.Confidence, Plausibility = result.Plausibility, PlausibilityReason = result.PlausibilityReason,
+                Model = result.Model, PromptVersion = result.PromptVersion,
             });
             await db.SaveChangesAsync(ct);
             // Without embeddings the embedding job never runs, so look for duplicates on place, time and category here.

@@ -244,7 +244,7 @@ public sealed class RecordingHandler(EventCollector collector, ITenantContext te
 public sealed class FakeAiClient : IAiBackend
 {
     public bool Down { get; set; }
-    public AiUnderstanding Reply { get; set; } = new("water", "No water supply in the street.", "Street 4", "en", 0.9f, false, "fake-model", "v1", new AiUsage(120, 30));
+    public AiUnderstanding Reply { get; set; } = new("water", "No water supply in the street.", "Street 4", "en", 0.9f, false, "fake-model", "v1", Usage: new AiUsage(120, 30));
     public List<(string Text, IReadOnlyList<AiCategory> Categories, IReadOnlyList<string> Names, IReadOnlyList<string> Landmarks)> Calls { get; } = [];
 
     public AiComparison Comparison { get; set; } = new(0.9f, "The rubble appears to have been cleared.", false, 0.8f, false, "fake-vision", "v1", new AiUsage(900, 60));

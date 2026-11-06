@@ -100,7 +100,8 @@ export const en = {
   "receipt.list": "Saved receipts",
   "receipt.none": "No saved receipts.",
 
-  "complaint.timeline": "What happened",
+  "complaint.timeline": "Service tracking",
+  "complaint.remarks": "Remarks:",
   "complaint.confirm": "It is fixed",
   "complaint.reopen": "Not fixed yet",
   "complaint.reason": "What is still wrong?",
@@ -375,7 +376,8 @@ export const ur: Record<Key, string> = {
   "receipt.list": "محفوظ رسیدیں",
   "receipt.none": "کوئی محفوظ رسید نہیں۔",
 
-  "complaint.timeline": "کیا ہوا",
+  "complaint.timeline": "سروس ٹریکنگ",
+  "complaint.remarks": "تفصیل:",
   "complaint.confirm": "مسئلہ حل ہو گیا",
   "complaint.reopen": "ابھی حل نہیں ہوا",
   "complaint.reason": "ابھی کیا مسئلہ باقی ہے؟",

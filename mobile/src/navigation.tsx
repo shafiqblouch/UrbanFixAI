@@ -15,9 +15,18 @@ import { onNotificationTap } from "./platform/push";
 import { targetFor } from "./pushLink";
 import { useServices } from "./services";
 import { useSession } from "./session";
-import { Badge, Empty, Loading, Screen, Button } from "./ui";
+import { Badge, Empty, Gradient, Loading, Screen, Button } from "./ui";
 import { usePalette } from "./theme";
 import { Text } from "react-native";
+
+/** A teal→blue gradient behind every navigation header, with a soft white title. */
+const gradientHeader = {
+  headerBackground: () => <Gradient style={{ flex: 1 }} />,
+  headerStyle: { backgroundColor: "transparent" },
+  headerTintColor: "#FFFFFF",
+  headerTitleStyle: { fontWeight: "700" as const, color: "#FFFFFF" },
+  headerShadowVisible: false,
+};
 
 export type RootStackParams = {
   Login: undefined;
@@ -49,7 +58,7 @@ function Tabs() {
   const unread = useUnreadNotices();
   const tabs = tabsByRole[view!.role as keyof typeof tabsByRole];
   return (
-    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: p.primary, tabBarStyle: { minHeight: 64, backgroundColor: p.surfaceRaised, borderTopColor: p.borderSoft }, tabBarLabelStyle: { fontSize: 13, fontWeight: "600" }, tabBarInactiveTintColor: p.textMuted, headerStyle: { backgroundColor: p.primary }, headerTintColor: p.onPrimary, headerTitleStyle: { fontWeight: "700" } }}>
+    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: p.primary, tabBarStyle: { minHeight: 64, backgroundColor: p.surfaceRaised, borderTopColor: p.borderSoft }, tabBarLabelStyle: { fontSize: 13, fontWeight: "600" }, tabBarInactiveTintColor: p.textMuted, ...gradientHeader }}>
       {tabs.map((id) => (
         <Tab.Screen key={id} name={id} component={screens[id]}
           options={{
@@ -92,7 +101,7 @@ export function Navigation() {
   const signedIn = !!me?.organizationId;
   return (
     <NavigationContainer ref={navigationRef} onReady={() => { if (pending.current) open(pending.current); }} theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={gradientHeader}>
         {!signedIn ? (
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         ) : !view || !isMobileRole(view.role) ? (

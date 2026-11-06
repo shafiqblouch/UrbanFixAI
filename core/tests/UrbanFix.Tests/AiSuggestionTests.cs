@@ -49,6 +49,31 @@ public class AiSuggestionTests(TestApp app)
     }
 
     [Fact]
+    public async Task Low_plausibility_is_stored_on_the_complaint_the_suggestion_and_the_review_queue()
+    {
+        var s = await Society.CreateAsync(app);
+        var ai = app.Services.GetRequiredService<FakeAiClient>();
+        ai.Reply = ai.Reply with { Plausibility = 0.1f, PlausibilityReason = "reads like a test message" };
+        var c = await Complain(s);
+        await using var scope = app.Services.CreateAsyncScope();
+        var job = scope.ServiceProvider.GetRequiredService<ComplaintEnrichmentJob>();
+        try { await job.RunCoreAsync(s.Org, c.Id, 0, default); }
+        finally { ai.Reply = ai.Reply with { Plausibility = 1f, PlausibilityReason = null }; }
+
+        // kept on the attempt row
+        var suggestion = (await s.Supervisor.Client.GetFromJsonAsync<List<SuggestionDto>>($"/complaints/{c.Id}/ai-suggestions"))!.Single();
+        Assert.Equal((0.1f, "reads like a test message"), (suggestion.Plausibility, suggestion.PlausibilityReason));
+
+        // surfaced on the complaint itself
+        var complaint = (await s.Manager.Client.GetFromJsonAsync<ComplaintDetailDto>($"/complaints/{c.Id}"))!.Complaint;
+        Assert.Equal((0.1f, "reads like a test message"), (complaint.AiPlausibility, complaint.AiPlausibilityReason));
+
+        // and carried into the supervisor review queue
+        var item = (await s.Supervisor.Client.GetFromJsonAsync<List<QueueItemDto>>("/review-queue"))!.Single(i => i.Complaint.Id == c.Id);
+        Assert.Equal(0.1f, item.Complaint.AiPlausibility);
+    }
+
+    [Fact]
     public async Task Suggestions_are_visible_to_staff_only_and_a_re_run_after_success_adds_nothing()
     {
         var s = await Society.CreateAsync(app);

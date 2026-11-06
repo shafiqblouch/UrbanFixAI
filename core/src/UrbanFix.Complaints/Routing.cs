@@ -27,6 +27,9 @@ public class AiSuggestion
     public string? LocationText { get; set; }
     public bool? NeedsMoreInfo { get; set; }
     public float? Confidence { get; set; }
+    /// <summary>How likely this attempt judged the complaint genuine (0..1, AI-05); null for tasks that do not assess it.</summary>
+    public float? Plausibility { get; set; }
+    public string? PlausibilityReason { get; set; }
     public string? Model { get; set; }
     public string? PromptVersion { get; set; }
     public string? Error { get; set; }

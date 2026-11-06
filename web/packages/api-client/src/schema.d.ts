@@ -7106,6 +7106,13 @@ export interface components {
              * @default null
              */
             longitude: number | null;
+            /**
+             * Format: float
+             * @default null
+             */
+            aiPlausibility: number | null;
+            /** @default null */
+            aiPlausibilityReason: string | null;
         };
         ComplaintPin: {
             /** Format: uuid */
@@ -8460,6 +8467,13 @@ export interface components {
             error: string | null;
             /** Format: date-time */
             createdAt: string;
+            /**
+             * Format: float
+             * @default null
+             */
+            plausibility: number | null;
+            /** @default null */
+            plausibilityReason: string | null;
         };
         SuggestionDto2: {
             /** Format: uuid */

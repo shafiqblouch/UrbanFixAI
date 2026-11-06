@@ -13,6 +13,8 @@ import { useSession } from "../session";
 const PRIORITIES = ["Low", "Normal", "High", "Urgent"] as const;
 /** Suggestions at or above this confidence can be accepted in one go. */
 const HIGH_CONFIDENCE = 0.95;
+/** Below this the AI thinks the complaint may not be genuine (prank / test / abuse); the reviewer is warned. */
+const LOW_PLAUSIBILITY = 0.5;
 
 type Item = S["QueueItemDto"];
 interface Edit { categoryId: string; priority: string; teamId: string }
@@ -57,7 +59,9 @@ function Workspace({ items, onDone }: { items: Item[]; onDone: () => void }) {
   }, [items, q, prio]);
 
   const selected = shown.find((i) => i.complaint.id === selectedId) ?? shown[0];
-  const confident = items.filter((i) => i.suggestedCategoryId && (i.complaint.aiConfidence ?? 0) >= HIGH_CONFIDENCE);
+  // High-confidence suggestions, but never one the AI flagged as possibly not genuine — those always need a person.
+  const confident = items.filter((i) => i.suggestedCategoryId && (i.complaint.aiConfidence ?? 0) >= HIGH_CONFIDENCE
+    && !(i.complaint.aiPlausibility != null && i.complaint.aiPlausibility < LOW_PLAUSIBILITY));
 
   useEffect(() => {
     if (!toast) return;
@@ -255,6 +259,9 @@ function Card({ item, edit, change, assignable, selected, busy, onSelect, onAcce
         <ComplaintStatusChip status={c.status} />
         <PriorityTag priority={c.priority} />
         {c.aiConfidence != null && <span className="rq-ai"><Icon name="bolt" size={12} /> {t("review.aiMatch", { pct: f.number(Math.round(c.aiConfidence * 100)) })}</span>}
+        {c.aiPlausibility != null && c.aiPlausibility < LOW_PLAUSIBILITY && (
+          <span className="rq-fake" title={c.aiPlausibilityReason ?? undefined}><Icon name="alert" size={12} /> {t("review.maybeFake")}</span>
+        )}
         <span className="rq-card__time">{f.dateTime(c.createdAt)}</span>
       </div>
       <p className="rq-card__text">{c.description}</p>
@@ -303,6 +310,16 @@ function Inspector({ item, edit, change, assignable, busy, onAccept, onReject }:
           </div>
           {c.aiConfidence != null && <span className="rq-aibox__pct">{t("review.match", { pct: f.number(Math.round(c.aiConfidence * 100)) })}</span>}
         </div>
+
+        {c.aiPlausibility != null && c.aiPlausibility < LOW_PLAUSIBILITY && (
+          <div className="rq-fakebox" role="alert">
+            <span className="rq-fakebox__icon"><Icon name="alert" size={16} /></span>
+            <div>
+              <h4>{t("review.maybeFake")} · {t("review.plausibility", { pct: f.number(Math.round(c.aiPlausibility * 100)) })}</h4>
+              <p>{c.aiPlausibilityReason || t("review.maybeFakeBody")}</p>
+            </div>
+          </div>
+        )}
 
         <div className="rq-box">
           <span className="rq-box__label">{t("review.statement")}</span>

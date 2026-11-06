@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { api, ok, type S } from "../api";
 import { errorText, useAction, useLoad, usePolling, useRefetchOnFocus } from "../hooks";
@@ -15,7 +15,7 @@ import { isSafetyText } from "../safety";
 import { currentPosition } from "../platform/device";
 import { useServices } from "../services";
 import { useSession } from "../session";
-import { space, TOUCH, usePalette } from "../theme";
+import { radius, space, timelineColors, TOUCH, usePalette } from "../theme";
 import { Banner, Button, Card, Chip, Empty, Field, Loading, Row, Screen, Txt } from "../ui";
 import type { RootStackParams } from "../navigation";
 import { EmergencyPrompt, FeedbackCard, FindByReference, MissingInfoCard } from "./residentExtras";
@@ -168,12 +168,108 @@ export function ComplaintDetailScreen({ route }: NativeStackScreenProps<RootStac
       )}
 
       <Txt size="lg" bold>{t("complaint.timeline")}</Txt>
-      {d.history.map((h, i) => (
-        <Card key={i}><StatusChip status={h.to} /><Txt size="sm" muted>{f(h.occurredAt)}</Txt>{h.reason && <Txt>{h.reason}</Txt>}</Card>
-      ))}
+      <Timeline history={d.history} status={d.complaint.status} />
     </Screen>
   );
 }
+
+type NodeKind = "done" | "active" | "danger";
+
+/** Split a timestamp into a short date ("06 Oct 2024") and a 12-hour time ("1:49 pm"), in the active language. */
+function useTimelineFormat() {
+  const { locale } = useI18n();
+  const l = locale === "ur" ? "ur-PK-u-nu-latn" : "en-GB";
+  return (iso: string) => {
+    const d = new Date(iso);
+    const date = new Intl.DateTimeFormat(l, { day: "2-digit", month: "short", year: "numeric" }).format(d);
+    const time = new Intl.DateTimeFormat(l, { hour: "numeric", minute: "2-digit", hour12: true }).format(d).toLowerCase();
+    return { date, time };
+  };
+}
+
+/** The circular step marker: a white tick, clock or cross on a vivid disc — colour plus a clear icon. */
+function TimelineDot({ kind }: { kind: NodeKind }) {
+  const c = timelineColors[kind];
+  return (
+    <View style={[styles.dot, { backgroundColor: c.ring }]}>
+      {kind === "active"
+        ? ( // a small clock drawn from Views so it stays crisp white with no icon font
+          <View style={styles.clockFace}>
+            <View style={styles.clockHandHour} />
+            <View style={styles.clockHandMinute} />
+          </View>
+        )
+        : <RNTextIcon glyph={kind === "danger" ? "✕" : "✓"} color={c.icon} />}
+    </View>
+  );
+}
+
+function RNTextIcon({ glyph, color }: { glyph: string; color: string }) {
+  return <Txt bold color={color} size="lg" style={{ lineHeight: 22 }}>{glyph}</Txt>;
+}
+
+/** A Dastak-style progress timeline: dated steps down a connected rail, each a tappable card that opens its remark. */
+function Timeline({ history, status }: { history: S["HistoryDto"][]; status: S["ComplaintStatus"] }) {
+  if (history.length === 0) return null;
+  const terminal = status === "Resolved" || status === "Closed";
+  return (
+    <View>
+      {history.map((h, i) => {
+        const last = i === history.length - 1;
+        const kind: NodeKind = h.to === "Rejected" ? "danger" : last && !terminal ? "active" : "done";
+        return <TimelineRow key={i} entry={h} kind={kind} last={last} />;
+      })}
+    </View>
+  );
+}
+
+function TimelineRow({ entry, kind, last }: { entry: S["HistoryDto"]; kind: NodeKind; last: boolean }) {
+  const t = useT();
+  const p = usePalette();
+  const fmt = useTimelineFormat();
+  const [open, setOpen] = useState(false);
+  const { date, time } = fmt(entry.occurredAt);
+  const hasRemark = !!entry.reason?.trim();
+  const line = timelineColors[kind].line;
+  return (
+    <Row gap={space[3]} style={{ alignItems: "stretch" }}>
+      <View style={{ width: 58, paddingTop: 10 }}>
+        <Txt size="sm" muted>{date}</Txt>
+      </View>
+      <View style={{ width: 40, alignItems: "center" }}>
+        <TimelineDot kind={kind} />
+        {!last && <View style={{ width: 3, flexGrow: 1, minHeight: 16, backgroundColor: line, borderRadius: 2, marginTop: 2 }} />}
+      </View>
+      <View style={{ flex: 1, paddingBottom: space[4] }}>
+        <Pressable
+          accessibilityRole={hasRemark ? "button" : undefined}
+          onPress={hasRemark ? () => setOpen((v) => !v) : undefined}
+          style={{ backgroundColor: p.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: p.borderSoft, padding: space[4], gap: space[1] }}
+        >
+          <Row gap={space[2]}>
+            <Txt bold style={{ flex: 1 }}>{t(`status.${entry.to}` as Key)}</Txt>
+            {hasRemark && <Txt size="lg" muted>{open ? "▴" : "▾"}</Txt>}
+          </Row>
+          <Txt size="sm" muted>{time}</Txt>
+          {open && hasRemark && (
+            <View style={{ gap: space[2], marginTop: space[2] }}>
+              <View style={{ height: 1, backgroundColor: p.borderSoft }} />
+              <Txt bold>{t("complaint.remarks")}</Txt>
+              <Txt muted>{entry.reason}</Txt>
+            </View>
+          )}
+        </Pressable>
+      </View>
+    </Row>
+  );
+}
+
+const styles = StyleSheet.create({
+  dot: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center", shadowColor: "#102820", shadowOpacity: 0.18, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
+  clockFace: { width: 20, height: 20, borderRadius: 10, borderWidth: 2.5, borderColor: "#FFFFFF" },
+  clockHandHour: { position: "absolute", left: 6.25, top: 1.5, width: 2, height: 6, borderRadius: 1, backgroundColor: "#FFFFFF" }, // points up to 12
+  clockHandMinute: { position: "absolute", left: 7, top: 6.25, width: 6, height: 2, borderRadius: 1, backgroundColor: "#FFFFFF" }, // points right to 3
+});
 
 /** A playable voice note, with the text the AI heard when it has been transcribed (AI-09). */
 function VoiceNote({ media }: { media: S["MediaDto"] }) {

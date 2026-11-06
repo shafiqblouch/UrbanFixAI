@@ -36,6 +36,10 @@ public class Complaint : IAudited
     public string? AiCategoryKey { get; set; }
     public string? AiSummary { get; set; }
     public float? AiConfidence { get; set; }
+    /// <summary>How likely the AI thinks this is a genuine, actionable complaint vs a prank/test/abuse (0..1, AI-05). Advisory; a low value only flags it for a reviewer.</summary>
+    public float? AiPlausibility { get; set; }
+    /// <summary>A few words on why plausibility is low, shown to the reviewer; null when the complaint looks genuine.</summary>
+    public string? AiPlausibilityReason { get; set; }
     public string? AiModel { get; set; }
     public string? AiPromptVersion { get; set; }
     public string? HoldReason { get; set; }

@@ -78,13 +78,20 @@ export function ComplaintDetailPage() {
 
                 <Card title={t("complaint.timeline")}>
                   <ol className="timeline">
-                    {d.history.map((h, i) => (
-                      <li key={i}>
-                        <span><ComplaintStatusChip status={h.to} /></span>
-                        <span className="muted">{f.dateTime(h.occurredAt)} · {nameOf(h.actorUserId)}</span>
-                        {h.reason && <span>{h.reason}</span>}
-                      </li>
-                    ))}
+                    {d.history.map((h, i) => {
+                      const last = i === d.history.length - 1;
+                      const terminal = c.status === "Resolved" || c.status === "Closed";
+                      // Green tick for finished steps, an orange dot for the current (latest) step, red for a rejection — matching the mobile timeline.
+                      const kind = h.to === "Rejected" ? "danger" : last && !terminal ? "active" : "done";
+                      return (
+                        <li key={i} className={`timeline__step timeline__step--${kind}`}>
+                          <span className="timeline__marker" aria-hidden="true" />
+                          <span><ComplaintStatusChip status={h.to} /></span>
+                          <span className="muted">{f.dateTime(h.occurredAt)} · {nameOf(h.actorUserId)}</span>
+                          {h.reason && <span>{h.reason}</span>}
+                        </li>
+                      );
+                    })}
                   </ol>
                 </Card>
               </div>

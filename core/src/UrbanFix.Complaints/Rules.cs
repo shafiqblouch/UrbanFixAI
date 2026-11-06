@@ -91,10 +91,16 @@ public static class AutoRoutePolicy
 {
     public const float DefaultThreshold = 0.9f;
 
+    /// <summary>Below this the AI thinks the complaint may not be genuine (prank / test / abuse); it must never auto-route (AI-05).</summary>
+    public const float PlausibilityGate = 0.5f;
+
+    /// <param name="plausibility">The AI's judgement that this is a genuine, actionable complaint (0..1), or null when it did not assess it.</param>
     /// <returns>Null when the complaint may be routed automatically, otherwise why it is queued for a person.</returns>
-    public static string? WhyQueued(bool categoryEnabled, float threshold, float? confidence, string priority, bool safetyFlag, bool categoryChosenByPerson, bool teamFound)
+    public static string? WhyQueued(bool categoryEnabled, float threshold, float? confidence, float? plausibility, string priority, bool safetyFlag, bool categoryChosenByPerson, bool teamFound)
     {
         if (safetyFlag || priority == PriorityLevels.Safety) return "safety";
+        // A possibly-fake complaint always needs a person, even on a confident, auto-route-enabled category.
+        if (plausibility is { } p && p < PlausibilityGate) return "low_plausibility";
         if (!categoryEnabled) return "auto_route_off";
         if (categoryChosenByPerson) return "category_set_by_person";
         if (confidence is null) return "no_confidence";

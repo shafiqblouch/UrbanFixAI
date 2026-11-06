@@ -77,6 +77,14 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
         detected = detect_language(req.text)
         language = detected.language if detected.confidence >= 0.8 else output.language
 
+        # Text aimed at the model rather than describing a problem is itself a sign of a non-genuine complaint,
+        # so it caps plausibility and, when nothing more specific was returned, supplies the reason.
+        plausibility = output.plausibility
+        plausibility_reason = output.plausibility_reason
+        if injection_suspected:
+            plausibility = min(plausibility, 0.3)
+            plausibility_reason = plausibility_reason or "reads like an instruction to the system, not a complaint"
+
         return UnderstandResponse(
             category=output.category,
             summary=scrub(output.summary, req.known_names).text,
@@ -84,6 +92,8 @@ async def understand(req: UnderstandRequest, providers: Providers, settings: Set
             language=language,
             confidence=output.confidence,
             needs_more_info=output.category == "other" or output.confidence < LOW_CONFIDENCE or injection_suspected,
+            plausibility=plausibility,
+            plausibility_reason=plausibility_reason,
             model=result.model,
             prompt_version=version,
             pii_redactions=sum(scrubbed.counts.values()),

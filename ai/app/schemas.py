@@ -42,6 +42,10 @@ class ModelOutput(BaseModel):
     location_text: str | None = Field(default=None, max_length=300)
     language: Language
     confidence: float = Field(ge=0, le=1)
+    # How likely this is a genuine, actionable complaint rather than a test, prank, abuse or gibberish (AI-05).
+    # Optional with a trusting default so older prompt versions that do not ask for it still validate.
+    plausibility: float = Field(default=1.0, ge=0, le=1)
+    plausibility_reason: str | None = Field(default=None, max_length=200)
 
 
 class UnderstandResponse(BaseModel):
@@ -51,6 +55,9 @@ class UnderstandResponse(BaseModel):
     language: Language
     confidence: float
     needs_more_info: bool
+    # 0..1: how likely this is a genuine, actionable complaint (low = possible prank / test / abuse); advisory only.
+    plausibility: float = 1.0
+    plausibility_reason: str | None = None
     model: str
     prompt_version: str
     pii_redactions: int

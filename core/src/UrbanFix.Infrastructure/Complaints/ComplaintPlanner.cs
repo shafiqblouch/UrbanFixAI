@@ -27,7 +27,7 @@ public sealed class ComplaintPlanner(AppDbContext db, NumberGenerator numbers, I
         var autoRoutingOn = await Platform.FeatureFlags.IsEnabledAsync(db, Platform.Features.AutoRouting, ct);
         var why = AutoRoutePolicy.WhyQueued(
             autoRoutingOn && (category?.AutoRoute ?? false), category?.AutoRouteThreshold ?? AutoRoutePolicy.DefaultThreshold, aiConfidence,
-            c.Priority, c.SafetyFlag, categoryChosenByPerson, teamId is not null);
+            c.AiPlausibility, c.Priority, c.SafetyFlag, categoryChosenByPerson, teamId is not null);
         if (why is null && c.Status == ComplaintStatus.New && teamId is { } team)
         {
             await AssignAsync(c, category, team, ct);
