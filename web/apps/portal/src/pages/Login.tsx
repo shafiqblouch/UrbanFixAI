@@ -18,11 +18,15 @@ export function LoginPage({ onLocale }: { onLocale: (l: "en" | "ur") => void }) 
   const session = useSession();
   const login = useAction();
   const enroll = useAction();
+  const sendOtp = useAction();
   const [step, setStep] = useState<Step>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [needsCode, setNeedsCode] = useState(false);
+  // Second factor: the authenticator app (default) or a one-time code sent to the registered phone.
+  const [otpMode, setOtpMode] = useState<"totp" | "phone">("totp");
+  const [phoneHint, setPhoneHint] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [secret, setSecret] = useState<{ secret: string; uri: string }>();
 
@@ -32,6 +36,9 @@ export function LoginPage({ onLocale }: { onLocale: (l: "en" | "ur") => void }) 
     e.preventDefault();
     const result = await login.run(async () => {
       try {
+        // In phone mode the second factor is the code texted to the registered number, not the authenticator.
+        if (needsCode && otpMode === "phone")
+          return await ok(api.POST("/auth/login/otp/verify", { body: { email, password, code, organizationId: null } }));
         return await ok(api.POST("/auth/login", { body: { email, password, totpCode: code || null, organizationId: null } }));
       } catch (err) {
         // The server asks for the authenticator code only once the password was right.
@@ -48,6 +55,12 @@ export function LoginPage({ onLocale }: { onLocale: (l: "en" | "ur") => void }) 
       return;
     }
     await session.signIn(result.token);
+  }
+
+  // Ask the server to text a login code to the user's registered phone. A no_phone/too-many error shows via sendOtp.error.
+  async function sendToPhone() {
+    const res = await sendOtp.run(() => ok(api.POST("/auth/login/otp/request", { body: { email, password } })));
+    if (res) { setOtpMode("phone"); setPhoneHint(res.phoneHint); setCode(""); }
   }
 
   function switchLocale() {
@@ -133,10 +146,21 @@ export function LoginPage({ onLocale }: { onLocale: (l: "en" | "ur") => void }) 
                 <div className="login__field">
                   <label htmlFor="login-code">{t("login.code")}</label>
                   <div className="login__input">
-                    <span className="login__input-icon"><Icon name="audit" size={17} /></span>
+                    <span className="login__input-icon"><Icon name={otpMode === "phone" ? "phone" : "audit"} size={17} /></span>
                     <input id="login-code" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value.trim())} required />
                   </div>
-                  <small className="login__hint">{t("login.codeHint")}</small>
+                  <small className="login__hint">{otpMode === "phone" ? t("login.phoneCodeHint", { hint: phoneHint }) : t("login.codeHint")}</small>
+                  <ErrorNote error={sendOtp.error} />
+                  {otpMode === "totp" ? (
+                    <button type="button" className="login__link login__link--block" onClick={sendToPhone} disabled={sendOtp.busy || !email || !password}>
+                      <Icon name="phone" size={13} />{t("login.sendToPhone")}
+                    </button>
+                  ) : (
+                    <div className="login__otp-actions">
+                      <button type="button" className="login__link" onClick={sendToPhone} disabled={sendOtp.busy}>{t("login.resend")}</button>
+                      <button type="button" className="login__link" onClick={() => { setOtpMode("totp"); setCode(""); }}>{t("login.useAuthenticator")}</button>
+                    </div>
+                  )}
                 </div>
               )}
               <label className="login__remember"><input type="checkbox" />{t("login.remember")}</label>

@@ -90,6 +90,9 @@ a:hover { color: var(--uf-primary-strong); }
 .login__label-row { display: flex; align-items: center; justify-content: space-between; gap: var(--uf-space-3); }
 .login__link { border: 0; background: transparent; padding: 0; color: #34d399; font: inherit; font-size: var(--uf-font-size-xs); font-weight: 600; cursor: pointer; }
 .login__link:hover { color: #6ee7b7; }
+.login__link:disabled { opacity: 0.55; cursor: default; }
+.login__link--block { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; }
+.login__otp-actions { display: flex; gap: 16px; margin-top: 2px; }
 .login__remember { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: var(--uf-font-size-xs); font-weight: 500; cursor: pointer; }
 .login__remember input { inline-size: 16px; block-size: 16px; accent-color: #10b981; cursor: pointer; }
 .login__divider { position: relative; display: flex; justify-content: center; margin-block: var(--uf-space-1); }

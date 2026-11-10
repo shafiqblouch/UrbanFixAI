@@ -14,6 +14,9 @@ public static class AuthEndpoints
     public sealed record LoginResponse(string Token, Guid? OrganizationId, bool TotpEnrollmentRequired);
     public sealed record OtpRequestBody(string Phone);
     public sealed record OtpVerifyBody(string Phone, string Code, Guid? OrganizationId);
+    public sealed record LoginOtpRequestBody(string Email, string Password);
+    public sealed record LoginOtpRequestResponse(string PhoneHint);
+    public sealed record LoginOtpVerifyBody(string Email, string Password, string Code, Guid? OrganizationId);
     public sealed record SwitchOrganizationRequest(Guid OrganizationId);
     public sealed record TotpEnrollmentResponse(string Secret, string ProvisioningUri);
     public sealed record TotpConfirmRequest(string Code);
@@ -50,6 +53,28 @@ public static class AuthEndpoints
         {
             if (PhoneNumber.Normalize(req.Phone) is not { } phone) return Results.BadRequest(new { error = "invalid_phone" });
             var result = await otp.VerifyAsync(phone, req.Code ?? "", req.OrganizationId, ct);
+            return result.Outcome == LoginOutcome.Success
+                ? Results.Ok(new LoginResponse(result.Token!, result.OrganizationId, false))
+                : Results.Json(new { error = "invalid_code" }, statusCode: 401);
+        }).Produces<LoginResponse>(200).AllowAnonymous().RequireRateLimiting(RateLimiting.PublicPolicy);
+
+        // Portal staff can take their second factor as a code sent to their registered phone instead of the authenticator (WP-01).
+        // The password is checked here and again on verify, so a leaked code is never enough; no-phone users fall back to TOTP.
+        g.MapPost("/login/otp/request", async (LoginOtpRequestBody req, AuthService auth, CancellationToken ct) =>
+        {
+            var result = await auth.RequestLoginOtpAsync(req.Email, req.Password, ct);
+            return result.Outcome switch
+            {
+                LoginOtpOutcome.Sent => Results.Ok(new LoginOtpRequestResponse(result.PhoneHint!)),
+                LoginOtpOutcome.NoPhone => Results.Json(new { error = "no_phone" }, statusCode: 409),
+                LoginOtpOutcome.Throttled => Results.Json(new { error = "too_many_requests" }, statusCode: 429),
+                _ => Results.Json(new { error = "invalid_credentials" }, statusCode: 401),
+            };
+        }).Produces<LoginOtpRequestResponse>(200).AllowAnonymous().RequireRateLimiting(RateLimiting.PublicPolicy);
+
+        g.MapPost("/login/otp/verify", async (LoginOtpVerifyBody req, AuthService auth, CancellationToken ct) =>
+        {
+            var result = await auth.VerifyLoginOtpAsync(req.Email, req.Password, req.Code ?? "", req.OrganizationId, ct);
             return result.Outcome == LoginOutcome.Success
                 ? Results.Ok(new LoginResponse(result.Token!, result.OrganizationId, false))
                 : Results.Json(new { error = "invalid_code" }, statusCode: 401);
