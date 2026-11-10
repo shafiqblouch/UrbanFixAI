@@ -33,6 +33,27 @@ services:
       AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
 
+  openwa:
+    # Dev/demo WhatsApp gateway (OpenWA) that delivers resident OTP codes over WhatsApp instead of SMS.
+    # Prebuilt image is used (not built here): this environment and the Dockerfile's apt step need plain
+    # HTTP to the Debian mirrors, which is blocked. The port is NOT published — only `core` reaches it on
+    # the compose network at http://openwa:2785. Link a WhatsApp number via its dashboard before enabling.
+    image: ghcr.io/rmyndharis/openwa:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: "2785"
+      HOME: /tmp
+      XDG_CONFIG_HOME: /tmp/.config
+      XDG_CACHE_HOME: /tmp/.cache
+      AUTO_START_SESSIONS: "true"
+      DATABASE_TYPE: sqlite
+      DATABASE_SYNCHRONIZE: "true"
+      PUPPETEER_HEADLESS: "true"
+      PUPPETEER_ARGS: --no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage,--disable-gpu
+    volumes: [openwadata:/app/data]
+    mem_limit: 2g
+
   core:
     # .NET 9 API. Runs the DB migration on startup and creates the admin account.
     # Built from the repo root so the sibling contracts/ folder is in the build context.
@@ -65,6 +86,13 @@ services:
       Storage__SecretKey: ${STORAGE_SECRET_KEY}
       Storage__Bucket: urbanfix-media
       DataProtection__KeyPath: /keys
+      # Deliver resident OTP codes over WhatsApp via the openwa service. Off until a WhatsApp number is
+      # linked and OPENWA_API_KEY/OPENWA_SESSION_ID are set in .env (then OPENWA_ENABLED=true + recreate core).
+      # Leaving it off keeps the existing behaviour: with Otp:FixedCode set the demo code 123456 still works.
+      OpenWa__Enabled: ${OPENWA_ENABLED:-false}
+      OpenWa__BaseUrl: http://openwa:2785
+      OpenWa__ApiKey: ${OPENWA_API_KEY:-}
+      OpenWa__SessionId: ${OPENWA_SESSION_ID:-}
     volumes: [keys:/keys]
 
   web:
@@ -98,3 +126,4 @@ volumes:
   miniodata:
   keys:
   caddydata:
+  openwadata:
