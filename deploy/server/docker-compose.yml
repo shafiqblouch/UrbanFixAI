@@ -93,6 +93,9 @@ services:
       OpenWa__BaseUrl: http://openwa:2785
       OpenWa__ApiKey: ${OPENWA_API_KEY:-}
       OpenWa__SessionId: ${OPENWA_SESSION_ID:-}
+      # Demo fixed OTP (123456) by default; set OTP_FIXED_CODE= (empty) in .env to send real random codes.
+      # The "-" form (not ":-") means an explicit empty value disables the fixed code; unset keeps 123456.
+      Otp__FixedCode: ${OTP_FIXED_CODE-123456}
     volumes: [keys:/keys]
 
   web:
