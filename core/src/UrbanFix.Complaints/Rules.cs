@@ -13,6 +13,10 @@ public static class IntakeText
 
     /// <summary>Marks a description the AI wrote from a photo, so a voice note that arrives later can still lead it.</summary>
     public const string SeenInPhoto = "(Seen in photo:";
+
+    /// <summary>Appended to a complaint that already has written words, to add what a photo shows so the categoriser
+    /// reads both. Distinct from <see cref="SeenInPhoto"/> so a later voice note does not treat the typed text as photo-derived.</summary>
+    public const string PhotoAlsoShows = "(Also visible in an attached photo:";
 }
 
 /// <summary>The resident has not yet confirmed that finished work is fixed (CP-10).</summary>

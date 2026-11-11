@@ -123,15 +123,40 @@ public class PhotoAndVoiceSafetyTests(TestApp app)
     }
 
     [Fact]
-    public async Task An_ordinary_photo_changes_nothing_but_the_labels()
+    public async Task A_photo_on_a_described_complaint_adds_what_it_shows_for_categorisation_and_keeps_the_words_and_category()
     {
         var s = await Society.CreateAsync(app);
-        var (id, media) = await ComplaintWith(s, Photo(11), "pothole.jpg");
+        var (id, media) = await ComplaintWith(s, Photo(11), "pothole.jpg", "There is a problem on my street");
+        var before = await Detail(s, id);
         await Photos(s, media.Id);
         var d = await Detail(s, id);
+
+        // The resident's own words are kept, and what the photo shows is appended so the categoriser reads both.
+        Assert.Contains("There is a problem on my street", d.Complaint.Description);
+        Assert.Contains("Also visible in an attached photo: pothole", d.Complaint.Description);
+        // A category the resident chose is never cleared by a photo.
+        Assert.Equal(before.Complaint.CategoryId, d.Complaint.CategoryId);
+        // An ordinary (non-hazard) photo still raises no safety flag or priority on its own.
         Assert.False(d.Complaint.SafetyFlag);
         Assert.NotEqual("Safety", d.Complaint.Priority);
         Assert.Equal(["pothole"], d.Media.Single().AiLabels);
+    }
+
+    [Fact]
+    public async Task A_second_photo_does_not_append_its_labels_a_second_time()
+    {
+        var s = await Society.CreateAsync(app);
+        var (id, first) = await ComplaintWith(s, Photo(11), "a.jpg", "There is a problem on my street");
+        await Photos(s, first.Id);
+
+        // A different photo on the same complaint; the "also visible" note must not be added twice.
+        var res = await s.Resident.Client.PostAsync($"/complaints/{id}/media", new MultipartFormDataContent { { new ByteArrayContent(Photo(21)), "file", "b.jpg" } });
+        var second = (await res.Content.ReadFromJsonAsync<MediaDto>())!;
+        await Photos(s, second.Id);
+
+        var description = (await Detail(s, id)).Complaint.Description;
+        var occurrences = description.Split(IntakeText.PhotoAlsoShows).Length - 1;
+        Assert.Equal(1, occurrences);
     }
 
     [Fact]

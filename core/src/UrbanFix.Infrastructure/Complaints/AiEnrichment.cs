@@ -430,18 +430,35 @@ public sealed class PhotoInterpretationJob(
             var complaint = await db.Complaints.SingleOrDefaultAsync(c => c.Id == media.ComplaintId, ct);
             if (result.SafetyFlag && complaint is not null) await planner.FlagSafetyAsync(complaint, ct);
 
-            // A complaint sent as only a photo gets its words from what the AI saw, and is then categorised like any other.
-            // An unclear photo or one with no visible issue says nothing useful, so the placeholder stays for a person to read.
+            // What the photo shows feeds categorisation (AI-08). An unclear photo or one with no visible issue
+            // says nothing useful, so it is ignored and a person reads the complaint as it is.
             var seen = result.Labels.Where(l => !PhotoLabels.NonIssue.Contains(l)).ToList();
-            var useAsDescription = complaint is not null && complaint.Description == IntakeText.MediaOnly && !result.Degraded && seen.Count > 0;
-            if (useAsDescription)
+            var labelText = string.Join(", ", seen.Select(l => l.Replace('_', ' ')));
+            var hasRealLabels = complaint is not null && !result.Degraded && seen.Count > 0;
+            // Media-only: the photo becomes the complaint's words. Already-has-words: keep them and add what the photo
+            // shows, so the categoriser reads both. Each guard also makes the job idempotent — a re-run appends nothing.
+            var mediaOnly = complaint is not null && complaint.Description == IntakeText.MediaOnly;
+            var addToExisting = hasRealLabels && !mediaOnly
+                && !complaint!.Description.Contains(IntakeText.PhotoAlsoShows) && !complaint.Description.Contains(IntakeText.SeenInPhoto);
+            var useAsDescription = hasRealLabels && (mediaOnly || addToExisting);
+            if (mediaOnly && hasRealLabels)
             {
-                var text = $"{result.Description.Trim()} {IntakeText.SeenInPhoto} {string.Join(", ", seen.Select(l => l.Replace('_', ' ')))})";
+                var text = $"{result.Description.Trim()} {IntakeText.SeenInPhoto} {labelText})";
                 complaint!.Description = text.Length > 4000 ? text[..4000] : text;
                 // A category the AI guessed from the placeholder is thrown away; one a person chose stays.
                 if (complaint.AiCategoryKey is { } guessed && complaint.CategoryId is { } current
                     && await db.Categories.AsNoTracking().AnyAsync(c => c.Id == current && c.Key == guessed, ct))
                     complaint.CategoryId = null;
+                complaint.AiStatus = "pending";
+                complaint.UpdatedAt = DateTimeOffset.UtcNow;
+            }
+            else if (addToExisting)
+            {
+                // Never clear an existing category here — it may be the resident's own choice. Re-running understanding
+                // with the photo's labels in the text refines the summary/suggestion and can categorise a complaint the
+                // words alone left as "other", while a category already set (chosen or confidently inferred) is kept.
+                var text = $"{complaint!.Description}\n\n{IntakeText.PhotoAlsoShows} {labelText})";
+                complaint.Description = text.Length > 4000 ? text[..4000] : text;
                 complaint.AiStatus = "pending";
                 complaint.UpdatedAt = DateTimeOffset.UtcNow;
             }
