@@ -138,7 +138,8 @@ public static class DependencyInjection
         services.AddScoped<WhatsAppInbox>();
         services.AddScoped<WhatsAppConversationService>();
         services.AddScoped<WhatsAppInboundJob>();
-        if (whatsApp.Enabled) services.AddScoped<INotificationChannel, WhatsAppNotificationChannel>();
+        // The WhatsApp notification channel (status updates, notices to residents) is available whenever either provider is on.
+        if (whatsApp.Enabled || openWaInbound) services.AddScoped<INotificationChannel, WhatsAppNotificationChannel>();
 
         var smsGateway = config.GetSection("Sms").Get<SmsGatewayOptions>() ?? new SmsGatewayOptions();
         services.AddSingleton(smsGateway);

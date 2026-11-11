@@ -167,6 +167,8 @@ public sealed class WhatsAppConversationService(
         }
 
         var matched = decision.Kind == SenderKind.Matched;
+        // A resident who reports on WhatsApp is opted in to hear back there — status changes, rejections and notices (NT-02, NT-08).
+        if (matched && decision.UserId is { } residentId) await EnsureWhatsAppNotificationsAsync(residentId, ct);
         var organizationId = tenant.OrganizationId!.Value;
         var (made, error) = await intake.CreateAsync(new IntakeRequest(
             organizationId, "whatsapp", c.DescriptionIsPlaceholder ? PlaceholderDescription : c.Description, null, null, null, null,
@@ -187,6 +189,14 @@ public sealed class WhatsAppConversationService(
         if (complaint.SafetyFlag) turn.Say("emergency");
 
         return (ChatStates.Collecting, new ChatData { ComplaintId = complaint.Id, Reference = complaint.Reference, AwaitingAddress = awaitingAddress });
+    }
+
+    /// <summary>Adds the WhatsApp channel to a resident's notification choices so updates reach the number they wrote from.</summary>
+    private async Task EnsureWhatsAppNotificationsAsync(Guid userId, CancellationToken ct)
+    {
+        var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userId, ct);
+        if (user is not null && !user.NotifyChannels.Contains("whatsapp"))
+            user.NotifyChannels = [.. user.NotifyChannels, "whatsapp"];
     }
 
     private async Task AppendAsync(string text, ChatData data, Turn turn, CancellationToken ct)

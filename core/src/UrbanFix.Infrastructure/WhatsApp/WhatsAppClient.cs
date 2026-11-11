@@ -106,7 +106,7 @@ public sealed record SendResult(SendOutcome Outcome, string? ProviderMessageId =
 /// (a status update, a reminder) respects consent and WhatsApp's 24-hour rule: within a day of the person's last message it is a
 /// normal message; after that only an approved template may be sent, and with no template it is not sent at all.
 /// </summary>
-public sealed class WhatsAppSender(AppDbContext db, IWhatsAppClient client, ITenantContext tenant, WhatsAppOptions options, ILogger<WhatsAppSender> log)
+public sealed class WhatsAppSender(AppDbContext db, IWhatsAppClient client, ITenantContext tenant, WhatsAppOptions options, OpenWaOptions openWa, ILogger<WhatsAppSender> log)
 {
     public async Task<WhatsAppChannel?> ChannelAsync(CancellationToken ct) => await db.WhatsAppChannels.AsNoTracking().FirstOrDefaultAsync(c => c.IsActive, ct);
 
@@ -162,7 +162,9 @@ public sealed class WhatsAppSender(AppDbContext db, IWhatsAppClient client, ITen
 
         var now = DateTimeOffset.UtcNow;
         SendResult result;
-        if (conversation.InServiceWindow(now))
+        // Meta's Cloud API only allows free-form replies within 24 hours of the person's last message; a self-hosted OpenWA
+        // gateway has no such rule, so when it is the provider we always send the message as it is (no approved template needed).
+        if (conversation.InServiceWindow(now) || openWa.InboundEnabled)
         {
             result = await RecordAndSendAsync(channel, phone, "text", freeText, to => client.SendTextAsync(channel.PhoneNumberId, to, freeText, ct), ct);
             if (result.Outcome != SendOutcome.NeedsTemplate) { if (result.Outcome == SendOutcome.Sent) conversation.LastOutboundAt = now; return result; }
