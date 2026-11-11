@@ -93,6 +93,14 @@ services:
       OpenWa__BaseUrl: http://openwa:2785
       OpenWa__ApiKey: ${OPENWA_API_KEY:-}
       OpenWa__SessionId: ${OPENWA_SESSION_ID:-}
+      # Register complaints from WhatsApp: residents message the number, each message becomes a complaint and gets a
+      # reply with its reference (see docs/openwa-complaints.md). Needs OPENWA_INBOUND=true, a signing secret shared with
+      # the gateway, and the society id the number serves. OPENWA_WEBHOOK_URL lets core tell the gateway where to POST.
+      OpenWa__InboundEnabled: ${OPENWA_INBOUND:-false}
+      OpenWa__WebhookSecret: ${OPENWA_WEBHOOK_SECRET:-}
+      OpenWa__OrganizationId: ${OPENWA_ORG_ID:-}
+      OpenWa__WebhookUrl: ${OPENWA_WEBHOOK_URL:-}
+      OpenWa__DisplayNumber: ${OPENWA_DISPLAY_NUMBER:-}
       # Demo fixed OTP (123456) by default; set OTP_FIXED_CODE= (empty) in .env to send real random codes.
       # The "-" form (not ":-") means an explicit empty value disables the fixed code; unset keeps 123456.
       Otp__FixedCode: ${OTP_FIXED_CODE-123456}

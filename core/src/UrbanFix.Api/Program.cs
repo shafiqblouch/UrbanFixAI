@@ -117,6 +117,7 @@ app.MapDashboardEndpoints();
 app.MapPricingEndpoints();
 app.MapNotificationEndpoints();
 app.MapWhatsAppEndpoints();
+app.MapOpenWaWebhook();
 app.MapApprovalEndpoints();
 app.MapRegistryEndpoints();
 app.MapStockEndpoints();

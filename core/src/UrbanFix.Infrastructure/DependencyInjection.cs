@@ -119,7 +119,21 @@ public static class DependencyInjection
         // WhatsApp, text messages and email (WA-02 to WA-06, NT-02 to NT-04). Each is installed only when it is configured.
         var whatsApp = config.GetSection("WhatsApp").Get<WhatsAppOptions>() ?? new WhatsAppOptions();
         services.AddSingleton(whatsApp);
-        services.AddHttpClient<IWhatsAppClient, HttpWhatsAppClient>(http => HttpWhatsAppClient.Configure(http, whatsApp));
+        var openWa = config.GetSection("OpenWa").Get<OpenWaOptions>() ?? new OpenWaOptions();
+        services.AddSingleton(openWa);
+        // Inbound complaints can arrive through the Cloud API or a self-hosted OpenWA gateway; the conversation flow is the same, only
+        // the client (send + media) differs. When OpenWA inbound is on it becomes the one WhatsApp client (see docs/openwa-complaints.md).
+        var openWaInbound = openWa.InboundEnabled && !string.IsNullOrEmpty(openWa.BaseUrl);
+        if (openWaInbound)
+        {
+            services.AddHttpClient<OpenWaWhatsAppClient>(http => OpenWaSmsSender.Configure(http, openWa));
+            services.AddScoped<IWhatsAppClient>(sp => sp.GetRequiredService<OpenWaWhatsAppClient>());
+            if (runBackgroundServers) services.AddHostedService<OpenWaChannelSeeder>();
+        }
+        else
+        {
+            services.AddHttpClient<IWhatsAppClient, HttpWhatsAppClient>(http => HttpWhatsAppClient.Configure(http, whatsApp));
+        }
         services.AddScoped<WhatsAppSender>();
         services.AddScoped<WhatsAppInbox>();
         services.AddScoped<WhatsAppConversationService>();
@@ -135,10 +149,8 @@ public static class DependencyInjection
             services.AddScoped<INotificationChannel, SmsNotificationChannel>();
         }
 
-        // Development/demo OTP delivery over WhatsApp via a self-hosted OpenWA gateway (see docs/openwa-otp.md).
-        // Registered last so it wins over the logging sender (and any SMS gateway) when turned on; left off, nothing changes.
-        var openWa = config.GetSection("OpenWa").Get<OpenWaOptions>() ?? new OpenWaOptions();
-        services.AddSingleton(openWa);
+        // OTP delivery over WhatsApp via the same self-hosted OpenWA gateway (see docs/openwa-otp.md). The options were read and
+        // registered with the WhatsApp section above. Registered last so it wins over the logging sender (and any SMS gateway) when on.
         if (openWa.Enabled && !string.IsNullOrEmpty(openWa.BaseUrl))
         {
             services.AddHttpClient<OpenWaSmsSender>(http => OpenWaSmsSender.Configure(http, openWa));

@@ -24,6 +24,18 @@ public sealed class OpenWaOptions
     public string SessionId { get; set; } = "default";
     /// <summary>Suffix that turns a phone number into a one-to-one WhatsApp chat id. Groups would use <c>@g.us</c>.</summary>
     public string ChatSuffix { get; set; } = "@c.us";
+
+    // Inbound complaint registration (residents message the number) ------------------------------------------------
+    /// <summary>Turn on complaint registration over WhatsApp: inbound messages become complaints and replies go back through OpenWA.</summary>
+    public bool InboundEnabled { get; set; }
+    /// <summary>Shared secret OpenWA signs each webhook with (<c>X-OpenWA-Signature: sha256=…</c>). A webhook without a valid signature is refused.</summary>
+    public string WebhookSecret { get; set; } = "";
+    /// <summary>The society this WhatsApp number serves; its id is written onto the channel so inbound messages find the right organization.</summary>
+    public Guid? OrganizationId { get; set; }
+    /// <summary>The public address OpenWA should POST messages to, e.g. <c>https://host/webhooks/openwa</c>. When set, the gateway is told to send here on startup.</summary>
+    public string WebhookUrl { get; set; } = "";
+    /// <summary>The linked number in international form, kept on the channel for display only.</summary>
+    public string DisplayNumber { get; set; } = "";
 }
 
 /// <summary>
