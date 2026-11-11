@@ -16,6 +16,7 @@ from app.config import Settings
 from app.pii import ScrubbedText
 from app.prompts import load_prompt
 from app.providers import Providers
+from app.providers.base import ProviderError
 from app.schemas import UsageBody
 
 MAX_BYTES = 10 * 1024 * 1024
@@ -133,12 +134,21 @@ async def interpret(data: bytes, providers: Providers, settings: Settings) -> Ph
     prompt = ScrubbedText(load_prompt("photo_interpretation", version).format(labels=", ".join(ALLOWED_LABELS)))
 
     feedback = ""
-    last_model = settings.vision_model
+    model = settings.vision_model
+    last_model = model
     used_in = used_out = 0
     for _ in range(settings.max_output_retries + 1):
-        result = await providers.vision.describe(
-            model=settings.vision_model, prompt=ScrubbedText(prompt + feedback), image=prepared.jpeg, mime_type="image/jpeg"
-        )
+        try:
+            result = await providers.vision.describe(
+                model=model, prompt=ScrubbedText(prompt + feedback), image=prepared.jpeg, mime_type="image/jpeg"
+            )
+        except ProviderError:
+            # One switch to the fallback vision model (a different vendor); if that also fails the error propagates
+            # and the endpoint returns 502, so CORE retries rather than silently losing the photo.
+            if not settings.vision_fallback_model or model == settings.vision_fallback_model:
+                raise
+            model = settings.vision_fallback_model
+            continue
         last_model = result.model
         used_in += result.usage.input_tokens
         used_out += result.usage.output_tokens

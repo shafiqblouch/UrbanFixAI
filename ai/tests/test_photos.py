@@ -197,6 +197,38 @@ def test_provider_failure_is_a_502(fake):
     assert r.status_code == 502 and r.json()["error"] == "provider_unavailable"
 
 
+def test_primary_vision_failure_falls_back_to_the_second_model():
+    """A bad/unavailable primary vision slug must not silently drop the photo: the fallback model is tried."""
+    from app.providers.base import ProviderError
+
+    class FailsPrimary(FakeProvider):
+        async def describe(self, *, model, **kw):
+            if model == "primary/bad":
+                raise ProviderError("not a valid model id")
+            return await super().describe(model=model, **kw)
+
+    f = FailsPrimary()
+    f.vision_replies.append(reply(("pothole",)))
+    settings = Settings(service_token=TOKEN, vision_model="primary/bad", vision_fallback_model="backup/good")
+    c = TestClient(create_app(settings, Providers(llm=f, vision=f, speech=f, embedding=f)))
+    r = post(c, jpeg())
+    assert r.status_code == 200
+    assert r.json()["labels"] == ["pothole"] and r.json()["model"] == "backup/good"
+
+
+def test_both_vision_models_failing_is_still_a_502():
+    from app.providers.base import ProviderError
+
+    class AlwaysDown(FakeProvider):
+        async def describe(self, **_):
+            raise ProviderError("quota")
+
+    d = AlwaysDown()
+    settings = Settings(service_token=TOKEN, vision_model="primary/bad", vision_fallback_model="backup/also-bad")
+    c = TestClient(create_app(settings, Providers(llm=d, vision=d, speech=d, embedding=d)))
+    assert post(c, jpeg()).status_code == 502
+
+
 @pytest.mark.parametrize("label", ["open_manhole", "exposed_wire", "sewage_overflow", "fallen_tree"])
 def test_hazard_labels_raise_the_safety_flag(client, fake, label):
     fake.vision_replies.append(reply((label,), "A possible hazard is visible near the footpath.", 0.7))

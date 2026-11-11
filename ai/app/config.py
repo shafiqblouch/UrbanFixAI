@@ -9,6 +9,9 @@ RECOMMENDED_LLM_MODEL = "anthropic/claude-haiku-5.5"
 RECOMMENDED_FALLBACK_MODEL = "deepseek/deepseek-v4.1-flash"
 # Vision is NOT yet compared (AI-01 covered text only): same family as the text model until the photo test exists.
 RECOMMENDED_VISION_MODEL = "anthropic/claude-haiku-5.5"
+# Second, different-vendor image-capable model used once if the primary vision call fails, so a bad/unavailable
+# primary slug degrades gracefully instead of silently dropping every photo (mirrors the text fallback).
+RECOMMENDED_VISION_FALLBACK_MODEL = "google/gemini-2.5-flash"
 # Speech compared on 2026-10-28 (accuracy and English translation, ~2 s per note): gemini-2.5-flash read English faithfully;
 # voxtral-small rewrote English speech as Urdu. Provisional until re-run on real Urdu recordings.
 RECOMMENDED_SPEECH_MODEL = "google/gemini-2.5-flash"
@@ -40,6 +43,8 @@ class Settings:
 
     # Used once if the primary model's provider call fails (AI-01 picked a second vendor on purpose).
     llm_fallback_model: str = ""
+    # Same idea for photo interpretation: a second, image-capable vision model tried if the primary one errors.
+    vision_fallback_model: str = ""
 
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
@@ -59,11 +64,13 @@ class Settings:
             llm_fallback_model=RECOMMENDED_FALLBACK_MODEL if live else d.llm_fallback_model,
             vision_provider=RECOMMENDED_LLM_PROVIDER if live else d.vision_provider,
             vision_model=RECOMMENDED_VISION_MODEL if live else d.vision_model,
+            vision_fallback_model=RECOMMENDED_VISION_FALLBACK_MODEL if live else d.vision_fallback_model,
             speech_provider=RECOMMENDED_LLM_PROVIDER if live else d.speech_provider,
             speech_model=RECOMMENDED_SPEECH_MODEL if live else d.speech_model,
         )
         return Settings(
             llm_fallback_model=e.get("AI_LLM_FALLBACK_MODEL", d.llm_fallback_model),
+            vision_fallback_model=e.get("AI_VISION_FALLBACK_MODEL", d.vision_fallback_model),
             service_token=e.get("AI_SERVICE_TOKEN", d.service_token),
             service_token_previous=e.get("AI_SERVICE_TOKEN_PREVIOUS", d.service_token_previous),
             llm_provider=e.get("AI_LLM_PROVIDER", d.llm_provider),
