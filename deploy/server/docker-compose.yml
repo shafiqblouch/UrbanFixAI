@@ -51,6 +51,13 @@ services:
       DATABASE_SYNCHRONIZE: "true"
       PUPPETEER_HEADLESS: "true"
       PUPPETEER_ARGS: --no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage,--disable-gpu
+      # Let the gateway deliver complaint webhooks to `core` on the compose network. OpenWA's SSRF guard blocks
+      # private addresses by default ("Destination address is not allowed"); this allowlists just our API host, so
+      # webhook delivery stays internal (no Cloudflare, no public exposure). See docs/openwa-complaints.md.
+      SSRF_ALLOWED_HOSTS: core
+      # WhatsApp photos/voice notes arrive inline as base64; the default 1 MB cap would drop most photos, so raise it.
+      WEBHOOK_MEDIA_INLINE_MAX_BYTES: "16777216"
+      WEBHOOK_MAX_PAYLOAD_BYTES: "16777216"
     volumes: [openwadata:/app/data]
     mem_limit: 2g
 
