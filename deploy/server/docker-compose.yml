@@ -58,6 +58,11 @@ services:
       # WhatsApp photos/voice notes arrive inline as base64; the default 1 MB cap would drop most photos, so raise it.
       WEBHOOK_MEDIA_INLINE_MAX_BYTES: "16777216"
       WEBHOOK_MAX_PAYLOAD_BYTES: "16777216"
+      # Modern WhatsApp often delivers the sender as a privacy "LID" (e.g. 56388776677441) instead of a phone number.
+      # Resolve it to the real number and include contact details, so the webhook carries senderPhone — without it the
+      # system can't match the sender to a resident or send a reply back ("could not resolve recipient").
+      RESOLVE_LID_TO_PHONE: "true"
+      WEBHOOK_CONTACT_DETAILS: "true"
     volumes: [openwadata:/app/data]
     mem_limit: 2g
 

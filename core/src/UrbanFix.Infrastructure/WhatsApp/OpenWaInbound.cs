@@ -43,8 +43,10 @@ public static class OpenWaWebhook
     {
         if (Bool(data, "fromMe") == true || Bool(data, "isGroup") == true) return null; // our own echoes and group chats are not reports
 
-        // Prefer the resolved phone for @lid senders; otherwise the digits of the chat id (e.g. 923...@c.us).
-        var from = Digits(Str(Child(data, "contact"), "senderPhone") ?? Str(data, "from") ?? Str(data, "chatId"));
+        // Modern WhatsApp may send the sender as a privacy "@lid" rather than a phone number. When the gateway resolves it
+        // (RESOLVE_LID_TO_PHONE), the real number is in senderPhone (top-level or under contact); prefer that. Otherwise fall
+        // back to the digits of from/chatId (a plain 92…@c.us number works; a bare @lid will not match a resident or reply).
+        var from = Digits(Str(data, "senderPhone") ?? Str(Child(data, "contact"), "senderPhone") ?? Str(data, "from") ?? Str(data, "chatId"));
         var id = Str(data, "id");
         if (string.IsNullOrEmpty(from) || id is null) return null;
 

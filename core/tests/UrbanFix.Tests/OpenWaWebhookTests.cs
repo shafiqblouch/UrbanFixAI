@@ -49,6 +49,23 @@ public class OpenWaWebhookTests
     }
 
     [Fact]
+    public void A_top_level_resolved_sender_phone_is_preferred_over_the_lid_in_from()
+    {
+        var hook = OpenWaWebhook.Parse(Envelope("""{"id":"m4b","from":"56388776677441@lid","type":"text","body":"hello there please","senderPhone":"923008888888"}"""));
+        Assert.Equal("923008888888", Assert.Single(hook.Messages).From);
+    }
+
+    [Fact]
+    public void A_photo_with_a_describing_caption_is_carried_as_the_caption_text()
+    {
+        var hook = OpenWaWebhook.Parse(Envelope("""{"id":"m9","from":"923001234567@c.us","type":"image","body":"broken street light near gate","media":{"mimetype":"image/jpeg","data":"/9j/4AAQ"}}"""));
+        var m = Assert.Single(hook.Messages);
+        Assert.Equal("image", m.Type);
+        Assert.Equal("m9", m.MediaId);
+        Assert.Equal("broken street light near gate", m.Caption); // the machine uses this as the description
+    }
+
+    [Fact]
     public void A_tapped_button_is_read_as_its_text_so_word_commands_still_work()
     {
         var hook = OpenWaWebhook.Parse(Envelope("""{"id":"m5","from":"923001234567@c.us","type":"button","button":{"id":"done","text":"Done"}}"""));

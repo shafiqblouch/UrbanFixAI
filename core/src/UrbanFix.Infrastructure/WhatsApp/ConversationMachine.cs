@@ -79,6 +79,8 @@ public static partial class ConversationMachine
     private static readonly HashSet<string> OptInWords = ["start", "subscribe", "شروع"];
     private static readonly HashSet<string> ReportWords = ["report", "complaint", "problem", "شکایت"];
     private static readonly HashSet<string> DoneWords = ["done", "finished", "مکمل", "ختم"];
+    // Typed equivalents of the "send now" button, for channels that cannot show tappable buttons (e.g. OpenWA).
+    private static readonly HashSet<string> SendNowWords = ["send", "send now", "sendnow", "ok", "بھیجیں", "بھیجو", "بھیج دیں"];
     private static readonly HashSet<string> CancelWords = ["cancel", "منسوخ"];
     private static readonly HashSet<string> UrduWords = ["urdu", "اردو"];
     private static readonly HashSet<string> EnglishWords = ["english", "انگریزی"];
@@ -176,7 +178,11 @@ public static partial class ConversationMachine
                 return Menu(language, first);
             case InputKind.Image or InputKind.Audio when input.MediaId is not null:
             {
-                var pending = new ChatData { Pending = [new PendingMedia(input.MediaId, input.Kind == InputKind.Image ? "image" : "audio")] };
+                var media = new PendingMedia(input.MediaId, input.Kind == InputKind.Image ? "image" : "audio");
+                // A photo (or voice) sent with a caption that already describes the problem is a complete report on its own.
+                if (input.Text is { } caption && Normal(caption).Length >= MinFreeTextLength)
+                    return new ChatStep(ChatStates.Collecting, new ChatData(), language, [new OpenComplaint(caption.Trim(), false, [media], null, null, null)]);
+                var pending = new ChatData { Pending = [media] };
                 return new ChatStep(ChatStates.AwaitDescription, pending, language,
                     [new SayWithButtons("got_media", [("sendnow", "btn.sendnow"), ("cancel", "btn.cancel")])]);
             }
@@ -194,6 +200,11 @@ public static partial class ConversationMachine
     {
         if (input.Kind == InputKind.Button && input.ButtonId == "cancel" || input.Kind == InputKind.Text && CancelWords.Contains(text))
             return new ChatStep(ChatStates.Idle, new ChatData(), language, [new Say("cancelled")]);
+
+        // Typed "send" (for channels without tappable buttons): submit what was collected so far, as the button would.
+        if (input.Kind == InputKind.Text && SendNowWords.Contains(text) && (data.Pending.Count > 0 || data.PinLatitude is not null))
+            return new ChatStep(ChatStates.Collecting, data, language,
+                [new OpenComplaint("", true, data.Pending, data.PinLatitude, data.PinLongitude, data.PinName)]);
 
         switch (input.Kind)
         {
