@@ -113,6 +113,10 @@ services:
       OpenWa__OrganizationId: ${OPENWA_ORG_ID:-}
       OpenWa__WebhookUrl: ${OPENWA_WEBHOOK_URL:-}
       OpenWa__DisplayNumber: ${OPENWA_DISPLAY_NUMBER:-}
+      # Answer only numbers that belong to a registered resident: any other number's message is stored and ignored with
+      # no reply (no menu, status or complaint). Default true here so the line is not an open bot; set WA_RESIDENTS_ONLY=false
+      # in .env to re-open it to guests/unknown senders per the organization's unknown-sender policy.
+      WhatsApp__RegisteredResidentsOnly: ${WA_RESIDENTS_ONLY:-true}
       # Demo fixed OTP (123456) by default; set OTP_FIXED_CODE= (empty) in .env to send real random codes.
       # The "-" form (not ":-") means an explicit empty value disables the fixed code; unset keeps 123456.
       Otp__FixedCode: ${OTP_FIXED_CODE-123456}

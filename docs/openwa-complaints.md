@@ -20,6 +20,12 @@ This reuses the existing conversation engine, so you get its behaviour for free:
 - **Urdu / English** is detected from the message; replies follow.
 - Unknown numbers are handled by the society's sender policy (guest / hold-for-staff / ask-to-register), and
   a flood of messages from one number is rate-limited — all as on the Cloud API path.
+- **Registered residents only (default on the server).** `WhatsApp__RegisteredResidentsOnly=true` (set via
+  `WA_RESIDENTS_ONLY`, default `true` in the server compose) makes the bot answer *only* numbers that belong to a
+  registered resident. A message from any other number is stored and marked `ignored` — no menu, no status, no
+  complaint, no reply — so the line is not an open bot. This gate runs before the sender policy above, so with it
+  on the guest / hold-for-staff / ask-to-register branches never fire; set `WA_RESIDENTS_ONLY=false` to re-open
+  the line and let that policy decide. The flag is off by default in code, so it affects only where it is set.
 
 **Buttons become text.** Unofficial WhatsApp cannot render tappable buttons, so prompts that had buttons are sent
 as plain text options the resident types back ("done", "report", or a reference). The state machine already

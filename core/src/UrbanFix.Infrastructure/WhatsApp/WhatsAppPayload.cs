@@ -171,6 +171,11 @@ public sealed class WhatsAppOptions
     public int RateWindowMinutes { get; set; } = 10;
     /// <summary>After this much quiet, a half-finished report asks whether to carry on (WA-04).</summary>
     public int ResumeAfterHours { get; set; } = 6;
+    /// <summary>
+    /// When true, the bot answers only numbers that belong to a registered resident. A message from any other number is stored and
+    /// marked ignored without a reply — no menu, no status, no complaint. Off by default so unknown-sender policy (guest/queue) is unchanged.
+    /// </summary>
+    public bool RegisteredResidentsOnly { get; set; }
     /// <summary>WhatsApp template names and languages by notification template; see docs/whatsapp-templates.md.</summary>
     public Dictionary<string, WhatsAppTemplate> Templates { get; set; } = [];
 }

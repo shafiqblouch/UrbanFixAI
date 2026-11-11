@@ -46,6 +46,20 @@ public sealed class WhatsAppConversationService(
         if (message is null || message.Status != MessageStatus.Received) return; // done already: safe to run twice
 
         var phone = "+" + message.WaId;
+
+        // Answer only registered residents when asked to: a message from any other number is kept but never replied to (no menu,
+        // no status, no complaint). The sender's membership does not depend on unknown-sender policy, so Default is enough here.
+        if (options.RegisteredResidentsOnly
+            && (await SenderResolver.ResolveAsync(db, phone, OrgPolicy.Default, ct)).Kind != SenderKind.Matched)
+        {
+            message.Status = MessageStatus.Ignored;
+            message.Error = "not_registered";
+            message.ProcessedAt = DateTimeOffset.UtcNow;
+            await db.SaveChangesAsync(ct);
+            log.LogInformation("WhatsApp message from unregistered number ignored (RegisteredResidentsOnly)");
+            return;
+        }
+
         var conversation = await sender.ConversationAsync(phone, ct);
         var now = DateTimeOffset.UtcNow;
 

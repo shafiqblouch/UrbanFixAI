@@ -320,6 +320,31 @@ public class WhatsAppFlowTests(TestApp app)
         Assert.Equal(ChatStates.Idle, await chat.State(stranger));
     }
 
+    [Fact]
+    public async Task With_registered_residents_only_a_stranger_gets_no_reply_while_a_resident_still_does()
+    {
+        var chat = await WaChat.CreateAsync(app, linkResident: false);
+        var options = app.Services.GetRequiredService<WhatsAppOptions>();
+        options.RegisteredResidentsOnly = true;
+        try
+        {
+            // A number the directory does not know: the message is kept but never answered, and no complaint is made.
+            var stranger = WaChat.NewWaId();
+            var ignored = await chat.Text(stranger, "Street light has been out for a week");
+            Assert.Empty(ignored);
+            Assert.Null(await chat.State(stranger)); // no conversation was started
+            Assert.Equal("ignored", await chat.Scalar<string>(
+                "SELECT status FROM whatsapp_messages WHERE organization_id = @o AND direction = 'in' AND wa_id = @p",
+                ("p", stranger)));
+
+            // A registered resident is answered as before.
+            var (from, _) = await chat.ResidentWithPhoneAsync();
+            var reply = await chat.Text(from, "The tap near the mosque is leaking badly");
+            Assert.NotEqual("", WaChat.ReferenceIn(reply));
+        }
+        finally { options.RegisteredResidentsOnly = false; }
+    }
+
     // WA-03: media ---------------------------------------------------------------------------------------------------
 
     [Fact]
