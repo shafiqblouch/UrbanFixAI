@@ -3,18 +3,36 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { type S } from "./api";
 import { usePeople } from "./components";
+import { useReverseGeocode } from "./geocode";
 import { useFormat, useT, type Key } from "./i18n";
 import { MapView } from "./LazyMap";
 import type { MapMarker } from "./MapView";
+
+/** A GPS fix, shown as its street address once resolved and otherwise as the coordinates stored with the report. */
+export function ComplaintLocationText({ complaint }: { complaint: S["ComplaintDto"] }) {
+  const t = useT();
+  const { address, status } = useReverseGeocode(complaint.latitude, complaint.longitude);
+  const coords = complaint.locationText ?? (complaint.latitude != null && complaint.longitude != null
+    ? `(${complaint.latitude}, ${complaint.longitude})` : null);
+
+  if (address) {
+    return <>{address}{coords ? <span className="muted"> · {coords}</span> : null}</>;
+  }
+  if (status === "loading") {
+    return <>{coords ?? "—"} <span className="muted">· {t("map.resolving")}</span></>;
+  }
+  return <>{coords ?? "—"}</>;
+}
 
 /** Where a complaint was reported from, on a small map (shown only when the report came with a position). */
 export function ComplaintLocationCard({ complaint }: { complaint: S["ComplaintDto"] }) {
   const t = useT();
   const navigate = useNavigate();
+  const { address } = useReverseGeocode(complaint.latitude, complaint.longitude);
   const markers = useMemo<MapMarker[]>(() => complaint.latitude == null || complaint.longitude == null ? [] : [{
     id: complaint.id, lat: complaint.latitude, lon: complaint.longitude, tone: "info", title: complaint.reference,
-    lines: complaint.locationText ? [complaint.locationText] : [],
-  }], [complaint]);
+    lines: [address, complaint.locationText].filter((l): l is string => !!l),
+  }], [complaint, address]);
 
   return (
     <Card title={t("map.complaintPlace")}>

@@ -1,6 +1,6 @@
 import { Alert, Button, Card, SelectField, Table, TextAreaField, TextField } from "@urbanfix/ui";
 import { useState } from "react";
-import { ComplaintLocationCard } from "../LocationMaps";
+import { ComplaintLocationCard, ComplaintLocationText } from "../LocationMaps";
 import { DuplicatesCard } from "./Duplicates";
 import { FeedbackCard } from "./Feedback";
 import { Link, useParams } from "react-router-dom";
@@ -50,7 +50,7 @@ export function ComplaintDetailPage() {
                     <dt>{t("priority")}</dt><dd><PriorityTag priority={c.priority} /></dd>
                     <dt>{t("reporter")}</dt><dd>{nameOf(c.reportedByUserId)}</dd>
                     <dt>{t("channel")}</dt><dd>{t(`channel.${c.channel}` as Key)}</dd>
-                    <dt>{t("location")}</dt><dd>{c.locationText ?? "—"}</dd>
+                    <dt>{t("location")}</dt><dd><ComplaintLocationText complaint={c} /></dd>
                     <dt>{t("created")}</dt><dd>{f.dateTime(c.createdAt)}</dd>
                     {c.statusReason && <><dt>{t("reason")}</dt><dd>{c.statusReason}</dd></>}
                   </dl>
