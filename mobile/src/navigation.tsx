@@ -63,6 +63,8 @@ function Tabs() {
         <Tab.Screen key={id} name={id} component={screens[id]}
           options={{
             title: t(`tab.${id}` as Key),
+            // Home and Report draw their own gradient hero, so the stock header is hidden for them.
+            headerShown: id !== "new" && id !== "home",
             tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 22 }}>{glyphs[id]}</Text>,
             tabBarBadge: id === "settings" && waiting > 0 ? waiting : id === "notices" && unread > 0 ? unread : undefined,
           }} />
