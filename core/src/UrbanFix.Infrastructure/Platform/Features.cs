@@ -31,6 +31,12 @@ public static class Features
     };
 
     public static bool IsKnown(string feature) => Defaults.ContainsKey(feature);
+
+    /// <summary>
+    /// Features a society's own manager may switch on or off for their own society, without the platform team
+    /// (via <c>PUT /my/features/{feature}</c>, guarded by <c>gate.manage</c>). Everything else stays platform-only.
+    /// </summary>
+    public static readonly IReadOnlySet<string> ManagerTogglable = new HashSet<string> { Gate };
 }
 
 /// <summary>A choice made for one organization. No row means the default applies.</summary>

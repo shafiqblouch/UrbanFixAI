@@ -93,6 +93,41 @@ public class GateFlowTests(TestApp app)
     }
 
     [Fact]
+    public async Task A_manager_can_switch_gate_security_on_and_off_for_their_own_society()
+    {
+        var s = await Society.CreateAsync(app);
+        var guard = await app.AddMemberAsync(s.Manager, s.Org, Role.Guard);
+
+        // Off by default: closed to the guard until someone turns it on.
+        Assert.Equal(HttpStatusCode.Forbidden, (await guard.Client.GetAsync("/gate/lookup?q=abc")).StatusCode);
+
+        // The manager turns it on themselves — no platform admin needed.
+        Assert.Equal(HttpStatusCode.OK, (await s.Manager.Client.PutAsJsonAsync("/my/features/gate",
+            new UrbanFix.Api.Endpoints.PlatformEndpoints.SetFeature(true))).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await guard.Client.GetAsync("/gate/lookup?q=abc")).StatusCode);
+
+        // And off again.
+        (await s.Manager.Client.PutAsJsonAsync("/my/features/gate",
+            new UrbanFix.Api.Endpoints.PlatformEndpoints.SetFeature(false))).EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.Forbidden, (await guard.Client.GetAsync("/gate/lookup?q=abc")).StatusCode);
+    }
+
+    [Fact]
+    public async Task Self_service_feature_toggle_is_limited_to_gate_and_to_managers()
+    {
+        var s = await Society.CreateAsync(app);
+
+        // A manager may self-provision gate, but nothing else (billing stays platform-only).
+        Assert.Equal(HttpStatusCode.BadRequest, (await s.Manager.Client.PutAsJsonAsync("/my/features/billing",
+            new UrbanFix.Api.Endpoints.PlatformEndpoints.SetFeature(true))).StatusCode);
+
+        // A guard holds gate.log but not gate.manage, so cannot flip the feature at all.
+        var guard = await app.AddMemberAsync(s.Manager, s.Org, Role.Guard);
+        Assert.Equal(HttpStatusCode.Forbidden, (await guard.Client.PutAsJsonAsync("/my/features/gate",
+            new UrbanFix.Api.Endpoints.PlatformEndpoints.SetFeature(true))).StatusCode);
+    }
+
+    [Fact]
     public async Task A_resident_cannot_touch_the_gate_and_a_guard_cannot_configure_checkpoints()
     {
         var (s, guard) = await GatedAsync();

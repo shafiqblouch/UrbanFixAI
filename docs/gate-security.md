@@ -18,7 +18,15 @@ existed in the codebase before this feature.
 | Resident | — (future) | Pre-authorise an expected guest from the mobile app (phase 2) |
 
 Every gate endpoint also requires the society's `gate` feature to be on, enforced by an endpoint filter that
-returns `403 {"error":"feature_disabled","feature":"gate"}`.
+returns `403 {"error":"feature_disabled","feature":"gate"}`. The filter runs **before** the auth policy, so while
+the feature is off even a fully-permissioned manager gets a 403 — the feature state masks the role.
+
+**Switching the feature on.** `gate` is off by default. A platform admin can toggle it for any society
+(`PUT /admin/organizations/{id}/features/gate`), and a society's own **manager** can self-provision it for their
+own society via `PUT /my/features/{feature}` (guarded by `gate.manage`, written through the tenant-scoped db so
+RLS keeps it to that org). This self-service route is limited to an allowlist (`Features.ManagerTogglable`, today
+just `gate`); any other feature returns `400 {"error":"feature_not_self_service"}`. In the portal, the manager's
+**Gate** page shows a "Turn on gate security" card whenever the feature is off, so they never see raw 403s.
 
 ## Data model (`0031_gate.sql`)
 

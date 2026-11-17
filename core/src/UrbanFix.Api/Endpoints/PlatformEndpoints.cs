@@ -63,6 +63,27 @@ public static class PlatformEndpoints
         app.MapGet("/features", async (AppDbContext db, CancellationToken ct) => Results.Ok(await FeatureFlags.AllAsync(db, ct)))
             .WithTags("Platform").Produces<Dictionary<string, bool>>(200).RequireAuthorization(AuthPolicies.Verified);
 
+        // A society's own manager switches on the handful of features it may self-provision (today: gate) for its own
+        // society — writing through the tenant-scoped db, so RLS keeps it to that org. Everything else stays platform-only.
+        app.MapPut("/my/features/{feature}", async (string feature, SetFeature req, ITenantContext tenant, ClaimsPrincipal user, HttpContext http, AppDbContext db, CancellationToken ct) =>
+        {
+            if (!Features.ManagerTogglable.Contains(feature)) return Results.BadRequest(new { error = "feature_not_self_service" });
+            var orgId = tenant.OrganizationId!.Value;
+            var actor = Guid.Parse(user.FindFirstValue("sub")!);
+            var row = await db.OrganizationFeatures.SingleOrDefaultAsync(f => f.Feature == feature, ct);
+            if (row is null) db.OrganizationFeatures.Add(row = new OrganizationFeature { OrganizationId = orgId, Feature = feature });
+            row.Enabled = req.Enabled;
+            row.UpdatedBy = actor;
+            row.UpdatedAt = DateTimeOffset.UtcNow;
+            db.AuditLog.Add(new AuditEntry
+            {
+                OrganizationId = orgId, ActorUserId = actor, Action = "feature_changed", EntityType = "Feature", EntityId = feature,
+                After = System.Text.Json.JsonSerializer.Serialize(new { enabled = req.Enabled }), Ip = http.Connection.RemoteIpAddress?.ToString(),
+            });
+            await db.SaveChangesAsync(ct);
+            return Results.Ok(new FeatureDto(feature, req.Enabled, Features.Defaults[feature]));
+        }).WithTags("Platform").Produces<FeatureDto>(200).RequireAuthorization(AuthPolicies.For(Permissions.GateManage));
+
         // PA-03 ----------------------------------------------------------------------------------------------------
         g.MapGet("/ai/quality", async (Guid? organizationId, DateTimeOffset? from, DateTimeOffset? to, PlatformData data, CancellationToken ct) =>
             Results.Ok(await data.AiQualityAsync(organizationId, from, to, ct))).Produces<List<AiQualityRow>>(200).RequireAuthorization(platform);

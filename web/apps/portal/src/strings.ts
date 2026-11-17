@@ -1279,6 +1279,9 @@ export const en = {
   "gate.kind.delivery": "Delivery",
   "gate.kind.help": "Daily help",
   "gate.kind.contractor": "Contractor",
+  "gate.disabledTitle": "Gate security is off for your society",
+  "gate.disabledHint": "Turn it on to log entries and exits, manage visitor passes and see who is inside. You can switch it off again at any time.",
+  "gate.enable": "Turn on gate security",
 } as const;
 
 export type Key = keyof typeof en;
@@ -2562,4 +2565,7 @@ export const ur: Record<Key, string> = {
   "gate.kind.delivery": "ڈیلیوری",
   "gate.kind.help": "گھریلو مددگار",
   "gate.kind.contractor": "ٹھیکیدار",
+  "gate.disabledTitle": "آپ کی سوسائٹی کے لیے گیٹ سیکیورٹی بند ہے",
+  "gate.disabledHint": "آمد و رفت کا اندراج، وزٹر پاس اور اندر موجود افراد دیکھنے کے لیے اسے آن کریں۔ آپ اسے کسی بھی وقت دوبارہ بند کر سکتے ہیں۔",
+  "gate.enable": "گیٹ سیکیورٹی آن کریں",
 };

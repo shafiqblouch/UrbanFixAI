@@ -20,21 +20,47 @@ const passTone: Record<string, Status> = {
 export function GatePage() {
   const t = useT();
   const [tab, setTab] = useState<Tab>("inside");
+  const features = useLoad(() => ok(api.GET("/features", {})), []);
   return (
     <>
       <PageHeader title={t("menu.gate")} subtitle={t("gate.subtitle")} />
-      <div className="tabs" role="tablist" aria-label={t("menu.gate")}>
-        {TABS.map((x) => (
-          <button key={x} role="tab" aria-selected={tab === x} className={tab === x ? "tab tab--active" : "tab"} onClick={() => setTab(x)}>
-            {t(`gate.${x}` as Key)}
-          </button>
-        ))}
-      </div>
-      {tab === "inside" && <Inside />}
-      {tab === "log" && <Log />}
-      {tab === "passes" && <Passes />}
-      {tab === "checkpoints" && <Checkpoints />}
+      <Async state={features}>
+        {(flags) => !flags.gate ? (
+          <EnableGate onEnabled={features.reload} />
+        ) : (
+          <>
+            <div className="tabs" role="tablist" aria-label={t("menu.gate")}>
+              {TABS.map((x) => (
+                <button key={x} role="tab" aria-selected={tab === x} className={tab === x ? "tab tab--active" : "tab"} onClick={() => setTab(x)}>
+                  {t(`gate.${x}` as Key)}
+                </button>
+              ))}
+            </div>
+            {tab === "inside" && <Inside />}
+            {tab === "log" && <Log />}
+            {tab === "passes" && <Passes />}
+            {tab === "checkpoints" && <Checkpoints />}
+          </>
+        )}
+      </Async>
     </>
+  );
+}
+
+/** When the society has never switched gate security on, a manager can turn it on from here (self-service feature flag). */
+function EnableGate({ onEnabled }: { onEnabled: () => void }) {
+  const t = useT();
+  const action = useAction();
+  const enable = () => action.run(async () => {
+    await ok(api.PUT("/my/features/{feature}", { params: { path: { feature: "gate" } }, body: { enabled: true } }));
+    onEnabled();
+  });
+  return (
+    <Card title={t("gate.disabledTitle")}>
+      <p className="muted">{t("gate.disabledHint")}</p>
+      {action.error && <Alert tone="danger">{t("error.generic")}</Alert>}
+      <Button onClick={() => void enable()} loading={action.busy}>{t("gate.enable")}</Button>
+    </Card>
   );
 }
 
