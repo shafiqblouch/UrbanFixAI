@@ -44,6 +44,13 @@ function useHouseLabel() {
   }, [locations]);
 }
 
+/** Up to two initials for a resident avatar, e.g. "Ali Khan" → "AK". */
+function initials(name: string | null | undefined): string {
+  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  const letters = (parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "");
+  return letters.toUpperCase() || "–";
+}
+
 // Search -------------------------------------------------------------------------------------------------------
 
 function Search() {
@@ -232,25 +239,33 @@ function Residents({ house, label, onClose }: { house: S["HouseDto"] | undefined
       <ErrorNote error={action.error} />
       <Async state={links}>
         {(rows) => rows.length === 0 ? <EmptyState title={t("directory.noResidents")} /> : (
-          <Table
-            caption={t("directory.residentCount", { count: current })}
-            rows={rows}
-            rowKey={(r) => r.id}
-            columns={[
-              { key: "name", header: t("name"), render: (r) => <strong>{r.displayName ?? "—"}</strong> },
-              { key: "phone", header: t("directory.phone"), render: (r) => (r.phone ? <a href={`tel:${r.phone}`}>{r.phone}</a> : "—") },
-              { key: "relation", header: t("directory.relation"), render: (r) => t(`charges.relation.${r.relation}` as Key) },
-              {
-                key: "status", header: t("status"), render: (r) => r.toDate
-                  ? <span>{t("directory.former")} <span className="muted">· {t("directory.until", { date: f.date(r.toDate) })}</span></span>
-                  : <span>{t("directory.current")} <span className="muted">· {t("directory.since", { date: f.date(r.fromDate) })}</span></span>,
-              },
-              { key: "action", header: t("action"), render: (r) => (r.toDate ? null : <Button variant="ghost" onClick={() => void end(r.id)} loading={action.busy}>{t("directory.moveOut")}</Button>) },
-            ]}
-          />
+          <>
+            <p className="dir-roster__head">{t("directory.residentCount", { count: current })}</p>
+            <ul className="dir-roster">
+              {rows.map((r) => (
+                <li key={r.id} className={r.toDate ? "dir-person dir-person--former" : "dir-person"}>
+                  <span className="avatar avatar--lg" aria-hidden="true">{initials(r.displayName)}</span>
+                  <div className="dir-person__main">
+                    <span className="dir-person__name">{r.displayName ?? "—"}</span>
+                    {r.phone
+                      ? <a className="dir-person__phone" href={`tel:${r.phone}`}>{r.phone}</a>
+                      : <span className="dir-person__phone dir-person__phone--none">{t("directory.noPhone")}</span>}
+                  </div>
+                  <div className="dir-person__side">
+                    <div className="dir-person__tags">
+                      <span className="dir-chip dir-chip--relation">{t(`charges.relation.${r.relation}` as Key)}</span>
+                      <span className={r.toDate ? "dir-chip dir-chip--former" : "dir-chip dir-chip--current"}>{t(r.toDate ? "directory.former" : "directory.current")}</span>
+                    </div>
+                    <span className="dir-person__meta">{r.toDate ? t("directory.until", { date: f.date(r.toDate) }) : t("directory.since", { date: f.date(r.fromDate) })}</span>
+                  </div>
+                  {!r.toDate && <Button variant="ghost" onClick={() => void end(r.id)} loading={action.busy}>{t("directory.moveOut")}</Button>}
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </Async>
-      <form className="stack" onSubmit={add}>
+      <form className="stack dir-addform" onSubmit={add}>
         <h3>{t("directory.addResident")}</h3>
         <p className="muted">{t("directory.addResidentHint")}</p>
         <div className="queue__fields">
