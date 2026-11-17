@@ -517,6 +517,69 @@ public class WhatsAppFlowTests(TestApp app)
         Assert.Equal((true, "Safety"), (detail.SafetyFlag, detail.Priority));
     }
 
+    // GT-04: answering a gate visitor request by WhatsApp ----------------------------------------------------------
+
+    private async Task<GateEndpoints.PassDto> AskAtGateAsync(WaChat chat, string visitor)
+    {
+        var admin = await app.LoginPlatformAdminAsync();
+        (await admin.Client.PutAsJsonAsync($"/admin/organizations/{chat.S.Org}/features/gate", new PlatformEndpoints.SetFeature(true))).EnsureSuccessStatusCode();
+        var guard = await app.AddMemberAsync(chat.S.Manager, chat.S.Org, Role.Guard);
+        var res = await guard.Client.PostAsJsonAsync("/gate/visit-requests", new GateEndpoints.VisitRequest(chat.S.HouseId, visitor, null, null, "delivery", null));
+        res.EnsureSuccessStatusCode();
+        return (await res.Content.ReadFromJsonAsync<GateEndpoints.PassDto>())!;
+    }
+
+    private Task<string?> PassStatusAsync(WaChat chat, Guid passId) =>
+        chat.Scalar<string>("SELECT status FROM gate_passes WHERE organization_id = @o AND id = @id", ("id", passId));
+
+    [Fact]
+    public async Task A_resident_allows_a_visitor_at_the_gate_by_replying_allow_on_whatsapp()
+    {
+        var chat = await WaChat.CreateAsync(app);
+        var (from, _) = await chat.ResidentWithPhoneAsync();
+        var pass = await AskAtGateAsync(chat, "Pizza Rider");
+
+        var reply = await chat.Text(from, "allow");
+        Assert.Contains("Pizza Rider", reply[0].Text);
+        Assert.Equal("active", await PassStatusAsync(chat, pass.Id));
+        Assert.Equal(ChatStates.Idle, await chat.State(from)); // the complaint flow was not entered
+    }
+
+    [Fact]
+    public async Task A_resident_denies_a_visitor_and_an_allow_with_no_pending_request_falls_through_to_the_menu()
+    {
+        var chat = await WaChat.CreateAsync(app);
+        var (from, _) = await chat.ResidentWithPhoneAsync();
+
+        // No request waiting: "allow" is just an ordinary short message and gets the menu, not a gate answer.
+        var fallthrough = await chat.Text(from, "allow");
+        Assert.DoesNotContain(fallthrough, r => r.Text.Contains("gate", StringComparison.OrdinalIgnoreCase) && r.Text.Contains("let in"));
+
+        var pass = await AskAtGateAsync(chat, "Unknown Guest");
+        var reply = await chat.Text(from, "deny");
+        Assert.Contains("Unknown Guest", reply[0].Text);
+        Assert.Equal("denied", await PassStatusAsync(chat, pass.Id));
+    }
+
+    [Fact]
+    public async Task With_two_requests_the_resident_is_asked_which_and_a_code_decides_it()
+    {
+        var chat = await WaChat.CreateAsync(app);
+        var (from, _) = await chat.ResidentWithPhoneAsync();
+        var first = await AskAtGateAsync(chat, "Guest One");
+        var second = await AskAtGateAsync(chat, "Guest Two");
+
+        var asked = await chat.Text(from, "allow");
+        Assert.Contains(first.Code, asked[0].Text);
+        Assert.Contains(second.Code, asked[0].Text);
+        Assert.Equal("pending", await PassStatusAsync(chat, first.Id)); // nothing decided yet
+
+        var done = await chat.Text(from, $"allow {second.Code}");
+        Assert.Contains("Guest Two", done[0].Text);
+        Assert.Equal("active", await PassStatusAsync(chat, second.Id));
+        Assert.Equal("pending", await PassStatusAsync(chat, first.Id)); // the other is untouched
+    }
+
     [Fact]
     public async Task Replies_are_kept_as_outbound_messages_with_their_whatsapp_ids()
     {

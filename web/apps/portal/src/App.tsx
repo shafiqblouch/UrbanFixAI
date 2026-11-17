@@ -22,6 +22,7 @@ import { StockPage } from "./pages/Stock";
 import { ReportsPage } from "./pages/Reports";
 import { ChargesPage } from "./pages/Charges";
 import { DirectoryPage } from "./pages/Directory";
+import { GatePage } from "./pages/Gate";
 import { PlatformPage } from "./pages/Platform";
 import { WelcomePage } from "./pages/Welcome";
 import { homeFor, menusFor, type MenuId } from "./roles";
@@ -57,6 +58,7 @@ function Routed({ onLocale }: { onLocale: (l: Locale) => void }) {
         <Route path="stock" element={<Guard menu="stock"><StockPage /></Guard>} />
         <Route path="approvals" element={<Guard menu="approvals"><ApprovalsPage /></Guard>} />
         <Route path="notices" element={<Guard menu="notices"><NoticesPage /></Guard>} />
+        <Route path="gate" element={<Guard menu="gate"><GatePage /></Guard>} />
         <Route path="config" element={<Guard menu="config"><ConfigPage /></Guard>} />
         <Route path="audit" element={<Guard menu="audit"><AuditPage /></Guard>} />
         <Route path="reports" element={<Guard menu="reports"><ReportsPage /></Guard>} />

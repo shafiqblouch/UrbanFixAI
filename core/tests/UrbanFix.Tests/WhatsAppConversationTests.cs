@@ -27,6 +27,35 @@ internal sealed class Chat(string? language = null)
     public IReadOnlyList<ChatAction> Pin(double lat, double lon) => Send(new ChatInput(InputKind.Location, Latitude: lat, Longitude: lon));
 }
 
+public class GateReplyTests
+{
+    [Theory]
+    [InlineData("allow", GateDecisionKind.Allow, null)]
+    [InlineData("  Allow ", GateDecisionKind.Allow, null)]
+    [InlineData("approve", GateDecisionKind.Allow, null)]
+    [InlineData("allow in", GateDecisionKind.Allow, null)] // "in" is too short to be a code
+    [InlineData("allow PX7QK2", GateDecisionKind.Allow, "PX7QK2")]
+    [InlineData("deny px-7qk2", GateDecisionKind.Deny, "PX7QK2")]
+    [InlineData("deny", GateDecisionKind.Deny, null)]
+    [InlineData("reject", GateDecisionKind.Deny, null)]
+    [InlineData("اجازت", GateDecisionKind.Allow, null)]
+    [InlineData("منع", GateDecisionKind.Deny, null)]
+    public void A_clear_allow_or_deny_is_read_with_its_code_if_given(string text, GateDecisionKind kind, string? code)
+    {
+        var intent = GateReply.Parse(text);
+        Assert.Equal((kind, code), (intent.Kind, intent.Code));
+    }
+
+    [Theory]
+    [InlineData("allowed")]        // not the bare word
+    [InlineData("I will allow it")] // allow is not at the start
+    [InlineData("no water in block a")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Anything_that_is_not_a_clear_decision_is_left_to_the_complaint_flow(string? text) =>
+        Assert.Equal(GateDecisionKind.None, GateReply.Parse(text).Kind);
+}
+
 public class WhatsAppConversationTests
 {
     private static T Only<T>(IReadOnlyList<ChatAction> actions) where T : ChatAction => Assert.IsType<T>(Assert.Single(actions));

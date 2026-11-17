@@ -28,6 +28,8 @@ public static class Permissions
     public const string EstimateApprove = "estimate.approve";
     public const string GateLog = "gate.log";
     public const string GateManage = "gate.manage";
+    /// <summary>A resident pre-authorises their own visitors and answers "someone is at the gate for you" (GT-03, GT-04).</summary>
+    public const string GatePassOwn = "gate.pass.own";
     public const string BillRead = "bill.read";
     public const string BillManage = "bill.manage";
     public const string PaymentRecord = "payment.record";
@@ -61,7 +63,7 @@ public static class RolePermissions
 {
     private static readonly Dictionary<Role, HashSet<string>> Matrix = new()
     {
-        [Role.Resident] = [Permissions.ComplaintCreate, Permissions.ComplaintReadOwn, Permissions.BillRead],
+        [Role.Resident] = [Permissions.ComplaintCreate, Permissions.ComplaintReadOwn, Permissions.BillRead, Permissions.GatePassOwn],
         [Role.Guard] = [Permissions.GateLog],
         [Role.Technician] = [Permissions.ComplaintRead, Permissions.ComplaintWork, Permissions.PricingRead, Permissions.EstimateCreate],
         [Role.Office] = [Permissions.ComplaintCreate, Permissions.ComplaintCreateBehalf, Permissions.ComplaintRead, Permissions.ComplaintTriage, Permissions.BillRead, Permissions.HouseLink, Permissions.PricingRead, Permissions.DashboardRead],
@@ -75,7 +77,7 @@ public static class RolePermissions
         [Role.Manager] =
         [
             Permissions.ComplaintRead, Permissions.ComplaintTriage, Permissions.ComplaintAssign, Permissions.ComplaintClose,
-            Permissions.EstimateApprove, Permissions.GateManage, Permissions.BillRead, Permissions.LedgerRead,
+            Permissions.EstimateApprove, Permissions.GateLog, Permissions.GateManage, Permissions.BillRead, Permissions.LedgerRead,
             Permissions.AuditRead, Permissions.MembershipManage, Permissions.OrganizationSettings, Permissions.CatalogManage,
             Permissions.ComplaintCreateBehalf, Permissions.HouseLink, Permissions.PricingManage, Permissions.PricingRead, Permissions.JobCreate, Permissions.EstimateCreate, Permissions.DashboardRead, Permissions.CostRead, Permissions.StockManage, Permissions.NoticeManage,
         ],

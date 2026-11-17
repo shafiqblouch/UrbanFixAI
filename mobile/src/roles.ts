@@ -3,17 +3,18 @@ import type { components } from "@urbanfix/api-client";
 type Membership = components["schemas"]["MembershipDto"];
 
 /** The roles that have screens in the app. Everyone else uses the web portal. */
-export const MOBILE_ROLES = ["Resident", "Technician"] as const;
+export const MOBILE_ROLES = ["Resident", "Technician", "Guard"] as const;
 export type MobileRole = (typeof MOBILE_ROLES)[number];
 
 export const isMobileRole = (role: string): role is MobileRole => (MOBILE_ROLES as readonly string[]).includes(role);
 
-export type TabId = "home" | "complaints" | "new" | "notices" | "today" | "jobs" | "settings";
+export type TabId = "home" | "complaints" | "new" | "notices" | "today" | "jobs" | "gate" | "log" | "settings";
 
-/** Bottom tabs per role (RA-01, TA-01). */
+/** Bottom tabs per role (RA-01, TA-01, GT-01). */
 export const tabsByRole: Record<MobileRole, TabId[]> = {
   Resident: ["home", "complaints", "new", "notices", "settings"],
   Technician: ["today", "jobs", "settings"],
+  Guard: ["gate", "log", "settings"],
 };
 
 export interface View {
@@ -49,9 +50,13 @@ export function dueChip(dueAt: string, now: Date): Due {
   return { kind: minutes < 0 ? "overdue" : minutes <= 24 * 60 ? "soon" : "later", amount, unit };
 }
 
-/** "Today's jobs": active jobs due within a day or already overdue, most urgent first. Jobs with no rush are listed under "My jobs". */
-export function todaysJobs<T extends { job: { status: string }; dueAt: string }>(jobs: T[], now: Date): T[] {
+/**
+ * "Today's jobs": every job still to be done — Open, Accepted or InProgress — most urgent first
+ * (overdue, then soonest due). Finished jobs (Completed, Returned, Cancelled) are left for "My jobs".
+ * This always surfaces the technician's current work; it does not hide jobs whose due date is further off.
+ */
+export function todaysJobs<T extends { job: { status: string }; dueAt: string }>(jobs: T[], _now?: Date): T[] {
   return jobs
-    .filter((j) => ["Open", "Accepted", "InProgress"].includes(j.job.status) && dueChip(j.dueAt, now).kind !== "later")
+    .filter((j) => ["Open", "Accepted", "InProgress"].includes(j.job.status))
     .sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime());
 }

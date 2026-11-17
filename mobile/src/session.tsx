@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, getToken, loadToken, ok, setToken, type S } from "./api";
+import { clearUserData, reconcileUserData } from "./offline/store";
 import { storage } from "./platform/device";
 import { pickView, type View } from "./roles";
 
@@ -28,6 +29,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (!getToken()) { setMe(undefined); setView(undefined); setLoading(false); return; }
     try {
       const profile = await ok(api.GET("/me"));
+      // Wipe any on-device data (receipts, draft, uploads) left by a different person on this device,
+      // so this person never opens someone else's receipt — whose complaint is not theirs on the server.
+      await reconcileUserData(storage, profile.userId);
       const last = (await storage.getItem(LAST_ROLE).catch(() => null)) ?? undefined;
       setMe(profile);
       setView(pickView(profile.memberships, profile.organizationId, last));
@@ -49,6 +53,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       try { await api.POST("/auth/logout"); } catch { /* the token is dropped either way */ }
       await setToken(undefined);
+      await clearUserData(storage); // this device's receipts/draft/uploads belong to no one once signed out
       setMe(undefined);
       setView(undefined);
     },

@@ -9,9 +9,10 @@ const at = (minutes: number) => new Date(now.getTime() + minutes * 60_000).toISO
 
 describe("roles and the role switcher (DS-05)", () => {
   it("has app screens for residents and technicians only, with the tabs each needs", () => {
-    expect(["Resident", "Technician", "Supervisor", "Manager", "Guard"].map(isMobileRole)).toEqual([true, true, false, false, false]);
+    expect(["Resident", "Technician", "Supervisor", "Manager", "Guard"].map(isMobileRole)).toEqual([true, true, false, false, true]);
     expect(tabsByRole.Resident).toEqual(["home", "complaints", "new", "notices", "settings"]);
     expect(tabsByRole.Technician).toEqual(["today", "jobs", "settings"]);
+    expect(tabsByRole.Guard).toEqual(["gate", "log", "settings"]);
   });
 
   it("opens as the supported role in the current organization, preferring the one used last", () => {
@@ -38,15 +39,16 @@ describe("due-time chips (TA-01)", () => {
     expect(dueChip(at(48 * 60), now)).toEqual({ kind: "later", amount: 2, unit: "d" });
   });
 
-  it("lists today's jobs most urgent first and leaves finished and no-rush jobs out", () => {
+  it("lists every active job most urgent first and leaves only finished jobs out", () => {
     const jobs = [
       { id: "later", job: { status: "Open" }, dueAt: at(72 * 60) },
       { id: "soon", job: { status: "Accepted" }, dueAt: at(120) },
       { id: "overdue", job: { status: "InProgress" }, dueAt: at(-600) },
       { id: "done", job: { status: "Completed" }, dueAt: at(-60) },
-      { id: "waiting", job: { status: "PendingVerification" }, dueAt: at(-60) },
+      { id: "cancelled", job: { status: "Cancelled" }, dueAt: at(-60) },
     ];
-    expect(todaysJobs(jobs, now).map((j) => j.id)).toEqual(["overdue", "soon"]);
+    // A job due days away (status still Open/Accepted/InProgress) stays on the list; only finished jobs drop off.
+    expect(todaysJobs(jobs, now).map((j) => j.id)).toEqual(["overdue", "soon", "later"]);
   });
 });
 
@@ -74,6 +76,10 @@ describe("opening a tapped notification (MA-04)", () => {
   it("opens the complaint for a resident and the job for a technician", () => {
     expect(targetFor(`/complaints/${id}`, "Resident")).toEqual({ name: "ComplaintDetail", params: { id } });
     expect(targetFor(`/jobs/${id}`, "Technician")).toEqual({ name: "JobDetail", params: { id } });
+  });
+  it("opens a resident's visitor passes for a gate request (GT-04)", () => {
+    expect(targetFor("/gate/guests", "Resident")).toEqual({ name: "GatePasses", params: undefined });
+    expect(targetFor("/gate/guests", "Technician")).toBeUndefined();
   });
   it("sends a resident to the notices list for anything else, and a technician nowhere", () => {
     expect(targetFor("/", "Resident")).toEqual({ name: "Tabs", params: { screen: "notices" } });

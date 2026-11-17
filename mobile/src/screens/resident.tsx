@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Animated, AppState, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Animated, AppState, Image, Modal, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { api, ok, type S } from "../api";
@@ -105,6 +105,7 @@ export function HomeScreen() {
         <Row gap={space[3]} style={{ alignItems: "stretch" }}>
           <ActionTile glyph="📋" title={t("home.mine")} subtitle={t("home.trackStatus")} badge={activeCount > 0 ? t("home.active", { count: activeCount }) : undefined} onPress={() => nav.navigate("Tabs", { screen: "complaints" } as never)} />
           <ActionTile glyph="🧾" title={t("home.receipts")} subtitle={t("home.receiptsSub")} note="PDF" onPress={() => nav.navigate("Receipts")} />
+          <ActionTile glyph="🚪" title={t("guest.title")} subtitle={t("guest.homeSub")} onPress={() => nav.navigate("GatePasses")} />
         </Row>
 
         {/* Recent complaints. */}
@@ -352,9 +353,11 @@ const styles = StyleSheet.create({
   clockHandMinute: { position: "absolute", left: 7, top: 6.25, width: 6, height: 2, borderRadius: 1, backgroundColor: "#FFFFFF" }, // points right to 3
 });
 
-/** A playable voice note, with the text the AI heard when it has been transcribed (AI-09). */
+/** A playable voice note, with the text the AI heard when it has been transcribed (AI-09).
+ * Matches the themed player used on the report form: a round play button, a waveform and the length. */
 function VoiceNote({ media }: { media: S["MediaDto"] }) {
   const t = useT();
+  const p = usePalette();
   const player = useAudioPlayer(media.url);
   const status = useAudioPlayerStatus(player);
   const toggle = async () => {
@@ -363,9 +366,30 @@ function VoiceNote({ media }: { media: S["MediaDto"] }) {
     if (status.duration > 0 && status.currentTime >= status.duration - 0.05) await player.seekTo(0); // replay once it has finished
     player.play();
   };
+  const seconds = Math.max(0, Math.round(status.duration || 0));
   return (
-    <View style={{ gap: space[1] }}>
-      <Button title={status.playing ? t("complaint.voicePause") : t("complaint.voicePlay")} variant="secondary" onPress={() => void toggle()} />
+    <View style={{ gap: space[2] }}>
+      <AttachmentRow>
+        <Row gap={space[3]}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={status.playing ? t("complaint.voicePause") : t("complaint.voicePlay")}
+            onPress={() => void toggle()}
+            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: p.primarySoft, alignItems: "center", justifyContent: "center" }}
+          >
+            <Txt color={p.onPrimarySoft} style={{ fontSize: 16 }}>{status.playing ? "⏸" : "▶"}</Txt>
+          </Pressable>
+          <View style={{ flex: 1, gap: space[1] }}>
+            <Txt bold>{t("complaint.voiceNote")}</Txt>
+            <Waveform color={status.playing ? p.primary : "#AEC6F2"} />
+          </View>
+          {seconds > 0 && (
+            <View style={{ backgroundColor: p.infoBg, borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 2 }}>
+              <Txt size="sm" bold color={p.info} style={{ writingDirection: "ltr" }}>{formatDuration(seconds)}</Txt>
+            </View>
+          )}
+        </Row>
+      </AttachmentRow>
       {media.transcript && media.transcriptStatus === "done" && <Txt muted>{t("complaint.voiceHeard", { text: media.transcript })}</Txt>}
     </View>
   );
@@ -374,6 +398,7 @@ function VoiceNote({ media }: { media: S["MediaDto"] }) {
 /** The resident's own photos and voice note on a complaint, so they can see and hear what they sent (RA-03). */
 function MediaCard({ media }: { media: S["MediaDto"][] }) {
   const t = useT();
+  const [viewing, setViewing] = useState<string>();
   const images = media.filter((m) => m.kind === "image");
   const audio = media.filter((m) => m.kind === "audio");
   if (images.length === 0 && audio.length === 0) return null;
@@ -383,10 +408,34 @@ function MediaCard({ media }: { media: S["MediaDto"][] }) {
       {audio.map((m) => <VoiceNote key={m.id} media={m} />)}
       {images.length > 0 && (
         <Row wrap gap={space[2]}>
-          {images.map((m) => <Image key={m.id} accessibilityIgnoresInvertColors source={{ uri: m.thumbUrl ?? m.url }} style={{ width: 96, height: 96, borderRadius: 8 }} />)}
+          {images.map((m) => (
+            <Pressable key={m.id} accessibilityRole="imagebutton" accessibilityLabel={t("complaint.viewPhoto")} onPress={() => setViewing(m.url)}>
+              <Image accessibilityIgnoresInvertColors source={{ uri: m.thumbUrl ?? m.url }} style={{ width: 96, height: 96, borderRadius: 8 }} />
+            </Pressable>
+          ))}
         </Row>
       )}
+      <ImageViewer uri={viewing} onClose={() => setViewing(undefined)} />
     </Card>
+  );
+}
+
+/** A full-screen, tap-to-dismiss photo viewer. Thumbnails across the app open the full image here. */
+export function ImageViewer({ uri, onClose }: { uri?: string; onClose: () => void }) {
+  const t = useT();
+  const insets = useSafeAreaInsets();
+  return (
+    <Modal visible={!!uri} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      <Pressable accessibilityRole="button" accessibilityLabel={t("complaint.closePhoto")} onPress={onClose} style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.94)", alignItems: "center", justifyContent: "center" }}>
+        {uri && <Image accessibilityIgnoresInvertColors source={{ uri }} resizeMode="contain" style={{ width: "100%", height: "100%" }} />}
+        <Pressable
+          accessibilityRole="button" accessibilityLabel={t("complaint.closePhoto")} onPress={onClose}
+          style={{ position: "absolute", top: insets.top + space[2], right: space[4], width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.16)", alignItems: "center", justifyContent: "center" }}
+        >
+          <Txt color="#FFFFFF" style={{ fontSize: 20 }}>✕</Txt>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 

@@ -20,7 +20,7 @@ vi.stubGlobal("fetch", fetchMock);
 
 describe("role menus (WP-01)", () => {
   it("gives every role exactly the screens it should see", () => {
-    expect(menusFor("Manager")).toEqual(["dashboard", "complaints", "map", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "config", "audit"]);
+    expect(menusFor("Manager")).toEqual(["dashboard", "complaints", "map", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "gate", "config", "audit"]);
     expect(menusFor("Supervisor")).toEqual(["dashboard", "complaints", "map", "review", "new", "jobs", "reports", "stock"]);
     expect(menusFor("Office")).toEqual(["dashboard", "complaints", "map", "review", "new", "directory"]);
     expect(menusFor("Committee")).toEqual(["dashboard", "complaints", "reports", "approvals", "notices", "audit"]);
@@ -114,7 +114,7 @@ describe("app", () => {
   }
 
   it.each([
-    ["Manager", ["Dashboard", "Complaints", "Map", "Review queue", "Directory", "Jobs", "Reports", "Store", "Approvals", "Notices", "Configuration", "Audit log"]],
+    ["Manager", ["Dashboard", "Complaints", "Map", "Review queue", "Directory", "Jobs", "Reports", "Store", "Approvals", "Notices", "Gate", "Configuration", "Audit log"]],
     ["Supervisor", ["Dashboard", "Complaints", "Map", "Review queue", "Jobs", "Reports", "Store"]],
     ["Office", ["Dashboard", "Complaints", "Map", "Review queue", "Directory"]],
     ["Technician", ["My jobs"]],

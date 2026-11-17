@@ -4,6 +4,7 @@ import type { MobileRole } from "./roles";
 export type Target =
   | { name: "ComplaintDetail"; params: { id: string } }
   | { name: "JobDetail"; params: { id: string } }
+  | { name: "GatePasses"; params: undefined }
   | { name: "Tabs"; params: { screen: "notices" | "today" } };
 
 const UUID = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
@@ -15,6 +16,8 @@ export function targetFor(link: string | null | undefined, role: MobileRole): Ta
   if (complaint && role === "Resident") return { name: "ComplaintDetail", params: { id: complaint[1] } };
   const job = new RegExp(`^/jobs/(${UUID})$`).exec(path);
   if (job && role === "Technician") return { name: "JobDetail", params: { id: job[1] } };
+  // A "someone is at the gate for you" message opens the resident's visitor passes (GT-04).
+  if (path === "/gate/guests" && role === "Resident") return { name: "GatePasses", params: undefined };
   // A notice, or any other message with no screen of its own, lands on the list that holds it.
   return role === "Resident" ? { name: "Tabs", params: { screen: "notices" } } : undefined;
 }

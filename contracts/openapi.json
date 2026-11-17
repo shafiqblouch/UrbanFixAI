@@ -1387,6 +1387,18 @@
         }
       }
     },
+    "/webhooks/openwa": {
+      "post": {
+        "tags": [
+          "WhatsApp"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/reports/costs": {
       "get": {
         "tags": [
@@ -4593,6 +4605,595 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/gates": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GateDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveGate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gates/{id}": {
+      "put": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveGate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/lookup": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LookupResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/events": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gateId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/events/{id}/photo": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/inside": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "gateId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/passes": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "houseId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PassDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePass"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/passes/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/visit-requests": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VisitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my/houses": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyHouseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my/gate-passes": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PassDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePass"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my/gate-passes/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my/gate-visit-requests": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PassDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my/gate-visit-requests/{id}/decide": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decide"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
           }
         }
       }
@@ -8654,6 +9255,101 @@
           }
         }
       },
+      "EventDto": {
+        "required": [
+          "id",
+          "gateId",
+          "direction",
+          "subjectType",
+          "houseId",
+          "houseLabel",
+          "vehicleId",
+          "helpId",
+          "passId",
+          "subjectName",
+          "phone",
+          "vehiclePlate",
+          "photoUrl",
+          "decision",
+          "note",
+          "recordedBy",
+          "recordedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gateId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "direction": {
+            "type": "string"
+          },
+          "subjectType": {
+            "type": "string"
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "houseLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "helpId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "passId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "subjectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "decision": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordedBy": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "EvidenceMediaDto": {
         "required": [
           "id",
@@ -8794,6 +9490,26 @@
           }
         }
       },
+      "GateDto": {
+        "required": [
+          "id",
+          "name",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
       "HelpDto": {
         "required": [
           "id",
@@ -8861,6 +9577,47 @@
             "type": "array",
             "items": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "HelpHit": {
+        "required": [
+          "id",
+          "name",
+          "role",
+          "status",
+          "allowedNow",
+          "photoUrl",
+          "houseIds"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "allowedNow": {
+            "type": "boolean"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "houseIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
             }
           }
         }
@@ -9520,6 +10277,34 @@
           }
         }
       },
+      "LookupResult": {
+        "required": [
+          "vehicles",
+          "help",
+          "passes"
+        ],
+        "type": "object",
+        "properties": {
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleHit"
+            }
+          },
+          "help": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpHit"
+            }
+          },
+          "passes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassHit"
+            }
+          }
+        }
+      },
       "LowStockItem": {
         "required": [
           "itemId",
@@ -9911,6 +10696,22 @@
           "onHand": {
             "type": "number",
             "format": "double"
+          }
+        }
+      },
+      "MyHouseDto": {
+        "required": [
+          "id",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
           }
         }
       },
@@ -10392,6 +11193,127 @@
           }
         }
       },
+      "PassDto": {
+        "required": [
+          "id",
+          "code",
+          "visitorName",
+          "phone",
+          "vehiclePlate",
+          "houseId",
+          "houseLabel",
+          "kind",
+          "purpose",
+          "validFrom",
+          "validTo",
+          "maxUses",
+          "usedCount",
+          "status",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "visitorName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "houseLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maxUses": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "usedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        }
+      },
+      "PassHit": {
+        "required": [
+          "id",
+          "code",
+          "visitorName",
+          "kind",
+          "houseId",
+          "houseLabel",
+          "vehiclePlate",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "visitorName": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "houseLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string"
+          }
+        }
+      },
       "PersonDto": {
         "required": [
           "userId",
@@ -10792,6 +11714,82 @@
           }
         }
       },
+      "RecordEvent": {
+        "required": [
+          "direction",
+          "subjectType",
+          "gateId",
+          "houseId",
+          "vehicleId",
+          "helpId",
+          "passId",
+          "residentUserId",
+          "subjectName",
+          "phone",
+          "vehiclePlate",
+          "decision",
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string"
+          },
+          "subjectType": {
+            "type": "string"
+          },
+          "gateId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "vehicleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "helpId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "passId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "residentUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "subjectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "decision": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "RegisterDevice": {
         "required": [
           "kind",
@@ -10989,7 +11987,10 @@
           "userId",
           "relation",
           "fromDate",
-          "toDate"
+          "toDate",
+          "displayName",
+          "phone",
+          "email"
         ],
         "type": "object",
         "properties": {
@@ -11015,6 +12016,18 @@
           "toDate": {
             "type": "string",
             "format": "date",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
             "nullable": true
           }
         }
@@ -11240,6 +12253,22 @@
           }
         }
       },
+      "SaveGate": {
+        "required": [
+          "name",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
       "SaveHelp": {
         "required": [
           "name",
@@ -11341,6 +12370,60 @@
           },
           "isActive": {
             "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "SavePass": {
+        "required": [
+          "visitorName",
+          "phone",
+          "vehiclePlate",
+          "houseId",
+          "kind",
+          "purpose",
+          "validFrom",
+          "validTo",
+          "maxUses"
+        ],
+        "type": "object",
+        "properties": {
+          "visitorName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "purpose": {
+            "type": "string",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "maxUses": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         }
@@ -12926,6 +14009,41 @@
           }
         }
       },
+      "VehicleHit": {
+        "required": [
+          "id",
+          "plate",
+          "type",
+          "houseId",
+          "houseLabel",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "plate": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "houseLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
       "VerifyReporter": {
         "required": [
           "userId"
@@ -12935,6 +14053,42 @@
           "userId": {
             "type": "string",
             "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "VisitRequest": {
+        "required": [
+          "houseId",
+          "visitorName",
+          "phone",
+          "vehiclePlate",
+          "kind",
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "houseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "visitorName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
             "nullable": true
           }
         }
@@ -13030,6 +14184,9 @@
     },
     {
       "name": "Registry"
+    },
+    {
+      "name": "Gate"
     },
     {
       "name": "Stock"

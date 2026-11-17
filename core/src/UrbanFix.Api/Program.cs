@@ -120,6 +120,7 @@ app.MapWhatsAppEndpoints();
 app.MapOpenWaWebhook();
 app.MapApprovalEndpoints();
 app.MapRegistryEndpoints();
+app.MapGateEndpoints();
 app.MapStockEndpoints();
 app.MapCostReportEndpoints();
 app.MapIncidentEndpoints();

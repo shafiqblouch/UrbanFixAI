@@ -40,6 +40,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
     public DbSet<DailyHelp> DailyHelp => Set<DailyHelp>();
     public DbSet<DailyHelpHouse> DailyHelpHouses => Set<DailyHelpHouse>();
     public DbSet<DirectoryDismissal> DirectoryDismissals => Set<DirectoryDismissal>();
+    public DbSet<Gate> Gates => Set<Gate>();
+    public DbSet<GatePass> GatePasses => Set<GatePass>();
+    public DbSet<GateEvent> GateEvents => Set<GateEvent>();
     public DbSet<SlaPolicy> SlaPolicies => Set<SlaPolicy>();
     public DbSet<PriceItem> PriceItems => Set<PriceItem>();
     public DbSet<PriceRate> PriceRates => Set<PriceRate>();
@@ -133,6 +136,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
         });
         b.Entity<DailyHelpHouse>().ToTable("daily_help_houses");
         b.Entity<DirectoryDismissal>().ToTable("directory_dismissals");
+        b.Entity<Gate>().ToTable("gates");
+        b.Entity<GatePass>().ToTable("gate_passes");
+        b.Entity<GateEvent>().ToTable("gate_events");
         b.Entity<PriceItem>().ToTable("price_items");
         b.Entity<PriceRate>().ToTable("price_rates");
 

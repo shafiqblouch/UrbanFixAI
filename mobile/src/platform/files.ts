@@ -21,3 +21,12 @@ export function openFile(uri: string, mimeType: string): FileSource {
 }
 
 export const fileSize = (uri: string): number => new File(uri).size;
+
+/** Whether a local file is still on disk. Used to drop draft attachments the OS has purged from cache. */
+export const fileExists = (uri: string): boolean => {
+  try {
+    return new File(uri).exists;
+  } catch {
+    return false; // an unreadable or malformed uri counts as gone
+  }
+};

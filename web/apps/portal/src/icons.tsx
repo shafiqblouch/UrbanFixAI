@@ -10,6 +10,7 @@ const paths: Record<string, ReactNode> = {
   jobs: <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z" />,
   reports: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
   stock: <><path d="M21 8l-9-5-9 5v8l9 5 9-5z" /><path d="M3.3 7.5 12 12l8.7-4.5M12 22V12" /></>,
+  gate: <><path d="M3 21V7l9-4 9 4v14" /><path d="M3 21h18M9 21V11m6 10V11M5 21V9m14 12V9" /></>,
   approvals: <><circle cx="12" cy="12" r="9" /><path d="m8 12.5 3 3 5-6" /></>,
   notices: <><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z" /><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12" /></>,
   config: <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />,

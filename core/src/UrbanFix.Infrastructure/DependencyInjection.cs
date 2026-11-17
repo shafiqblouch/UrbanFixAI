@@ -116,6 +116,9 @@ public static class DependencyInjection
         services.AddScoped<IEventHandler<EscalationRaised>>(sp => sp.GetRequiredService<LifecycleNotifications>());
         services.AddScoped<IEventHandler<ComplaintSafetyFlagged>>(sp => sp.GetRequiredService<LifecycleNotifications>());
         services.AddScoped<IEventHandler<ConfirmationReminder>>(sp => sp.GetRequiredService<LifecycleNotifications>());
+        services.AddScoped<GateNotifications>();
+        services.AddScoped<IEventHandler<UrbanFix.OrgSetup.GateVisitRequested>>(sp => sp.GetRequiredService<GateNotifications>());
+        services.AddScoped<IEventHandler<UrbanFix.OrgSetup.GateVisitDecided>>(sp => sp.GetRequiredService<GateNotifications>());
         // WhatsApp, text messages and email (WA-02 to WA-06, NT-02 to NT-04). Each is installed only when it is configured.
         var whatsApp = config.GetSection("WhatsApp").Get<WhatsAppOptions>() ?? new WhatsAppOptions();
         services.AddSingleton(whatsApp);

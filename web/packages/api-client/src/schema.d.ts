@@ -1462,6 +1462,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks/openwa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/reports/costs": {
         parameters: {
             query?: never;
@@ -4866,6 +4899,631 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/gates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveGate"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveGate"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LookupResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    direction?: string;
+                    gateId?: string;
+                    from?: string;
+                    to?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RecordEvent"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/events/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        file: components["schemas"]["IFormFile"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/inside": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    gateId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/passes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    houseId?: string;
+                    status?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SavePass"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/passes/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/visit-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VisitRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/my/houses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyHouseDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/my/gate-passes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SavePass"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/my/gate-passes/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/my/gate-visit-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/my/gate-visit-requests/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Decide"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/stock": {
         parameters: {
             query?: never;
@@ -7573,6 +8231,33 @@ export interface components {
              */
             approvalId: string | null;
         };
+        EventDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            gateId: string | null;
+            direction: string;
+            subjectType: string;
+            /** Format: uuid */
+            houseId: string | null;
+            houseLabel: string | null;
+            /** Format: uuid */
+            vehicleId: string | null;
+            /** Format: uuid */
+            helpId: string | null;
+            /** Format: uuid */
+            passId: string | null;
+            subjectName: string | null;
+            phone: string | null;
+            vehiclePlate: string | null;
+            photoUrl: string | null;
+            decision: string;
+            note: string | null;
+            /** Format: uuid */
+            recordedBy: string | null;
+            /** Format: date-time */
+            recordedAt: string;
+        };
         EvidenceMediaDto: {
             /** Format: uuid */
             id: string;
@@ -7614,6 +8299,12 @@ export interface components {
         Fulfil: {
             lines: components["schemas"]["RequestLineInput"][] | null;
         };
+        GateDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            isActive: boolean;
+        };
         HelpDto: {
             /** Format: uuid */
             id: string;
@@ -7628,6 +8319,16 @@ export interface components {
             allowedTo: string | null;
             houseIds: string[];
             warnings: string[];
+        };
+        HelpHit: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            role: string;
+            status: string;
+            allowedNow: boolean;
+            photoUrl: string | null;
+            houseIds: string[];
         };
         HistoryDto: {
             from: components["schemas"]["NullableOfComplaintStatus2"];
@@ -7823,6 +8524,11 @@ export interface components {
             organizationId: string | null;
             totpEnrollmentRequired: boolean;
         };
+        LookupResult: {
+            vehicles: components["schemas"]["VehicleHit"][];
+            help: components["schemas"]["HelpHit"][];
+            passes: components["schemas"]["PassHit"][];
+        };
         LowStockItem: {
             /** Format: uuid */
             itemId: string;
@@ -7949,6 +8655,11 @@ export interface components {
             movement: components["schemas"]["MovementDto"];
             /** Format: double */
             onHand: number;
+        };
+        MyHouseDto: {
+            /** Format: uuid */
+            id: string;
+            label: string;
         };
         MyNoticeDto: {
             /** Format: uuid */
@@ -8131,6 +8842,41 @@ export interface components {
             /** Format: date-time */
             flaggedAt: string | null;
         };
+        PassDto: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            visitorName: string;
+            phone: string | null;
+            vehiclePlate: string | null;
+            /** Format: uuid */
+            houseId: string;
+            houseLabel: string | null;
+            kind: string;
+            purpose: string | null;
+            /** Format: date-time */
+            validFrom: string;
+            /** Format: date-time */
+            validTo: string;
+            /** Format: int32 */
+            maxUses: number | null;
+            /** Format: int32 */
+            usedCount: number;
+            status: string;
+            state: string;
+        };
+        PassHit: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            visitorName: string;
+            kind: string;
+            /** Format: uuid */
+            houseId: string;
+            houseLabel: string | null;
+            vehiclePlate: string | null;
+            state: string;
+        };
         PersonDto: {
             /** Format: uuid */
             userId: string;
@@ -8248,6 +8994,27 @@ export interface components {
             quantity: number;
             reason: string | null;
         };
+        RecordEvent: {
+            direction: string;
+            subjectType: string;
+            /** Format: uuid */
+            gateId: string | null;
+            /** Format: uuid */
+            houseId: string | null;
+            /** Format: uuid */
+            vehicleId: string | null;
+            /** Format: uuid */
+            helpId: string | null;
+            /** Format: uuid */
+            passId: string | null;
+            /** Format: uuid */
+            residentUserId: string | null;
+            subjectName: string | null;
+            phone: string | null;
+            vehiclePlate: string | null;
+            decision: string | null;
+            note: string | null;
+        };
         RegisterDevice: {
             kind: string;
             token: string;
@@ -8317,6 +9084,9 @@ export interface components {
             fromDate: string;
             /** Format: date */
             toDate: string | null;
+            displayName: string | null;
+            phone: string | null;
+            email: string | null;
         };
         /** @enum {unknown} */
         Role: "Resident" | "Guard" | "Technician" | "Office" | "Supervisor" | "Accounts" | "Committee" | "Manager" | "PlatformAdmin" | "Support";
@@ -8374,6 +9144,10 @@ export interface components {
             confirmedFixed: boolean;
             comment: string | null;
         };
+        SaveGate: {
+            name: string;
+            isActive: boolean | null;
+        };
         SaveHelp: {
             name: string;
             phone: string | null;
@@ -8396,6 +9170,21 @@ export interface components {
             /** Format: double */
             longitude: number | null;
             isActive: boolean | null;
+        };
+        SavePass: {
+            visitorName: string;
+            phone: string | null;
+            vehiclePlate: string | null;
+            /** Format: uuid */
+            houseId: string;
+            kind: string | null;
+            purpose: string | null;
+            /** Format: date-time */
+            validFrom: string | null;
+            /** Format: date-time */
+            validTo: string | null;
+            /** Format: int32 */
+            maxUses: number | null;
         };
         SavePreferences: {
             locale: string | null;
@@ -8875,9 +9664,28 @@ export interface components {
             status: string;
             note: string | null;
         };
+        VehicleHit: {
+            /** Format: uuid */
+            id: string;
+            plate: string;
+            type: string;
+            /** Format: uuid */
+            houseId: string | null;
+            houseLabel: string | null;
+            status: string;
+        };
         VerifyReporter: {
             /** Format: uuid */
             userId: string | null;
+        };
+        VisitRequest: {
+            /** Format: uuid */
+            houseId: string;
+            visitorName: string;
+            phone: string | null;
+            vehiclePlate: string | null;
+            kind: string | null;
+            note: string | null;
         };
         WorkloadRow: {
             /** Format: uuid */

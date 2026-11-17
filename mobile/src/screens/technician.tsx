@@ -1,7 +1,8 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useEffect, useMemo, useState } from "react";
-import { Image, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AppState, Image, Pressable, Text as RNText, View } from "react-native";
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { ApiError, api, ok, transcribeVoice, type S } from "../api";
 import { amountOf, emptyLine, fromServer, KINDS, problemWith, toInput, totalOf, type Line } from "../costs";
 import { emptyRequestLine, requestBody, requestIsValid, type RequestLine } from "../materials";
@@ -11,11 +12,13 @@ import type { Key } from "../i18n/strings";
 import { checklistProgress, completionBlockers } from "../jobRules";
 import { currentPosition } from "../platform/device";
 import { takePhoto } from "../platform/photo";
-import { useVoiceRecorder } from "../platform/voice";
+import { useVoiceRecorder, type VoiceNote } from "../platform/voice";
 import { dueChip, todaysJobs, type Due } from "../roles";
 import { useServices } from "../services";
-import { space } from "../theme";
-import { Banner, Button, Card, Choice, Chip, Empty, Field, Loading, Row, Screen, Txt } from "../ui";
+import type { QueueItem } from "../upload/queue";
+import { fontSize, radius, space, usePalette } from "../theme";
+import { Banner, Button, Card, Check, Choice, Chip, Empty, Field, Loading, Row, Screen, Txt } from "../ui";
+import { ImageViewer } from "./resident";
 import type { RootStackParams } from "../navigation";
 
 type Nav = NativeStackScreenProps<RootStackParams>["navigation"];
@@ -68,7 +71,8 @@ export function TodayScreen() {
       {jobs.error && <Banner text={errorText(t, jobs.error)} />}
       <Txt size="xl" bold>{t("today.title")}</Txt>
       {today.length === 0 ? <Empty text={t("today.none")} /> : today.map((j) => <JobCard key={j.job.id} item={j} onPress={() => nav.navigate("JobDetail", { id: j.job.id })} />)}
-      <Button title={t("retry")} variant="ghost" onPress={jobs.reload} />
+      {/* The list refreshes on its own when the tab regains focus; offer a manual retry only when a load failed. */}
+      {jobs.error && <Button title={t("retry")} variant="ghost" onPress={jobs.reload} />}
     </Screen>
   );
 }
@@ -93,7 +97,7 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
   const t = useT();
   const nav = useNavigation<Nav>();
   const { id } = route.params;
-  const { queue, drain, waiting } = useServices();
+  const { queue, drain, waiting, uploading, jobDrafts } = useServices();
   const detail = useLoad(() => ok(api.GET("/jobs/{id}", { params: { path: { id } } })), [id]);
   const complaint = useLoad(async () => (detail.data ? ok(api.GET("/complaints/{id}", { params: { path: { id: detail.data.job.complaintId } } })) : undefined), [detail.data?.job.complaintId]);
   const act = useAction();
@@ -102,42 +106,75 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
   const [cannot, setCannot] = useState(false);
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState<string>();
-  const [queued, setQueued] = useState({ before: 0, after: 0 });
+  const [pending, setPending] = useState<QueueItem[]>([]); // this job's photos still waiting to upload
+  const [clips, setClips] = useState<VoiceNote[]>([]); // recordings kept so the technician can replay them
+  const [viewing, setViewing] = useState<string>(); // the photo shown full-screen, or none
   const { locale } = useI18n();
   const voice = useVoiceRecorder();
   const dictate = useAction();
   const [dictation, setDictation] = useState<"ok" | "low">();
 
-  // A finished recording is turned into words the technician can correct before saving (TA-08).
+  // A finished recording is kept in a playable list and turned into words to correct before saving (TA-08).
   useEffect(() => {
     if (!voice.note) return;
-    const uri = voice.note.uri;
+    const clip = voice.note;
+    setClips((list) => [...list, clip]);
     voice.discard();
     setDictation(undefined);
     void dictate.run(async () => {
-      const r = await transcribeVoice(uri, locale === "ur" ? "ur" : "en");
+      const r = await transcribeVoice(clip.uri, locale === "ur" ? "ur" : "en");
       if (r.transcript.trim()) setNote((current) => (current.trim() ? `${current.trim()} ${r.transcript.trim()}` : r.transcript.trim()));
       setDictation(r.lowConfidence ? "low" : "ok");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voice.note]);
 
-  // Photos taken but not uploaded yet still count for the person holding the phone.
+  // The photos this job still has waiting to upload, kept so they can be shown and removed before they go.
+  const refreshQueue = useCallback(
+    () => queue.list().then((items) => setPending(items.filter((i) => i.target.kind === "job" && i.target.id === id))),
+    [queue, id],
+  );
+  useEffect(() => { void refreshQueue(); }, [refreshQueue, waiting]);
+
+  // When an upload run finishes, this job's just-sent photos have left the queue and become server evidence.
+  // Reload the job so they appear as saved thumbnails; without this they vanish when the pending item is removed.
+  const wasUploading = useRef(uploading);
   useEffect(() => {
-    void queue.list().then((items) => setQueued({
-      before: items.filter((i) => i.target.kind === "job" && i.target.id === id && i.target.stage === "before").length,
-      after: items.filter((i) => i.target.kind === "job" && i.target.id === id && i.target.stage === "after").length,
-    }));
-  }, [queue, id, waiting]);
+    if (wasUploading.current && !uploading) detail.reload();
+    wasUploading.current = uploading;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploading]);
+
+  // The completion note survives leaving the job screen or the app being closed (its photos already do, in
+  // the upload queue). Restore it when returning if the field is still empty, and save it when leaving.
+  const noteRef = useRef(note);
+  noteRef.current = note;
+  const clearedRef = useRef(false);
+  const persistNote = useCallback(() => {
+    if (clearedRef.current) return; // the note was saved to the job: do not re-create a draft
+    if (noteRef.current.trim()) void jobDrafts.save(id, noteRef.current);
+  }, [jobDrafts, id]);
+  useFocusEffect(useCallback(() => {
+    clearedRef.current = false;
+    let active = true;
+    void jobDrafts.get(id).then((saved) => { if (active && saved && !noteRef.current.trim()) setNote(saved); });
+    return () => { active = false; persistNote(); };
+  }, [jobDrafts, id, persistNote]));
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (s) => { if (s !== "active") persistNote(); });
+    return () => sub.remove();
+  }, [persistNote]);
 
   if (!detail.data) return <Screen>{detail.error ? <Banner text={errorText(t, detail.error)} /> : <Loading />}</Screen>;
   const d = detail.data;
   const job = d.job;
   const path = { params: { path: { id } } };
-  const photos = (stage: string) => d.evidence.filter((e) => e.stage === stage).length;
+  const uploaded = (stage: string) => d.evidence.filter((e) => e.stage === stage && e.kind === "image");
+  const pendingOf = (stage: string) => pending.filter((i) => i.target.kind === "job" && i.target.stage === stage);
+  const count = (stage: "before" | "after") => uploaded(stage).length + pendingOf(stage).length;
   const refresh = () => { setMessage(undefined); detail.reload(); };
   const blockers = completionBlockers({
-    rule: job.evidenceRule, before: photos("before") + queued.before, after: photos("after") + queued.after, checklist: d.checklist,
+    rule: job.evidenceRule, before: count("before"), after: count("after"), checklist: d.checklist,
     note, requiresCosts: job.requiresCosts, hasCosts: d.actuals.length > 0,
   });
   const progress = checklistProgress(d.checklist);
@@ -150,8 +187,15 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
     const shot = await takePhoto();
     if ("error" in shot) return;
     await queue.add({ target: { kind: "job", id, stage }, uri: shot.photo.uri, mimeType: shot.photo.mimeType, size: shot.photo.size });
-    setQueued((q) => ({ ...q, [stage]: q[stage] + 1 }));
+    await refreshQueue();
     void drain();
+  }
+
+  // Removes a photo that has not uploaded yet. Once uploaded it leaves the queue and becomes evidence the
+  // server holds, which there is no way to delete from the phone.
+  async function removePhoto(itemId: string) {
+    await queue.remove(itemId);
+    await refreshQueue();
   }
 
   // Starting and finishing the work always record where the technician was, so the manager's map can show it; notes only when ticked.
@@ -160,6 +204,7 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
   const addNote = () => act.run(async () => {
     const at = withGps ? await fixOrUndefined() : undefined;
     await ok(api.POST("/jobs/{id}/updates", { ...path, body: { note: note.trim(), latitude: at?.latitude ?? null, longitude: at?.longitude ?? null, checklistDone: null } }));
+    await jobDrafts.clear(id); // the note is on the job now
     setNote("");
     refresh();
   });
@@ -183,7 +228,11 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
         <Card>
           <Txt bold>{t("job.resident")}</Txt>
           <Row wrap gap={space[2]}>
-            {complaint.data.media.filter((m) => m.kind === "image").map((m) => <Image key={m.id} accessibilityIgnoresInvertColors source={{ uri: m.thumbUrl ?? m.url }} style={{ width: 96, height: 96, borderRadius: 8 }} />)}
+            {complaint.data.media.filter((m) => m.kind === "image").map((m) => (
+              <Pressable key={m.id} accessibilityRole="imagebutton" accessibilityLabel={t("complaint.viewPhoto")} onPress={() => setViewing(m.url)}>
+                <Image accessibilityIgnoresInvertColors source={{ uri: m.thumbUrl ?? m.url }} style={{ width: 96, height: 96, borderRadius: 8 }} />
+              </Pressable>
+            ))}
           </Row>
         </Card>
       )}
@@ -198,11 +247,25 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
 
       {["Accepted", "InProgress"].includes(job.status) && (
         <Card>
-          <Row wrap>
-            <Button title={t("job.before")} variant="secondary" onPress={() => void photo("before")} />
-            <Button title={t("job.after")} variant="secondary" onPress={() => void photo("after")} />
-          </Row>
-          <Txt muted>{t("job.beforeCount", { count: photos("before") + queued.before })} · {t("job.afterCount", { count: photos("after") + queued.after })}</Txt>
+          <Txt bold>{t("job.evidence")}</Txt>
+          {(["before", "after"] as const).map((stage) => (
+            <View key={stage} style={{ gap: space[2] }}>
+              <Row>
+                <Txt bold style={{ flex: 1 }}>{stage === "before" ? t("job.beforeCount", { count: count("before") }) : t("job.afterCount", { count: count("after") })}</Txt>
+                <Button title={stage === "before" ? t("job.before") : t("job.after")} variant="secondary" onPress={() => void photo(stage)} />
+              </Row>
+              {(uploaded(stage).length > 0 || pendingOf(stage).length > 0) && (
+                <Row wrap gap={space[2]} style={{ alignItems: "flex-start" }}>
+                  {uploaded(stage).map((m) => (
+                    <Pressable key={m.id} style={{ width: 80 }} accessibilityRole="imagebutton" accessibilityLabel={t("complaint.viewPhoto")} onPress={() => setViewing(m.url)}>
+                      <Image accessibilityIgnoresInvertColors source={{ uri: m.thumbUrl ?? m.url }} style={{ width: 80, height: 80, borderRadius: radius.md }} />
+                    </Pressable>
+                  ))}
+                  {pendingOf(stage).map((it) => <PendingPhoto key={it.id} item={it} onRemove={() => void removePhoto(it.id)} onView={() => setViewing(it.uri)} />)}
+                </Row>
+              )}
+            </View>
+          ))}
           {waiting > 0 && <Txt size="sm" muted>{t("offline.queued", { count: waiting })}</Txt>}
         </Card>
       )}
@@ -212,7 +275,7 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
           {d.checklist.length > 0 && (
             <Card>
               <Txt bold>{t("job.checklist")} · {t("job.progress", { done: progress.done, total: progress.total })}</Txt>
-              {d.checklist.map((c, i) => <Button key={i} variant={c.done ? "secondary" : "ghost"} title={`${c.done ? "☑" : "☐"}  ${c.label}`} onPress={() => void toggle(i)} />)}
+              {d.checklist.map((c, i) => <Check key={i} label={c.label} checked={c.done} onPress={() => void toggle(i)} />)}
             </Card>
           )}
           <Card>
@@ -224,13 +287,15 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
             {dictation === "ok" && <Banner tone="info" text={t("job.dictated")} />}
             {dictation === "low" && <Banner text={`${t("job.dictated")} ${t("job.dictateLow")}`} />}
             {dictateText && <Banner text={dictateText} />}
+            {clips.length > 0 && <Txt bold>{t("job.recordings")}</Txt>}
+            {clips.map((clip) => <JobClip key={clip.uri} note={clip} onRemove={() => setClips((list) => list.filter((c) => c.uri !== clip.uri))} />)}
             <Row><Button title={withGps ? `☑ ${t("job.gps")}` : `☐ ${t("job.gps")}`} variant="ghost" onPress={() => setWithGps((v) => !v)} /></Row>
             <Button title={t("save")} variant="secondary" disabled={!note.trim()} loading={act.busy} onPress={() => void addNote()} />
           </Card>
           <Button title={t("job.costs")} variant="secondary" onPress={() => nav.navigate("Costs", { jobId: id, mode: "actuals" })} />
           {blockers.length > 0 && <Banner text={[t("job.notReady"), ...blockers.map((m) => `• ${t(`job.missing.${m}` as Key)}`)].join("\n")} />}
           <Button title={t("job.complete")} loading={act.busy} disabled={blockers.length > 0}
-            onPress={() => void act.run(async () => { const at = await fixOrUndefined(); await ok(api.POST("/jobs/{id}/complete", { ...path, body: { note: note.trim() || null, latitude: at?.latitude ?? null, longitude: at?.longitude ?? null } })); setMessage(t("job.completed")); refresh(); })} />
+            onPress={() => void act.run(async () => { const at = await fixOrUndefined(); await ok(api.POST("/jobs/{id}/complete", { ...path, body: { note: note.trim() || null, latitude: at?.latitude ?? null, longitude: at?.longitude ?? null } })); clearedRef.current = true; await jobDrafts.clear(id); setMessage(t("job.completed")); refresh(); })} />
         </>
       )}
 
@@ -252,7 +317,53 @@ export function JobDetailScreen({ route }: NativeStackScreenProps<RootStackParam
         <Banner text={missing.map((m) => t(`job.missing.${m}` as Key)).join("\n") + (waiting > 0 ? `\n${t("offline.queued", { count: waiting })}` : "")} />
       )}
       {act.error && missing.length === 0 && <Banner tone="danger" text={errorText(t, act.error)} />}
+      <ImageViewer uri={viewing} onClose={() => setViewing(undefined)} />
     </Screen>
+  );
+}
+
+/**
+ * A photo still waiting to upload: an 80×80 thumbnail (tap to view full), dimmed, with a round ✕ delete badge
+ * in the corner so a bad shot can be dropped before it sends. The tile is exactly the image size, so uploaded and
+ * pending photos line up on the same grid.
+ */
+function PendingPhoto({ item, onRemove, onView }: { item: QueueItem; onRemove: () => void; onView: () => void }) {
+  const t = useT();
+  const p = usePalette();
+  return (
+    <View style={{ width: 80, height: 80 }}>
+      <Pressable accessibilityRole="imagebutton" accessibilityLabel={t("complaint.viewPhoto")} onPress={onView}>
+        <Image accessibilityIgnoresInvertColors source={{ uri: item.uri }} style={{ width: 80, height: 80, borderRadius: radius.md, opacity: 0.6 }} />
+      </Pressable>
+      <Pressable
+        accessibilityRole="button" accessibilityLabel={t("new.remove")} onPress={onRemove} hitSlop={8}
+        style={{ position: "absolute", top: -8, right: -8, width: 26, height: 26, borderRadius: 13, backgroundColor: p.dangerBg, borderWidth: 1, borderColor: p.danger, alignItems: "center", justifyContent: "center" }}
+      >
+        <RNText style={{ color: p.danger, fontSize: fontSize.sm, fontWeight: "700", lineHeight: fontSize.sm + 2 }}>✕</RNText>
+      </Pressable>
+    </View>
+  );
+}
+
+/** One recording the technician can replay or delete. The audio stays on the phone; the job keeps the typed note. */
+function JobClip({ note, onRemove }: { note: VoiceNote; onRemove: () => void }) {
+  const t = useT();
+  const player = useAudioPlayer(note.uri);
+  const status = useAudioPlayerStatus(player);
+  const label = t("new.voiceItem", { seconds: note.seconds });
+  const toggle = async () => {
+    if (status.playing) { player.pause(); return; }
+    await setAudioModeAsync({ playsInSilentMode: true });
+    if (status.duration > 0 && status.currentTime >= status.duration - 0.05) await player.seekTo(0);
+    player.play();
+  };
+  return (
+    <Card style={{ flexDirection: "row", alignItems: "center", gap: space[2] }}>
+      <Txt size="xl">🎤</Txt>
+      <Txt style={{ flex: 1 }}>{label}</Txt>
+      <Button title={status.playing ? t("new.pause") : t("new.play")} variant="secondary" onPress={() => void toggle()} accessibilityLabel={`${status.playing ? t("new.pause") : t("new.play")}: ${label}`} />
+      <Button title={t("new.remove")} variant="ghost" onPress={onRemove} accessibilityLabel={`${t("new.remove")}: ${label}`} />
+    </Card>
   );
 }
 

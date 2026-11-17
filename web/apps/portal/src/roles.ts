@@ -1,11 +1,11 @@
 import type { S } from "./api";
 
 export type Role = S["Role"];
-export type MenuId = "platform" | "directory" | "charges" | "reports" | "dashboard" | "complaints" | "map" | "review" | "new" | "jobs" | "stock" | "approvals" | "notices" | "config" | "audit";
+export type MenuId = "platform" | "directory" | "charges" | "reports" | "dashboard" | "complaints" | "map" | "review" | "new" | "jobs" | "stock" | "approvals" | "notices" | "gate" | "config" | "audit";
 
 /** Which screens each role sees (WP-01). The server enforces the same rules; this only decides what to show. */
 export const menusByRole: Record<Role, MenuId[]> = {
-  Manager: ["dashboard", "complaints", "map", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "config", "audit"],
+  Manager: ["dashboard", "complaints", "map", "review", "new", "directory", "jobs", "reports", "stock", "approvals", "notices", "gate", "config", "audit"],
   Supervisor: ["dashboard", "complaints", "map", "review", "new", "jobs", "reports", "stock"],
   Office: ["dashboard", "complaints", "map", "review", "new", "directory"],
   Committee: ["dashboard", "complaints", "reports", "approvals", "notices", "audit"],

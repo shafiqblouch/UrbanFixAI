@@ -7,6 +7,7 @@ using Npgsql;
 using UrbanFix.Complaints;
 using UrbanFix.Identity;
 using UrbanFix.Infrastructure.Persistence;
+using UrbanFix.OrgSetup;
 using UrbanFix.SharedKernel;
 
 namespace UrbanFix.Infrastructure.Notifications;
@@ -115,6 +116,9 @@ public static class NotificationTemplates
     /// <summary>A notice carries the sender's own words, so the template only places them.</summary>
     public const string Notice = "notice";
     public const string MonthlySummary = "monthly_summary";
+    public const string GateVisitRequest = "gate_visit_request";
+    public const string GateVisitApproved = "gate_visit_approved";
+    public const string GateVisitDenied = "gate_visit_denied";
 
     private static readonly Dictionary<string, Dictionary<string, (string Title, string Body)>> All = new()
     {
@@ -252,6 +256,21 @@ public static class NotificationTemplates
         {
             ["en"] = ("If anyone is in danger", "We have flagged {reference} as urgent for safety. If anyone is in danger, call Rescue 1122 now. Keep away from the hazard."),
             ["ur"] = ("اگر کسی کی جان خطرے میں ہے", "ہم نے {reference} کو حفاظت کے لیے فوری قرار دیا ہے۔ اگر کسی کی جان خطرے میں ہو تو ابھی ریسکیو 1122 پر کال کریں۔ خطرے والی جگہ سے دور رہیں۔"),
+        },
+        [GateVisitRequest] = new()
+        {
+            ["en"] = ("Someone is at the gate", "{visitor} is at the gate to visit you. Allow or deny in the app, or reply ALLOW or DENY to this message."),
+            ["ur"] = ("کوئی گیٹ پر موجود ہے", "{visitor} آپ سے ملنے گیٹ پر موجود ہے۔ ایپ میں اجازت دیں یا منع کریں، یا اس پیغام کے جواب میں ALLOW یا DENY لکھیں۔"),
+        },
+        [GateVisitApproved] = new()
+        {
+            ["en"] = ("Visitor approved", "The resident approved {visitor}. You can let them in."),
+            ["ur"] = ("ملاقاتی کی اجازت مل گئی", "رہائشی نے {visitor} کو اجازت دے دی۔ آپ انہیں اندر آنے دے سکتے ہیں۔"),
+        },
+        [GateVisitDenied] = new()
+        {
+            ["en"] = ("Visitor denied", "The resident did not allow {visitor} in."),
+            ["ur"] = ("ملاقاتی کو اجازت نہیں", "رہائشی نے {visitor} کو اندر آنے کی اجازت نہیں دی۔"),
         },
     };
 
@@ -513,4 +532,19 @@ public sealed class LifecycleNotifications(NotificationService notifications, Ap
         await notifications.SendAsync(e.EventId, e.OrganizationId,
             people.Select(u => new Recipient(u, NotificationTemplates.Escalation(e.Rule), values, link)), ct);
     }
+}
+
+/// <summary>Turns gate visitor-approval events into messages (GT-04): the house's residents are asked, the guard is told the answer.</summary>
+public sealed class GateNotifications(NotificationService notifications) :
+    IEventHandler<GateVisitRequested>, IEventHandler<GateVisitDecided>
+{
+    private static Dictionary<string, string> V(params (string, string?)[] pairs) => pairs.ToDictionary(p => p.Item1, p => p.Item2 ?? "");
+
+    public Task Handle(GateVisitRequested e, CancellationToken ct) =>
+        notifications.SendAsync(e.EventId, e.OrganizationId,
+            e.ResidentUserIds.Select(u => new Recipient(u, NotificationTemplates.GateVisitRequest, V(("visitor", e.VisitorName)), "/gate/guests")), ct);
+
+    public Task Handle(GateVisitDecided e, CancellationToken ct) =>
+        notifications.SendAsync(e.EventId, e.OrganizationId,
+            [new Recipient(e.GuardUserId, e.Approved ? NotificationTemplates.GateVisitApproved : NotificationTemplates.GateVisitDenied, V(("visitor", e.VisitorName)), "/gate")], ct);
 }

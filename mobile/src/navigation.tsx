@@ -8,6 +8,8 @@ import type { Key } from "./i18n/strings";
 import { isMobileRole, tabsByRole, type MobileRole, type TabId } from "./roles";
 import { ComplaintDetailScreen, ComplaintsScreen, HomeScreen, NewComplaintScreen, ReceiptScreen, ReceiptsScreen } from "./screens/resident";
 import { CostsScreen, JobDetailScreen, JobsScreen, MaterialsScreen, TodayScreen } from "./screens/technician";
+import { GateScreen, LogScreen } from "./screens/guard";
+import { GatePassesScreen } from "./screens/guestPasses";
 import { LoginScreen } from "./screens/LoginScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { NoticesScreen, useUnreadNotices } from "./screens/notices";
@@ -38,6 +40,7 @@ export type RootStackParams = {
   JobDetail: { id: string };
   Costs: { jobId: string; mode: "estimate" | "actuals" };
   Materials: { jobId: string };
+  GatePasses: undefined;
 };
 
 const navigationRef = createNavigationContainerRef<RootStackParams>();
@@ -45,9 +48,10 @@ const Stack = createNativeStackNavigator<RootStackParams>();
 const Tab = createBottomTabNavigator();
 
 const screens: Record<TabId, React.ComponentType> = {
-  home: HomeScreen, complaints: ComplaintsScreen, new: NewComplaintScreen, notices: NoticesScreen, today: TodayScreen, jobs: JobsScreen, settings: SettingsScreen,
+  home: HomeScreen, complaints: ComplaintsScreen, new: NewComplaintScreen, notices: NoticesScreen, today: TodayScreen, jobs: JobsScreen,
+  gate: GateScreen, log: LogScreen, settings: SettingsScreen,
 };
-const glyphs: Record<TabId, string> = { home: "⌂", complaints: "☰", new: "＋", notices: "✉", today: "☀", jobs: "🔧", settings: "⚙" };
+const glyphs: Record<TabId, string> = { home: "⌂", complaints: "☰", new: "＋", notices: "✉", today: "☀", jobs: "🔧", gate: "🚧", log: "📋", settings: "⚙" };
 
 /** The bottom tabs for the current role (RA-01, TA-01). The upload backlog shows as a badge on settings. */
 function Tabs() {
@@ -95,7 +99,7 @@ export function Navigation() {
     const target = isMobileRole(role ?? "") ? targetFor(link, role as MobileRole) : undefined;
     if (!target || !navigationRef.isReady()) { pending.current = link; return; }
     pending.current = undefined;
-    (navigationRef.navigate as (name: string, params: object) => void)(target.name, target.params);
+    (navigationRef.navigate as (name: string, params?: object) => void)(target.name, target.params);
   }, [role]);
   useEffect(() => onNotificationTap(open), [open]);
   if (loading) return <Screen><Loading /></Screen>;
@@ -117,6 +121,7 @@ export function Navigation() {
             <Stack.Screen name="JobDetail" component={JobDetailScreen} options={{ title: t("tab.jobs") }} />
             <Stack.Screen name="Costs" component={CostsScreen} options={{ title: t("cost.title") }} />
             <Stack.Screen name="Materials" component={MaterialsScreen} options={{ title: t("mat.title") }} />
+            <Stack.Screen name="GatePasses" component={GatePassesScreen} options={{ title: t("guest.title") }} />
           </>
         )}
       </Stack.Navigator>

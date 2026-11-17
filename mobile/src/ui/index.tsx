@@ -68,11 +68,12 @@ export function Row({ children, gap = space[3], style, wrap }: { children: React
   return <View style={[{ flexDirection: rtl ? "row-reverse" : "row", alignItems: "center", gap, flexWrap: wrap ? "wrap" : "nowrap" }, style]}>{children}</View>;
 }
 
-export function Screen({ children, scroll = true, footer }: { children: ReactNode; scroll?: boolean; footer?: ReactNode }) {
+export function Screen({ children, scroll = true, header, footer }: { children: ReactNode; scroll?: boolean; header?: ReactNode; footer?: ReactNode }) {
   const p = usePalette();
   const body = <View style={{ padding: space[4], gap: space[4] }}>{children}</View>;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: p.bg }} edges={["left", "right", "bottom"]}>
+      {header && <View style={{ paddingHorizontal: space[4], paddingTop: space[4], paddingBottom: space[3], gap: space[2], backgroundColor: p.bg, borderBottomWidth: 1, borderBottomColor: p.borderSoft }}>{header}</View>}
       {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>{body}</ScrollView> : <View style={{ flex: 1 }}>{body}</View>}
       {footer}
     </SafeAreaView>
@@ -203,6 +204,32 @@ export function Choice<V extends string>({ label, value, options, onChange }: { 
         );
       })}
     </View>
+  );
+}
+
+/**
+ * A tappable checkbox row: the box keeps its place on the left while the label wraps beside it, so a column of
+ * them lines up down one edge (unlike a centred Button). Used for the job checklist.
+ */
+export function Check({ label, checked, onPress, disabled }: { label: string; checked: boolean; onPress: () => void; disabled?: boolean }) {
+  const p = usePalette();
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked, disabled: !!disabled }}
+      accessibilityLabel={label}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => ({
+        minHeight: TOUCH, justifyContent: "center", paddingHorizontal: space[3], paddingVertical: space[2], borderRadius: radius.md,
+        borderWidth: 2, borderColor: checked ? p.primary : p.border, backgroundColor: checked ? p.primarySoft : p.surfaceRaised, opacity: pressed ? 0.85 : 1,
+      })}
+    >
+      <Row gap={space[2]} style={{ alignItems: "flex-start" }}>
+        <RNText style={{ color: checked ? p.primary : p.textMuted, fontSize: fontSize.lg, lineHeight: fontSize.lg * 1.35 }}>{checked ? "☑" : "☐"}</RNText>
+        <Txt bold={checked} style={{ flex: 1 }}>{label}</Txt>
+      </Row>
+    </Pressable>
   );
 }
 

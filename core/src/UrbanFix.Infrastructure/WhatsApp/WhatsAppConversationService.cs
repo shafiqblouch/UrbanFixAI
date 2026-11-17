@@ -83,6 +83,14 @@ public sealed class WhatsAppConversationService(
         var turn = new Turn(conversation.Language ?? "en", await SocietyNameAsync(ct));
         try
         {
+            // A resident answering "allow"/"deny" to a visitor waiting at the gate (GT-04) is handled here, before the
+            // complaint flow, and only when they actually have a request pending — so it never hijacks a normal message.
+            if (await TryHandleGateDecisionAsync(message, phone, turn, ct))
+            {
+                message.Status = MessageStatus.Processed;
+            }
+            else
+            {
             var data = ChatData.FromJson(conversation.StateData);
             var gap = conversation.LastInboundAt is { } last ? now - last : TimeSpan.Zero;
             var step = ConversationMachine.Advance(new ChatSnapshot(conversation.State, conversation.Language, data, gap), ToInput(message), options.ResumeAfterHours);
@@ -122,6 +130,7 @@ public sealed class WhatsAppConversationService(
             conversation.ComplaintId = newData.ComplaintId ?? conversation.ComplaintId;
             message.Status = MessageStatus.Processed;
             message.ComplaintId = conversation.ComplaintId;
+            }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -141,6 +150,44 @@ public sealed class WhatsAppConversationService(
 
         foreach (var reply in turn.Replies) await sender.ReplyAsync(phone, reply.Text, reply.Buttons, ct);
         await db.SaveChangesAsync(ct);
+    }
+
+    /// <summary>
+    /// Handles a resident's "allow"/"deny" reply to a gate visitor request (GT-04). Returns false — leaving the
+    /// complaint flow to run — unless the sender is a resident with at least one request actually pending, so an
+    /// ordinary message is never mistaken for a gate decision.
+    /// </summary>
+    private async Task<bool> TryHandleGateDecisionAsync(WhatsAppMessage message, string phone, Turn turn, CancellationToken ct)
+    {
+        if (message.Type != "text") return false;
+        var intent = GateReply.Parse(message.Body);
+        if (intent.Kind == GateDecisionKind.None) return false;
+
+        var decision = await SenderResolver.ResolveAsync(db, phone, OrgPolicy.Default, ct);
+        if (decision.Kind != SenderKind.Matched || decision.UserId is not { } userId) return false;
+
+        var houses = await db.ResidentLinks.AsNoTracking().Where(r => r.UserId == userId && r.ToDate == null).Select(r => r.HouseId).Distinct().ToListAsync(ct);
+        if (houses.Count == 0) return false;
+
+        var pending = await db.GatePasses.Where(p => p.Status == "pending" && houses.Contains(p.HouseId)).OrderByDescending(p => p.CreatedAt).ToListAsync(ct);
+        if (pending.Count == 0) return false; // nothing to decide: let the normal flow answer
+
+        // Which one: the code they gave, or the only one waiting. More than one and no code — ask which.
+        var target = intent.Code is { } code ? pending.FirstOrDefault(p => p.Code == code) : pending.Count == 1 ? pending[0] : null;
+        if (target is null)
+        {
+            if (intent.Code is not null) turn.Say("gate_no_request");
+            else turn.Say("gate_which", ("list", string.Join(", ", pending.Select(p => $"{p.VisitorName} ({p.Code})"))), ("example", pending[0].Code));
+            return true;
+        }
+
+        var approve = intent.Kind == GateDecisionKind.Allow;
+        target.Status = approve ? "active" : "denied";
+        target.DecidedBy = userId;
+        target.DecidedAt = DateTimeOffset.UtcNow;
+        if (target.CreatedBy is { } guard) bus.Publish(new GateVisitDecided(target.OrganizationId, target.Id, guard, approve, target.VisitorName));
+        turn.Say(approve ? "gate_allowed" : "gate_denied", ("visitor", target.VisitorName));
+        return true;
     }
 
     private static ChatInput ToInput(WhatsAppMessage m)

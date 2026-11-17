@@ -86,6 +86,16 @@ public static class WhatsAppScripts
         ["error"] = (
             "Sorry, something went wrong on our side. Your message is saved. Please try again in a minute.",
             "معذرت، ہماری طرف سے کچھ خرابی ہو گئی۔ آپ کا پیغام محفوظ ہے۔ براہ کرم ایک منٹ بعد دوبارہ کوشش کریں۔"),
+
+        // Gate visitor approval replies (GT-04)
+        ["gate_allowed"] = ("Thank you. {visitor} will be let in at the gate.", "شکریہ۔ {visitor} کو گیٹ پر اندر آنے دیا جائے گا۔"),
+        ["gate_denied"] = ("Thank you. {visitor} will not be let in.", "شکریہ۔ {visitor} کو اندر نہیں آنے دیا جائے گا۔"),
+        ["gate_which"] = (
+            "More than one visitor is waiting for you: {list}. Please reply ALLOW or DENY with the code, for example: ALLOW {example}.",
+            "آپ کے لیے ایک سے زیادہ ملاقاتی موجود ہیں: {list}۔ براہ کرم کوڈ کے ساتھ ALLOW یا DENY لکھیں، مثلاً: ALLOW {example}۔"),
+        ["gate_no_request"] = (
+            "There is no visitor waiting for you with that code right now.",
+            "اس وقت اس کوڈ کے ساتھ آپ کے لیے کوئی ملاقاتی موجود نہیں۔"),
     };
 
     private static readonly Dictionary<ComplaintStatus, (string En, string Ur)> Statuses = new()

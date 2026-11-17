@@ -27,7 +27,7 @@ public static class SetupEndpoints
     public sealed record SaveCategory(string Key, string NameEn, string? NameUr, Guid? DepartmentId, string? DefaultPriority, string? EvidenceRule, string[]? Checklist, bool? IsActive, bool? RequiresCosts = null);
     public sealed record HouseDto(Guid Id, Guid LocationId, string LocationPath, decimal? PlotSizeSqYd, string? HouseCategory, string Status);
     public sealed record CreateHouse(Guid LocationId, decimal? PlotSizeSqYd, string? HouseCategory, string? Status);
-    public sealed record ResidentLinkDto(Guid Id, Guid HouseId, Guid UserId, string Relation, DateOnly FromDate, DateOnly? ToDate);
+    public sealed record ResidentLinkDto(Guid Id, Guid HouseId, Guid UserId, string Relation, DateOnly FromDate, DateOnly? ToDate, string? DisplayName, string? Phone, string? Email);
     /// <summary>Link an existing person (<c>UserId</c>) to a house, or create one from <c>Name</c> + <c>Phone</c> (the manual "add resident" form); the CSV import is the bulk path.</summary>
     public sealed record CreateResidentLink(Guid? UserId, string Relation, DateOnly? FromDate, string? Name = null, string? Phone = null, string? Email = null);
     public sealed record EndResidentLink(DateOnly? ToDate);
@@ -273,9 +273,20 @@ public static class SetupEndpoints
             return await SaveOrConflict(db, ct, () => Results.Created($"/houses/{h.Id}", ToDto(h, loc.Path)), "location_already_has_house");
         }).WithTags("Setup").Produces<HouseDto>(201).RequireAuthorization(manage);
 
+        // Current residents first, then former ones; within each, most recent move-in first. The person's name,
+        // phone and email are joined in so the house roster can be read at a glance (OR-06).
         app.MapGet("/houses/{houseId:guid}/residents", async (Guid houseId, AppDbContext db, CancellationToken ct) =>
-            Results.Ok((await db.ResidentLinks.AsNoTracking().Where(r => r.HouseId == houseId).OrderByDescending(r => r.FromDate).ToListAsync(ct)).Select(ToDto)))
-            .WithTags("Setup").Produces<List<ResidentLinkDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
+        {
+            var rows = await (from r in db.ResidentLinks.AsNoTracking().Where(r => r.HouseId == houseId)
+                              join u in db.Users.AsNoTracking() on r.UserId equals u.Id into ug
+                              from u in ug.DefaultIfEmpty()
+                              select new { Link = r, u.DisplayName, u.Phone, u.Email })
+                             .OrderByDescending(x => x.Link.ToDate == null).ThenByDescending(x => x.Link.FromDate)
+                             .ToListAsync(ct);
+            return Results.Ok(rows.Select(x => new ResidentLinkDto(
+                x.Link.Id, x.Link.HouseId, x.Link.UserId, x.Link.Relation, x.Link.FromDate, x.Link.ToDate,
+                x.DisplayName, x.Phone, x.Email != null && x.Email.EndsWith(".invalid") ? null : x.Email)));
+        }).WithTags("Setup").Produces<List<ResidentLinkDto>>(200).RequireAuthorization(AuthPolicies.For(Permissions.ComplaintRead));
 
         app.MapPost("/houses/{houseId:guid}/residents", async (Guid houseId, CreateResidentLink req, AppDbContext db, ITenantContext tenant, PasswordService passwords, CancellationToken ct) =>
         {
@@ -410,5 +421,5 @@ public static class SetupEndpoints
     private static LocationDto ToDto(Location l) => new(l.Id, l.ParentId, l.Kind, l.Name, l.NameUr, l.Path, l.Depth, l.Latitude, l.Longitude, l.IsActive);
     private static CategoryDto ToDto(Category c) => new(c.Id, c.Key, c.NameEn, c.NameUr, c.DepartmentId, c.DefaultPriority, c.EvidenceRule, JsonDocument.Parse(c.Checklist).RootElement.Clone(), c.IsActive, c.RequiresCosts);
     private static HouseDto ToDto(House h, string path) => new(h.Id, h.LocationId, path, h.PlotSizeSqYd, h.HouseCategory, h.Status);
-    private static ResidentLinkDto ToDto(ResidentLink r) => new(r.Id, r.HouseId, r.UserId, r.Relation, r.FromDate, r.ToDate);
+    private static ResidentLinkDto ToDto(ResidentLink r) => new(r.Id, r.HouseId, r.UserId, r.Relation, r.FromDate, r.ToDate, null, null, null);
 }

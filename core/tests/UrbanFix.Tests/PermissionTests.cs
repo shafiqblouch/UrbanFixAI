@@ -32,7 +32,10 @@ public class PermissionTests(TestApp app)
             .Where(e => e.Metadata.GetMetadata<IAllowAnonymous>() is not null)
             .Select(e => e.RoutePattern.RawText!).Order().ToArray();
 
-        Assert.Equal(["/auth/login", "/auth/otp/request", "/auth/otp/verify", "/health/live", "/health/ready", "/openapi/{documentName}.json", "/webhooks/whatsapp", "/webhooks/whatsapp"], anonymous);
+        Assert.Equal([
+            "/auth/login", "/auth/login/otp/request", "/auth/login/otp/verify", "/auth/otp/request", "/auth/otp/verify",
+            "/health/live", "/health/ready", "/openapi/{documentName}.json", "/webhooks/openwa", "/webhooks/whatsapp", "/webhooks/whatsapp",
+        ], anonymous);
     }
 
     [Fact]
