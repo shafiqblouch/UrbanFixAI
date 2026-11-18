@@ -50,6 +50,9 @@ export function HomeScreen() {
   const online = useOnline();
   const unread = useUnreadNotices();
   const recent = useLoad(() => ok(api.GET("/complaints", { params: { query: { limit: 50 } } })), []);
+  // The visitor-passes entry only appears where the society has gate security switched on (best-effort: hidden if unknown).
+  const features = useLoad(() => ok(api.GET("/features", {})).catch(() => ({}) as Record<string, boolean>), []);
+  const gateOn = features.data?.gate === true;
   useRefetchOnFocus(recent.reload); // refresh the recent list on return instead of only at login
   const p = usePalette();
 
@@ -101,12 +104,16 @@ export function HomeScreen() {
           </Gradient>
         </Pressable>
 
-        {/* Quick links. */}
+        {/* Quick links: the two complaint shortcuts stay a balanced two-up row. */}
         <Row gap={space[3]} style={{ alignItems: "stretch" }}>
           <ActionTile glyph="📋" title={t("home.mine")} subtitle={t("home.trackStatus")} badge={activeCount > 0 ? t("home.active", { count: activeCount }) : undefined} onPress={() => nav.navigate("Tabs", { screen: "complaints" } as never)} />
           <ActionTile glyph="🧾" title={t("home.receipts")} subtitle={t("home.receiptsSub")} note="PDF" onPress={() => nav.navigate("Receipts")} />
-          <ActionTile glyph="🚪" title={t("guest.title")} subtitle={t("guest.homeSub")} onPress={() => nav.navigate("GatePasses")} />
         </Row>
+
+        {/* Visitor passes get their own full-width row so they don't squeeze the complaint tiles, and only where gate is on. */}
+        {gateOn && (
+          <WideTile glyph="🚪" title={t("guest.title")} subtitle={t("guest.homeSub")} onPress={() => nav.navigate("GatePasses")} />
+        )}
 
         {/* Recent complaints. */}
         <Row style={{ justifyContent: "space-between" }}>
@@ -151,6 +158,27 @@ function ActionTile({ glyph, title, subtitle, badge, note, onPress }: { glyph: s
       </Row>
       <Txt bold>{title}</Txt>
       <Txt size="sm" muted>{subtitle}</Txt>
+    </Pressable>
+  );
+}
+
+/** A full-width quick link (icon left, text, chevron). Used for entries that should not share the two-up tile row. */
+function WideTile({ glyph, title, subtitle, onPress }: { glyph: string; title: string; subtitle: string; onPress: () => void }) {
+  const p = usePalette();
+  const { rtl } = useI18n();
+  return (
+    <Pressable
+      accessibilityRole="button" accessibilityLabel={title} onPress={onPress}
+      style={({ pressed }) => ({ flexDirection: rtl ? "row-reverse" : "row", alignItems: "center", gap: space[3], backgroundColor: p.surfaceRaised, borderColor: p.borderSoft, borderWidth: 1, borderRadius: radius.lg, padding: space[4], opacity: pressed ? 0.9 : 1 })}
+    >
+      <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: p.primarySoft, alignItems: "center", justifyContent: "center" }}>
+        <Txt style={{ fontSize: 22 }}>{glyph}</Txt>
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <Txt bold>{title}</Txt>
+        <Txt size="sm" muted>{subtitle}</Txt>
+      </View>
+      <Txt size="lg" muted>{rtl ? "‹" : "›"}</Txt>
     </Pressable>
   );
 }

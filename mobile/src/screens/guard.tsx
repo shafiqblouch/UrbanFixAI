@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { api, ok, type S } from "../api";
-import { errorText, useLoad, useRefetchOnFocus } from "../hooks";
+import { errorText, useAction, useLoad, usePolling, useRefetchOnFocus } from "../hooks";
 import { useI18n, useT } from "../i18n";
 import type { Key } from "../i18n/strings";
 import type { GateEventInput } from "../offline/store";
@@ -14,6 +14,7 @@ type Vehicle = S["VehicleHit"];
 type Help = S["HelpHit"];
 type Pass = S["PassHit"];
 type Event = S["EventDto"];
+type Approval = S["GateApprovalDto"];
 
 type Direction = "in" | "out";
 type Decision = "allowed" | "denied";
@@ -65,6 +66,8 @@ export function GateScreen() {
       )}
       {message && <Banner tone={message.tone === "success" ? "success" : "info"} text={message.text} />}
 
+      <BarrierWaiting />
+
       <Choice<Direction>
         label={t("gate.direction")}
         value={direction}
@@ -93,6 +96,43 @@ export function GateScreen() {
 
       {gatePending > 0 && <Button title={t("gate.syncNow")} variant="secondary" onPress={() => void drainGate()} />}
     </Screen>
+  );
+}
+
+/** Cars an RFID reader is holding at the barrier: the boom stays shut until the guard allows or refuses here (GT-05). */
+function BarrierWaiting() {
+  const t = useT();
+  const waiting = useLoad<Approval[]>(() => ok(api.GET("/gate/waiting", {})), []);
+  const act = useAction();
+  useRefetchOnFocus(waiting.reload);
+  usePolling(waiting.reload, 4000); // a car at the barrier should show within a few seconds, then clear once decided
+  const [note, setNote] = useState<{ tone: "success" | "info"; text: string }>();
+
+  const decide = (id: string, approve: boolean) => void act.run(async () => {
+    await ok(api.POST("/gate/waiting/{id}/decide", { params: { path: { id } }, body: { approve, note: null } }));
+    setNote({ tone: approve ? "success" : "info", text: t(approve ? "gate.opened" : "gate.refused") });
+    waiting.reload();
+  });
+
+  const rows = waiting.data ?? [];
+  if (rows.length === 0 && !note) return null;
+  return (
+    <Card>
+      <Txt size="lg" bold>{t("gate.barrier")}</Txt>
+      {note && <Banner tone={note.tone === "success" ? "success" : "info"} text={note.text} />}
+      {rows.map((a) => (
+        <View key={a.id} style={{ gap: space[2] }}>
+          <Txt bold>{t("gate.carWaiting", { direction: t(`gate.${a.direction}` as "gate.in" | "gate.out") })}</Txt>
+          {(a.vehiclePlate || a.tag) && (
+            <Txt muted>{a.vehiclePlate ?? t("gate.carWaitingTag", { tag: a.tag ?? "" })}{a.gateName ? ` · ${a.gateName}` : ""}</Txt>
+          )}
+          <Row gap={space[2]}>
+            <View style={{ flex: 1 }}><Button title={t("gate.openBarrier")} onPress={() => decide(a.id, true)} /></View>
+            <View style={{ flex: 1 }}><Button title={t("gate.refuse")} variant="danger" onPress={() => decide(a.id, false)} /></View>
+          </Row>
+        </View>
+      ))}
+    </Card>
   );
 }
 

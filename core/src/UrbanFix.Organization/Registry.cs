@@ -68,6 +68,13 @@ public static class RegistryRules
     /// <summary>"abc 123" and "ABC-123" give the same key.</summary>
     public static string PlateKey(string? plate) => new((plate ?? "").Where(char.IsLetterOrDigit).Select(char.ToUpperInvariant).ToArray());
 
+    /// <summary>
+    /// A short, no-look-alike gate-sticker code to print on an RFID label and programme onto the tag (GT-05), e.g.
+    /// "UF7Q4K2P". The "UF" prefix marks it as one of ours; the rest reuses the gate alphabet (no 0/O/1/I/…), and it
+    /// is stored upper-case with no separators so it matches the tag read exactly.
+    /// </summary>
+    public static string NewStickerCode() => "UF" + GateRules.NewPassCode();
+
     /// <summary>Keeps the last four letters or digits of an ID number and hides the rest: "35202-1234567-1" becomes "*****-*******-1" shortened to its last four.</summary>
     public static string? MaskId(string? id)
     {

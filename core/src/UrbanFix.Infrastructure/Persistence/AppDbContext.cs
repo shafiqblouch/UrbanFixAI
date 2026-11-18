@@ -43,6 +43,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
     public DbSet<Gate> Gates => Set<Gate>();
     public DbSet<GatePass> GatePasses => Set<GatePass>();
     public DbSet<GateEvent> GateEvents => Set<GateEvent>();
+    public DbSet<GateReader> GateReaders => Set<GateReader>();
+    public DbSet<GateApproval> GateApprovals => Set<GateApproval>();
     public DbSet<SlaPolicy> SlaPolicies => Set<SlaPolicy>();
     public DbSet<PriceItem> PriceItems => Set<PriceItem>();
     public DbSet<PriceRate> PriceRates => Set<PriceRate>();
@@ -139,6 +141,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext
         b.Entity<Gate>().ToTable("gates");
         b.Entity<GatePass>().ToTable("gate_passes");
         b.Entity<GateEvent>().ToTable("gate_events");
+        b.Entity<GateReader>().ToTable("gate_readers");
+        b.Entity<GateApproval>().ToTable("gate_approvals");
         b.Entity<PriceItem>().ToTable("price_items");
         b.Entity<PriceRate>().ToTable("price_rates");
 

@@ -104,3 +104,52 @@ recorded events queue locally and sync when the network returns — reusing the 
     `WhatsAppConversationService` intercepts it **before** the complaint flow and **only when the sender actually
     has a request pending**, so an ordinary message is never mistaken for a gate decision. One pending → decided;
     several → it replies listing the codes and asks which. 15 parser tests + 3 end-to-end WhatsApp tests green.
+
+- **Phase 5 — RFID/UHF sticker + boom barrier.** ✅ A UHF reader at each lane reads a car's sticker and drives that
+  lane's boom barrier. A registered resident vehicle opens **automatically** and is logged; an unrecognised car is
+  **held** until a guard allows or denies it in the app. Manual entry/exit (phase 2) stays as the fallback until
+  hardware is installed. See [the hardware integration contract](#rfid--boom-barrier-the-edge-contract) below.
+  Backend 22 gate tests (16 flow + 6 RFID) green; mobile 110; portal 31.
+
+## RFID / boom barrier: the edge contract
+
+Each lane has an **edge gateway** (a small box, e.g. a Raspberry Pi) wired to its UHF reader and its boom relay. It
+talks to the core over plain HTTPS and needs no user login — it authenticates with its **own reader key**, sent as
+`X-Gate-Key: grk_…` (or `Authorization: Bearer grk_…`). A manager issues one key per lane in the portal
+(**Gate → Readers**); the key is shown once. A reader is fixed to one direction, so entry and exit are separate
+readers (and separate keys).
+
+Three calls, all under the public `/api` prefix and behind the society's `gate` feature:
+
+| Call | Who | Purpose |
+|------|-----|---------|
+| `POST /gate/scan` `{ "tag": "<EPC>" }` | reader | A tag was read (or a car is present with no tag). |
+| `GET /gate/commands` | reader | Poll (~1 s) for barrier **opens** the guard has approved. |
+| `GET /gate/waiting`, `POST /gate/waiting/{id}/decide` | guard app | See and decide held cars. |
+
+**Scan response** (`ScanResult`): `action` is one of
+- `open` — a registered resident vehicle (its `sticker_code` matched the tag). The crossing is logged automatically
+  (`source=rfid`), and repeated reads within 20 s open again without double-logging. **Raise the barrier now.**
+- `hold` — the tag is unknown (or empty): a `GateApproval` is created, the on-duty guards are notified
+  (in-app + push), and `approvalId` is returned. **Keep the barrier shut** and poll `GET /gate/commands`.
+- A denied decision never produces an open, so the barrier simply stays down.
+
+**Opening after a guard approves.** When a guard taps *Open barrier* in the app, the hold flips to `approved`. The
+edge's next `GET /gate/commands` returns `[{ approvalId, direction }]` **once** (the row is marked consumed, so one
+approval opens the barrier one time), and a decision older than 30 s is not re-opened (the car has gone). Raise the
+barrier on receipt.
+
+**Tags.** A sticker is tied to a resident vehicle through the vehicle's existing `sticker_code` (set in the
+directory). Matching is case-insensitive on the stored value; programme the EPC to equal the `sticker_code`.
+
+**Issuing a sticker (portal).** In **Directory → a vehicle** a manager taps **Generate** to get a unique,
+no-look-alike code (`POST /vehicles/{id}/sticker`, e.g. `UF7Q4K2`) saved on the car, then **Print sticker** for a
+label (plate + a Code 39 barcode + the code). Programme the UHF tag's EPC to that exact code and stick it on the
+car. (A pre-encoded tag instead: just type its EPC into the **Sticker code** field.)
+
+**No presence sensor?** A car with no sticker never triggers the reader, so without a loop/IR detector the barrier
+just stays down and the guard opens it the old (manual) way. With a presence detector, the gateway sends
+`POST /gate/scan` with an empty `tag` on a car-present-no-tag event, which raises the same guard hold.
+
+A throwaway reader you can drive from a terminal, to try the whole flow without hardware, is in
+[`tools/gate-reader-sim.sh`](../tools/gate-reader-sim.sh).

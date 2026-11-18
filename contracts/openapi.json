@@ -1399,6 +1399,57 @@
         }
       }
     },
+    "/gate/scan": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/commands": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OpenCommand"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/reports/costs": {
       "get": {
         "tags": [
@@ -4369,6 +4420,36 @@
         }
       }
     },
+    "/vehicles/{id}/sticker": {
+      "post": {
+        "tags": [
+          "Registry"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/daily-help": {
       "get": {
         "tags": [
@@ -5230,6 +5311,187 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/readers": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GateReaderDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveReader"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateReaderKeyDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/readers/{id}": {
+      "put": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReader"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateReaderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/readers/{id}/rotate-key": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateReaderKeyDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/waiting": {
+      "get": {
+        "tags": [
+          "Gate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GateApprovalDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gate/waiting/{id}/decide": {
+      "post": {
+        "tags": [
+          "Gate"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decide"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateApprovalDto"
                 }
               }
             }
@@ -9311,6 +9573,7 @@
           "photoUrl",
           "decision",
           "note",
+          "source",
           "recordedBy",
           "recordedAt"
         ],
@@ -9377,6 +9640,9 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "source": {
+            "type": "string"
           },
           "recordedBy": {
             "type": "string",
@@ -9529,6 +9795,52 @@
           }
         }
       },
+      "GateApprovalDto": {
+        "required": [
+          "id",
+          "gateId",
+          "gateName",
+          "direction",
+          "tag",
+          "vehiclePlate",
+          "status",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gateId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "gateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehiclePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "GateDto": {
         "required": [
           "id",
@@ -9546,6 +9858,61 @@
           },
           "isActive": {
             "type": "boolean"
+          }
+        }
+      },
+      "GateReaderDto": {
+        "required": [
+          "id",
+          "gateId",
+          "gateName",
+          "name",
+          "direction",
+          "isActive",
+          "lastSeenAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "GateReaderKeyDto": {
+        "required": [
+          "reader",
+          "apiKey"
+        ],
+        "type": "object",
+        "properties": {
+          "reader": {
+            "$ref": "#/components/schemas/GateReaderDto"
+          },
+          "apiKey": {
+            "type": "string"
           }
         }
       },
@@ -10987,6 +11354,22 @@
           "count": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "OpenCommand": {
+        "required": [
+          "approvalId",
+          "direction"
+        ],
+        "type": "object",
+        "properties": {
+          "approvalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "direction": {
+            "type": "string"
           }
         }
       },
@@ -12487,6 +12870,26 @@
           }
         }
       },
+      "SaveReader": {
+        "required": [
+          "gateId",
+          "name",
+          "direction"
+        ],
+        "type": "object",
+        "properties": {
+          "gateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          }
+        }
+      },
       "SaveRequest": {
         "required": [
           "jobId",
@@ -12632,6 +13035,44 @@
           },
           "note": {
             "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ScanRequest": {
+        "required": [
+          "tag"
+        ],
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ScanResult": {
+        "required": [
+          "action",
+          "decision",
+          "subject",
+          "approvalId"
+        ],
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "approvalId": {
+            "type": "string",
+            "format": "uuid",
             "nullable": true
           }
         }
@@ -13816,6 +14257,28 @@
           }
         }
       },
+      "UpdateReader": {
+        "required": [
+          "name",
+          "direction",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
       "UploadDto": {
         "required": [
           "id",
@@ -14198,6 +14661,9 @@
       "name": "WhatsApp"
     },
     {
+      "name": "Gate"
+    },
+    {
       "name": "Reports"
     },
     {
@@ -14223,9 +14689,6 @@
     },
     {
       "name": "Registry"
-    },
-    {
-      "name": "Gate"
     },
     {
       "name": "Stock"

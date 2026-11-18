@@ -60,11 +60,16 @@ export function errorText(t: T, error: ApiError): string {
  */
 export function useRefetchOnFocus(reload: () => void) {
   const first = useRef(true);
+  // Read the latest `reload` through a ref so the focus effect callback stays stable even when the caller
+  // passes a fresh function each render. Depending on `[reload]` directly would re-fire the effect every
+  // render for such callers and spin into an endless refetch loop.
+  const latest = useRef(reload);
+  latest.current = reload;
   useFocusEffect(
     useCallback(() => {
       if (first.current) { first.current = false; return; }
-      reload();
-    }, [reload]),
+      latest.current();
+    }, []),
   );
 }
 

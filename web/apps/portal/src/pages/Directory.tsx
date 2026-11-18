@@ -7,6 +7,7 @@ import { useFormat, useT, type Key } from "../i18n";
 import { useLookups } from "../lookups";
 import { canConfigure } from "../roles";
 import { useSession } from "../session";
+import { printSticker } from "../sticker";
 
 const TABS = ["search", "houses", "vehicles", "help", "import", "checks"] as const;
 type Tab = (typeof TABS)[number];
@@ -320,14 +321,15 @@ function Vehicles() {
           />
         )}
       </Async>
-      <VehicleSheet value={editing} onClose={() => setEditing(undefined)} onSaved={() => { setEditing(undefined); list.reload(); }} />
+      <VehicleSheet value={editing} onClose={() => setEditing(undefined)} onSaved={() => { setEditing(undefined); list.reload(); }} onReload={list.reload} />
     </div>
   );
 }
 
-function VehicleSheet({ value, onClose, onSaved }: { value: S["VehicleDto"] | "new" | undefined; onClose: () => void; onSaved: () => void }) {
+function VehicleSheet({ value, onClose, onSaved, onReload }: { value: S["VehicleDto"] | "new" | undefined; onClose: () => void; onSaved: () => void; onReload?: () => void }) {
   const t = useT();
   const action = useAction();
+  const sticker = useAction();
   const { options } = useHouseOptions();
   const existing = value && value !== "new" ? value : undefined;
   const [form, setForm] = useState({ plate: "", type: "car", houseId: "", stickerCode: "", status: "active", note: "" });
@@ -354,7 +356,24 @@ function VehicleSheet({ value, onClose, onSaved }: { value: S["VehicleDto"] | "n
         <TextField label={t("directory.plate")} value={form.plate} required onChange={(e) => set("plate", e.target.value)} />
         <SelectField label={t("directory.type")} value={form.type} onChange={(e) => set("type", e.target.value)} options={VEHICLE_TYPES.map((x) => ({ value: x, label: t(`directory.vehicleType.${x}` as Key) }))} />
         <SelectField label={t("house")} placeholder={t("directory.noHouse")} value={form.houseId} onChange={(e) => set("houseId", e.target.value)} options={options} />
-        <TextField label={t("directory.sticker")} value={form.stickerCode} onChange={(e) => set("stickerCode", e.target.value)} />
+        <TextField label={t("directory.sticker")} hint={t("directory.stickerHint")} value={form.stickerCode} onChange={(e) => set("stickerCode", e.target.value)} />
+        {existing && (
+          <div className="row">
+            <Button
+              type="button" variant="secondary" loading={sticker.busy}
+              onClick={() => void sticker.run(async () => {
+                const v = await ok(api.POST("/vehicles/{id}/sticker", { params: { path: { id: existing.id } } }));
+                set("stickerCode", v.stickerCode ?? "");
+                onReload?.();
+              })}
+            >{t("directory.generateSticker")}</Button>
+            {form.stickerCode.trim() && (
+              <Button type="button" variant="ghost" onClick={() => printSticker({ plate: form.plate || existing.plate, code: form.stickerCode.trim(), caption: t("directory.stickerCaption") })}>
+                {t("directory.printSticker")}
+              </Button>
+            )}
+          </div>
+        )}
         <SelectField label={t("status")} value={form.status} onChange={(e) => set("status", e.target.value)} options={STATUSES.map((x) => ({ value: x, label: t(`directory.status.${x}` as Key) }))} />
         <TextField label={t("directory.note")} value={form.note} onChange={(e) => set("note", e.target.value)} />
         <ErrorNote error={action.error} />

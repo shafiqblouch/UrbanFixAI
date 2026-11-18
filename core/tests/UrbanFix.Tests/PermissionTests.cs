@@ -34,6 +34,7 @@ public class PermissionTests(TestApp app)
 
         Assert.Equal([
             "/auth/login", "/auth/login/otp/request", "/auth/login/otp/verify", "/auth/otp/request", "/auth/otp/verify",
+            "/gate/commands", "/gate/scan",
             "/health/live", "/health/ready", "/openapi/{documentName}.json", "/webhooks/openwa", "/webhooks/whatsapp", "/webhooks/whatsapp",
         ], anonymous);
     }

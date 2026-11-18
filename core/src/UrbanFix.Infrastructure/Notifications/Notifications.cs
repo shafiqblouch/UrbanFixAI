@@ -119,6 +119,7 @@ public static class NotificationTemplates
     public const string GateVisitRequest = "gate_visit_request";
     public const string GateVisitApproved = "gate_visit_approved";
     public const string GateVisitDenied = "gate_visit_denied";
+    public const string GateCarWaiting = "gate_car_waiting";
 
     private static readonly Dictionary<string, Dictionary<string, (string Title, string Body)>> All = new()
     {
@@ -271,6 +272,11 @@ public static class NotificationTemplates
         {
             ["en"] = ("Visitor denied", "The resident did not allow {visitor} in."),
             ["ur"] = ("ملاقاتی کو اجازت نہیں", "رہائشی نے {visitor} کو اندر آنے کی اجازت نہیں دی۔"),
+        },
+        [GateCarWaiting] = new()
+        {
+            ["en"] = ("Car waiting at the gate", "An unrecognised car ({plate}) is waiting to go {direction}. Allow or deny it in the app."),
+            ["ur"] = ("گاڑی گیٹ پر منتظر", "ایک غیر رجسٹرڈ گاڑی ({plate}) {direction} جانے کے لیے منتظر ہے۔ ایپ میں اجازت دیں یا منع کریں۔"),
         },
     };
 
@@ -536,7 +542,7 @@ public sealed class LifecycleNotifications(NotificationService notifications, Ap
 
 /// <summary>Turns gate visitor-approval events into messages (GT-04): the house's residents are asked, the guard is told the answer.</summary>
 public sealed class GateNotifications(NotificationService notifications) :
-    IEventHandler<GateVisitRequested>, IEventHandler<GateVisitDecided>
+    IEventHandler<GateVisitRequested>, IEventHandler<GateVisitDecided>, IEventHandler<GateCarWaiting>
 {
     private static Dictionary<string, string> V(params (string, string?)[] pairs) => pairs.ToDictionary(p => p.Item1, p => p.Item2 ?? "");
 
@@ -547,4 +553,9 @@ public sealed class GateNotifications(NotificationService notifications) :
     public Task Handle(GateVisitDecided e, CancellationToken ct) =>
         notifications.SendAsync(e.EventId, e.OrganizationId,
             [new Recipient(e.GuardUserId, e.Approved ? NotificationTemplates.GateVisitApproved : NotificationTemplates.GateVisitDenied, V(("visitor", e.VisitorName)), "/gate")], ct);
+
+    public Task Handle(GateCarWaiting e, CancellationToken ct) =>
+        notifications.SendAsync(e.EventId, e.OrganizationId,
+            e.GuardUserIds.Select(u => new Recipient(u, NotificationTemplates.GateCarWaiting,
+                V(("plate", e.VehiclePlate ?? "—"), ("direction", e.Direction)), "/gate")), ct);
 }

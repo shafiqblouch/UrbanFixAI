@@ -1,4 +1,4 @@
-import { Alert, Button, Card, EmptyState, StatusChip, Table, TextField, type Column, type Status } from "@urbanfix/ui";
+import { Alert, Button, Card, EmptyState, SelectField, StatusChip, Table, TextField, type Column, type Status } from "@urbanfix/ui";
 import { useState } from "react";
 import { api, ok, type S } from "../api";
 import { Async, PageHeader } from "../components";
@@ -8,8 +8,9 @@ import { useFormat, useT, type Key } from "../i18n";
 type Event = S["EventDto"];
 type Pass = S["PassDto"];
 type GateDto = S["GateDto"];
+type Reader = S["GateReaderDto"];
 
-const TABS = ["inside", "log", "passes", "checkpoints"] as const;
+const TABS = ["inside", "log", "passes", "checkpoints", "readers"] as const;
 type Tab = (typeof TABS)[number];
 
 const passTone: Record<string, Status> = {
@@ -40,6 +41,7 @@ export function GatePage() {
             {tab === "log" && <Log />}
             {tab === "passes" && <Passes />}
             {tab === "checkpoints" && <Checkpoints />}
+            {tab === "readers" && <Readers />}
           </>
         )}
       </Async>
@@ -171,6 +173,68 @@ function Checkpoints() {
         {(rows) => rows.length === 0
           ? <EmptyState title={t("gate.noGates")} />
           : <Card><Table caption={t("gate.checkpoints")} columns={columns} rows={rows} rowKey={(g) => g.id} /></Card>}
+      </Async>
+    </>
+  );
+}
+
+/** RFID/UHF readers at the lanes (GT-05): a manager sets one up per lane and copies its key for the hardware. */
+function Readers() {
+  const t = useT();
+  const time = useTime();
+  const state = useLoad<Reader[]>(() => ok(api.GET("/gate/readers", {})), []);
+  const gates = useLoad<GateDto[]>(() => ok(api.GET("/gates", {})), []);
+  const act = useAction();
+  const [name, setName] = useState("");
+  const [gateId, setGateId] = useState("");
+  const [direction, setDirection] = useState("in");
+  const [issuedKey, setIssuedKey] = useState<string>();
+
+  const add = () => void act.run(async () => {
+    if (!name.trim() || !gateId) return;
+    const res = await ok(api.POST("/gate/readers", { body: { gateId, name: name.trim(), direction } }));
+    setIssuedKey(res.apiKey); setName(""); state.reload();
+  });
+  const rotate = (r: Reader) => void act.run(async () => {
+    const res = await ok(api.POST("/gate/readers/{id}/rotate-key", { params: { path: { id: r.id } } }));
+    setIssuedKey(res.apiKey); state.reload();
+  });
+  const toggle = (r: Reader) => void act.run(async () => {
+    await ok(api.PUT("/gate/readers/{id}", { params: { path: { id: r.id } }, body: { name: null, direction: null, isActive: !r.isActive } }));
+    state.reload();
+  });
+
+  const columns: Column<Reader>[] = [
+    { key: "name", header: t("gate.reader.name"), render: (r) => r.name },
+    { key: "gate", header: t("gate.gateName"), render: (r) => r.gateName ?? "—" },
+    { key: "dir", header: t("gate.col.direction"), render: (r) => t(`gate.${r.direction}` as Key) },
+    { key: "seen", header: t("gate.reader.lastSeen"), render: (r) => r.lastSeenAt ? time(r.lastSeenAt) : t("gate.reader.never") },
+    { key: "status", header: t("gate.col.status"), render: (r) => <StatusChip status={r.isActive ? "resolved" : "rejected"} label={t(r.isActive ? "gate.active" : "gate.inactive")} /> },
+    { key: "act", header: "", render: (r) => (
+      <span style={{ display: "flex", gap: 8 }}>
+        <Button variant="secondary" onClick={() => rotate(r)} disabled={act.busy}>{t("gate.reader.rotate")}</Button>
+        <Button variant="secondary" onClick={() => toggle(r)} disabled={act.busy}>{t(r.isActive ? "gate.deactivate" : "gate.activate")}</Button>
+      </span>
+    ) },
+  ];
+
+  return (
+    <>
+      <Card>
+        <p className="muted">{t("gate.reader.hint")}</p>
+        <form className="form-row" onSubmit={(e) => { e.preventDefault(); add(); }}>
+          <TextField label={t("gate.reader.name")} value={name} onChange={(e) => setName(e.target.value)} />
+          <SelectField label={t("gate.gateName")} value={gateId} onChange={(e) => setGateId(e.target.value)} placeholder={t("gate.reader.pickGate")} options={(gates.data ?? []).map((g) => ({ value: g.id, label: g.name }))} />
+          <SelectField label={t("gate.col.direction")} value={direction} onChange={(e) => setDirection(e.target.value)} options={[{ value: "in", label: t("gate.in") }, { value: "out", label: t("gate.out") }]} />
+          <Button type="submit" disabled={act.busy || !name.trim() || !gateId}>{t("gate.reader.add")}</Button>
+        </form>
+        {issuedKey && <Alert tone="info">{t("gate.reader.keyOnce")} <code>{issuedKey}</code></Alert>}
+        {act.error && <Alert tone="danger">{act.error.code}</Alert>}
+      </Card>
+      <Async state={state}>
+        {(rows) => rows.length === 0
+          ? <EmptyState title={t("gate.reader.none")} />
+          : <Card><Table caption={t("gate.readers")} columns={columns} rows={rows} rowKey={(r) => r.id} /></Card>}
       </Async>
     </>
   );

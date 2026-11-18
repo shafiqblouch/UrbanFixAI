@@ -31,6 +31,13 @@ public class GateRulesTests
     [InlineData(null, "")]
     public void A_typed_code_is_tidied_to_the_stored_form(string? input, string expected) => Assert.Equal(expected, GateRules.NormalizeCode(input));
 
+    [Theory]
+    [InlineData(" e2:00-1234 ", "E2001234")]
+    [InlineData("rf-tag-001", "RFTAG001")]
+    [InlineData(null, "")]
+    public void An_rfid_tag_is_tidied_so_small_formatting_differences_still_match(string? input, string expected) =>
+        Assert.Equal(expected, GateRules.NormalizeTag(input));
+
     [Fact]
     public void A_generated_code_is_six_characters_from_the_no_lookalike_alphabet()
     {
@@ -125,6 +132,133 @@ public class GateFlowTests(TestApp app)
         var guard = await app.AddMemberAsync(s.Manager, s.Org, Role.Guard);
         Assert.Equal(HttpStatusCode.Forbidden, (await guard.Client.PutAsJsonAsync("/my/features/gate",
             new UrbanFix.Api.Endpoints.PlatformEndpoints.SetFeature(true))).StatusCode);
+    }
+
+    // RFID / UHF sticker + boom barrier (GT-05) ---------------------------------------------------------------
+    private static async Task<T> Ok<T>(Task<HttpResponseMessage> call)
+    {
+        var res = await call;
+        res.EnsureSuccessStatusCode();
+        return (await res.Content.ReadFromJsonAsync<T>())!;
+    }
+
+    /// <summary>A reader POSTs a tag read, authenticating with its own key (no user token), as the hardware will.</summary>
+    private async Task<HttpResponseMessage> ScanAsync(string key, string? tag)
+    {
+        var req = new HttpRequestMessage(HttpMethod.Post, "/gate/scan") { Content = JsonContent.Create(new ScanRequest(tag)) };
+        req.Headers.Add("X-Gate-Key", key);
+        return await app.CreateClient().SendAsync(req);
+    }
+
+    private async Task<HttpResponseMessage> CommandsAsync(string key)
+    {
+        var req = new HttpRequestMessage(HttpMethod.Get, "/gate/commands");
+        req.Headers.Add("X-Gate-Key", key);
+        return await app.CreateClient().SendAsync(req);
+    }
+
+    /// <summary>A gated society with a gate, an entry reader and a guard.</summary>
+    private async Task<(Society S, ApiSession Guard, GateDto Gate, GateReaderKeyDto Reader)> RfidGateAsync(string direction = "in")
+    {
+        var (s, guard) = await GatedAsync();
+        var gate = await Ok<GateDto>(s.Manager.Client.PostAsJsonAsync("/gates", new SaveGate("Main", true)));
+        var reader = await Ok<GateReaderKeyDto>(s.Manager.Client.PostAsJsonAsync("/gate/readers",
+            new SaveReader(gate.Id, direction == "in" ? "Entry" : "Exit", direction)));
+        return (s, guard, gate, reader);
+    }
+
+    [Fact]
+    public async Task A_registered_resident_car_opens_the_barrier_automatically_and_is_logged_once()
+    {
+        var (s, guard, _, reader) = await RfidGateAsync();
+        var plate = Plate();
+        (await s.Office.Client.PostAsJsonAsync("/vehicles",
+            new UrbanFix.Api.Endpoints.RegistryEndpoints.SaveVehicle(plate, "car", s.HouseId, "RF-TAG-001", "active", null))).EnsureSuccessStatusCode();
+
+        var scan = await Ok<ScanResult>(ScanAsync(reader.ApiKey, "rf-tag-001")); // matched case-insensitively
+        Assert.Equal("open", scan.Action);
+        Assert.Equal(plate, scan.Subject);
+
+        var events = await Ok<List<EventDto>>(guard.Client.GetAsync("/gate/events?limit=20"));
+        var mine = events.Where(e => e.VehiclePlate == plate).ToList();
+        Assert.Single(mine);
+        Assert.Equal(("in", "allowed", "rfid"), (mine[0].Direction, mine[0].Decision, mine[0].Source));
+
+        // A repeat read moments later still opens, but does not double-log the same crossing.
+        Assert.Equal("open", (await Ok<ScanResult>(ScanAsync(reader.ApiKey, "RF-TAG-001"))).Action);
+        var after = await Ok<List<EventDto>>(guard.Client.GetAsync("/gate/events?limit=20"));
+        Assert.Single(after.Where(e => e.VehiclePlate == plate));
+    }
+
+    [Fact]
+    public async Task An_unknown_tag_is_held_for_a_guard_and_opens_once_approved()
+    {
+        var (s, guard, _, reader) = await RfidGateAsync();
+
+        var scan = await Ok<ScanResult>(ScanAsync(reader.ApiKey, "STRANGER-9"));
+        Assert.Equal("hold", scan.Action);
+        Assert.NotNull(scan.ApprovalId);
+        Assert.Empty(await Ok<List<OpenCommand>>(CommandsAsync(reader.ApiKey))); // barrier stays shut
+
+        var waiting = await Ok<List<GateApprovalDto>>(guard.Client.GetAsync("/gate/waiting"));
+        Assert.Contains(waiting, a => a.Id == scan.ApprovalId);
+
+        var decided = await Ok<GateApprovalDto>(guard.Client.PostAsJsonAsync($"/gate/waiting/{scan.ApprovalId}/decide", new Decide(true, null)));
+        Assert.Equal("approved", decided.Status);
+
+        // The reader now gets exactly one open.
+        Assert.Contains(await Ok<List<OpenCommand>>(CommandsAsync(reader.ApiKey)), c => c.ApprovalId == scan.ApprovalId);
+        Assert.Empty(await Ok<List<OpenCommand>>(CommandsAsync(reader.ApiKey)));
+
+        Assert.Contains(await Ok<List<EventDto>>(guard.Client.GetAsync("/gate/events?limit=20")), e => e.Decision == "allowed" && e.Source == "rfid");
+    }
+
+    [Fact]
+    public async Task A_denied_car_never_opens_the_barrier_and_cannot_be_decided_twice()
+    {
+        var (s, guard, _, reader) = await RfidGateAsync();
+        var scan = await Ok<ScanResult>(ScanAsync(reader.ApiKey, "STRANGER-X"));
+
+        var decided = await Ok<GateApprovalDto>(guard.Client.PostAsJsonAsync($"/gate/waiting/{scan.ApprovalId}/decide", new Decide(false, null)));
+        Assert.Equal("denied", decided.Status);
+        Assert.Empty(await Ok<List<OpenCommand>>(CommandsAsync(reader.ApiKey)));
+        Assert.Equal(HttpStatusCode.Conflict,
+            (await guard.Client.PostAsJsonAsync($"/gate/waiting/{scan.ApprovalId}/decide", new Decide(true, null))).StatusCode);
+    }
+
+    [Fact]
+    public async Task A_reader_key_must_be_valid_and_rotating_it_revokes_the_old_one()
+    {
+        var (s, _, _, reader) = await RfidGateAsync();
+        Assert.Equal(HttpStatusCode.Unauthorized, (await ScanAsync("grk_not-a-real-key", "x")).StatusCode);
+
+        var rotated = await Ok<GateReaderKeyDto>(s.Manager.Client.PostAsync($"/gate/readers/{reader.Reader.Id}/rotate-key", null));
+        Assert.Equal(HttpStatusCode.Unauthorized, (await ScanAsync(reader.ApiKey, "x")).StatusCode); // the old key is dead
+        Assert.Equal(HttpStatusCode.OK, (await ScanAsync(rotated.ApiKey, "x")).StatusCode);           // the new key works
+    }
+
+    [Fact]
+    public async Task Only_a_manager_can_set_up_readers()
+    {
+        var (_, guard, gate, _) = await RfidGateAsync();
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await guard.Client.PostAsJsonAsync("/gate/readers", new SaveReader(gate.Id, "Sneaky", "in"))).StatusCode);
+    }
+
+    [Fact]
+    public async Task A_generated_sticker_code_is_unique_per_car_and_opens_the_barrier_for_it()
+    {
+        var (s, _, _, reader) = await RfidGateAsync();
+        var plate = Plate();
+        var vehicle = await Ok<UrbanFix.Api.Endpoints.RegistryEndpoints.VehicleDto>(s.Office.Client.PostAsJsonAsync("/vehicles",
+            new UrbanFix.Api.Endpoints.RegistryEndpoints.SaveVehicle(plate, "car", s.HouseId, null, "active", null)));
+
+        var tagged = await Ok<UrbanFix.Api.Endpoints.RegistryEndpoints.VehicleDto>(s.Office.Client.PostAsync($"/vehicles/{vehicle.Id}/sticker", null));
+        Assert.StartsWith("UF", tagged.StickerCode);
+
+        var scan = await Ok<ScanResult>(ScanAsync(reader.ApiKey, tagged.StickerCode!.ToLowerInvariant())); // reader may send any case
+        Assert.Equal("open", scan.Action);
+        Assert.Equal(plate, scan.Subject);
     }
 
     [Fact]

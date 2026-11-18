@@ -70,6 +70,22 @@ public static class RegistryEndpoints
             return await SaveVehicleAsync(db, v, created: false, ct);
         }).Produces<VehicleDto>(200).RequireAuthorization(write);
 
+        // Issue a fresh gate-sticker code for a car (GT-05): a short, no-look-alike code to print on the RFID label
+        // and programme onto the tag. Unique per society (the vehicles_sticker index), so a collision just retries.
+        g.MapPost("/vehicles/{id:guid}/sticker", async (Guid id, AppDbContext db, CancellationToken ct) =>
+        {
+            for (var attempt = 0; ; attempt++)
+            {
+                if (await db.Vehicles.SingleOrDefaultAsync(v => v.Id == id, ct) is not { } v) return Results.NotFound();
+                v.StickerCode = RegistryRules.NewStickerCode();
+                try { await db.SaveChangesAsync(ct); return Results.Ok((await ToDtosAsync(db, [v], ct))[0]); }
+                catch (DbUpdateException ex) when (attempt < 5 && ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } pg && pg.ConstraintName?.Contains("sticker") == true)
+                {
+                    db.ChangeTracker.Clear();
+                }
+            }
+        }).Produces<VehicleDto>(200).RequireAuthorization(write);
+
         // OR-09 ---------------------------------------------------------------------------------------------------
         g.MapGet("/daily-help", async (string? q, Guid? houseId, string? status, AppDbContext db, IObjectStorage storage, CancellationToken ct) =>
         {

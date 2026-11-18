@@ -1495,6 +1495,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/gate/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ScanRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScanResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/commands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OpenCommand"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/reports/costs": {
         parameters: {
             query?: never;
@@ -4643,6 +4717,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/vehicles/{id}/sticker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VehicleDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/daily-help": {
         parameters: {
             query?: never;
@@ -5555,6 +5666,218 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["PassDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/readers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateReaderDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveReader"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateReaderKeyDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/readers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateReader"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateReaderDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/readers/{id}/rotate-key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateReaderKeyDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/waiting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateApprovalDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gate/waiting/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Decide"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GateApprovalDto"];
                     };
                 };
             };
@@ -8294,6 +8617,7 @@ export interface components {
             photoUrl: string | null;
             decision: string;
             note: string | null;
+            source: string;
             /** Format: uuid */
             recordedBy: string | null;
             /** Format: date-time */
@@ -8340,11 +8664,40 @@ export interface components {
         Fulfil: {
             lines: components["schemas"]["RequestLineInput"][] | null;
         };
+        GateApprovalDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            gateId: string | null;
+            gateName: string | null;
+            direction: string;
+            tag: string | null;
+            vehiclePlate: string | null;
+            status: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
         GateDto: {
             /** Format: uuid */
             id: string;
             name: string;
             isActive: boolean;
+        };
+        GateReaderDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            gateId: string;
+            gateName: string | null;
+            name: string;
+            direction: string;
+            isActive: boolean;
+            /** Format: date-time */
+            lastSeenAt: string | null;
+        };
+        GateReaderKeyDto: {
+            reader: components["schemas"]["GateReaderDto"];
+            apiKey: string;
         };
         HelpDto: {
             /** Format: uuid */
@@ -8769,6 +9122,11 @@ export interface components {
             done: boolean;
             /** Format: int32 */
             count: number;
+        };
+        OpenCommand: {
+            /** Format: uuid */
+            approvalId: string;
+            direction: string;
         };
         OpenSupport: {
             reason: string;
@@ -9231,6 +9589,12 @@ export interface components {
             locale: string | null;
             channels: string[] | null;
         };
+        SaveReader: {
+            /** Format: uuid */
+            gateId: string;
+            name: string;
+            direction: string;
+        };
         SaveRequest: {
             /** Format: uuid */
             jobId: string;
@@ -9272,6 +9636,16 @@ export interface components {
             stickerCode: string | null;
             status: string | null;
             note: string | null;
+        };
+        ScanRequest: {
+            tag: string | null;
+        };
+        ScanResult: {
+            action: string;
+            decision: string;
+            subject: string | null;
+            /** Format: uuid */
+            approvalId: string | null;
         };
         ScheduleDto: {
             enabled: boolean;
@@ -9624,6 +9998,11 @@ export interface components {
             name: string | null;
             nameUr: string | null;
             unit: string | null;
+            isActive: boolean | null;
+        };
+        UpdateReader: {
+            name: string | null;
+            direction: string | null;
             isActive: boolean | null;
         };
         UploadDto: {

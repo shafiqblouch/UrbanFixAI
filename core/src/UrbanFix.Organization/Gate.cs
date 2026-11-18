@@ -75,8 +75,60 @@ public class GateEvent : IAudited
     /// <summary>allowed | denied.</summary>
     public string Decision { get; set; } = "allowed";
     public string? Note { get; set; }
+    /// <summary>manual (a guard recorded it) | rfid (a reader logged it automatically).</summary>
+    public string Source { get; set; } = "manual";
+    /// <summary>The reader that logged an automatic crossing, when one did.</summary>
+    public Guid? ReaderId { get; set; }
     public Guid? RecordedBy { get; set; }
     public DateTimeOffset RecordedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>
+/// A UHF/RFID reader at a gate lane (GT-05). Each reader is fixed to one direction (a separate reader for entry and
+/// for exit), drives that lane's boom barrier, and authenticates to the scan API with its own key. A resident car's
+/// sticker (its <see cref="Vehicle.StickerCode"/>, the tag's id) read here opens the barrier automatically; an unknown
+/// tag is held for a guard to allow or deny. Behind the "gate" feature flag.
+/// </summary>
+public class GateReader : IAudited
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid OrganizationId { get; set; }
+    public Guid GateId { get; set; }
+    public string Name { get; set; } = "";
+    /// <summary>in | out — the one direction this reader/lane records.</summary>
+    public string Direction { get; set; } = "in";
+    /// <summary>SHA-256 (hex) of the reader's API key; the key itself is shown once at issue and never stored.</summary>
+    public string ApiKeyHash { get; set; } = "";
+    public bool IsActive { get; set; } = true;
+    public DateTimeOffset? LastSeenAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>
+/// A car held at the barrier because its tag was not a registered resident vehicle (GT-05). The boom stays shut until a
+/// guard allows or denies it in the app; the reader polls for the decision and opens on "approved". An allow also writes
+/// the crossing to the gate log (<see cref="EventId"/>).
+/// </summary>
+public class GateApproval : IAudited
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid OrganizationId { get; set; }
+    public Guid? GateId { get; set; }
+    public Guid? ReaderId { get; set; }
+    /// <summary>in | out, taken from the reader that raised it.</summary>
+    public string Direction { get; set; } = "in";
+    /// <summary>The raw tag that was read, when there was one (a read with no known tag is still held).</summary>
+    public string? Tag { get; set; }
+    public string? VehiclePlate { get; set; }
+    /// <summary>pending | approved | denied | expired.</summary>
+    public string Status { get; set; } = "pending";
+    public Guid? DecidedBy { get; set; }
+    public DateTimeOffset? DecidedAt { get; set; }
+    /// <summary>The crossing written to the log when a guard allowed it.</summary>
+    public Guid? EventId { get; set; }
+    /// <summary>When the reader picked up the "open" for an approved hold and raised the barrier (so it opens once).</summary>
+    public DateTimeOffset? ConsumedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 /// <summary>Small gate rules as pure functions, kept together so they can be read and tested in one place.</summary>
@@ -87,6 +139,15 @@ public static class GateRules
     public static readonly string[] Decisions = ["allowed", "denied"];
     public static readonly string[] PassKinds = ["visitor", "guest", "delivery", "help", "contractor"];
     public static readonly string[] PassStatuses = ["active", "cancelled", "pending", "denied"];
+    public static readonly string[] EventSources = ["manual", "rfid"];
+    public static readonly string[] ApprovalStatuses = ["pending", "approved", "denied", "expired"];
+
+    /// <summary>
+    /// Tidies a tag read off an RFID sticker to its stored form so small formatting differences still match a vehicle's
+    /// sticker code: trimmed, upper-cased, and stripped of spaces and dashes (the EPC's own characters are kept).
+    /// </summary>
+    public static string NormalizeTag(string? tag) =>
+        new((tag ?? "").Where(c => !char.IsWhiteSpace(c) && c != '-' && c != ':').Select(char.ToUpperInvariant).ToArray());
 
     /// <summary>No 0/O/1/I/S/5/2/Z/8/B look-alikes, so a code read aloud at a gate is not mistyped.</summary>
     private const string Alphabet = "ACDEFGHJKLMNPQRTUVWXY34679";
@@ -148,3 +209,9 @@ public sealed record GateVisitRequested(Guid OrganizationId, Guid PassId, Guid H
 
 /// <summary>A resident approved or denied a visitor the guard asked about; the requesting guard is told (GT-04).</summary>
 public sealed record GateVisitDecided(Guid OrganizationId, Guid PassId, Guid GuardUserId, bool Approved, string VisitorName) : DomainEvent(OrganizationId);
+
+/// <summary>
+/// An RFID reader held an unknown car at the barrier; the on-duty guards are asked to allow or deny it (GT-05).
+/// The guard user ids are resolved when the hold is raised, so the live prompt reaches whoever is on the gate.
+/// </summary>
+public sealed record GateCarWaiting(Guid OrganizationId, Guid ApprovalId, Guid? GateId, string Direction, string? VehiclePlate, IReadOnlyList<Guid> GuardUserIds) : DomainEvent(OrganizationId);

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using UrbanFix.Api.Security;
 using UrbanFix.Identity;
+using UrbanFix.Infrastructure.GateHardware;
 using UrbanFix.Infrastructure.Persistence;
 using UrbanFix.Infrastructure.Platform;
 using UrbanFix.Infrastructure.Storage;
@@ -36,7 +37,7 @@ public static class GateEndpoints
     public sealed record EventDto(
         Guid Id, Guid? GateId, string Direction, string SubjectType, Guid? HouseId, string? HouseLabel, Guid? VehicleId, Guid? HelpId,
         Guid? PassId, string? SubjectName, string? Phone, string? VehiclePlate, string? PhotoUrl, string Decision, string? Note,
-        Guid? RecordedBy, DateTimeOffset RecordedAt);
+        string Source, Guid? RecordedBy, DateTimeOffset RecordedAt);
 
     // ---- Passes (GT-03) ----
     public sealed record SavePass(
@@ -50,6 +51,19 @@ public static class GateEndpoints
     public sealed record VisitRequest(Guid HouseId, string VisitorName, string? Phone, string? VehiclePlate, string? Kind, string? Note);
     public sealed record Decide(bool Approve, string? Note);
     public sealed record MyHouseDto(Guid Id, string Label);
+
+    // ---- RFID readers + boom barrier (GT-05) ----
+    public sealed record GateReaderDto(Guid Id, Guid GateId, string? GateName, string Name, string Direction, bool IsActive, DateTimeOffset? LastSeenAt);
+    public sealed record SaveReader(Guid GateId, string Name, string Direction);
+    public sealed record UpdateReader(string? Name, string? Direction, bool? IsActive);
+    /// <summary>A reader with its freshly issued key — the only time the key is ever returned in full.</summary>
+    public sealed record GateReaderKeyDto(GateReaderDto Reader, string ApiKey);
+    public sealed record GateApprovalDto(Guid Id, Guid? GateId, string? GateName, string Direction, string? Tag, string? VehiclePlate, string Status, DateTimeOffset CreatedAt);
+    // What a reader sends and gets back.
+    public sealed record ScanRequest(string? Tag);
+    /// <summary>action: open (raise the barrier now) | hold (keep it shut, a guard was asked) | deny.</summary>
+    public sealed record ScanResult(string Action, string Decision, string? Subject, Guid? ApprovalId);
+    public sealed record OpenCommand(Guid ApprovalId, string Direction);
 
     public static void MapGateEndpoints(this IEndpointRouteBuilder app)
     {
@@ -248,6 +262,149 @@ public static class GateEndpoints
             await db.SaveChangesAsync(ct);
             return Results.Ok((await PassDtosAsync(db, [pass], ct))[0]);
         }).Produces<PassDto>(200).RequireAuthorization(own);
+
+        // RFID readers + boom barrier (GT-05) ------------------------------------------------------------------
+        // A reader per lane, each fixed to one direction and holding its own key. Managers set them up.
+        g.MapGet("/gate/readers", async (AppDbContext db, CancellationToken ct) =>
+        {
+            var rows = await db.GateReaders.AsNoTracking().OrderBy(r => r.Name).ToListAsync(ct);
+            var gates = await db.Gates.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.Name, ct);
+            return Results.Ok(rows.Select(r => new GateReaderDto(r.Id, r.GateId, gates.GetValueOrDefault(r.GateId), r.Name, r.Direction, r.IsActive, r.LastSeenAt)).ToList());
+        }).Produces<List<GateReaderDto>>(200).RequireAuthorization(manage);
+
+        g.MapPost("/gate/readers", async (SaveReader req, ITenantContext tenant, AppDbContext db, CancellationToken ct) =>
+        {
+            if (string.IsNullOrWhiteSpace(req.Name)) return Results.BadRequest(new { error = "name_required" });
+            if (!GateRules.Directions.Contains(req.Direction)) return Results.BadRequest(new { error = "invalid_direction" });
+            if (!await db.Gates.AnyAsync(x => x.Id == req.GateId, ct)) return Results.BadRequest(new { error = "gate_not_found" });
+            var key = GateReaderAuth.NewKey();
+            var reader = new GateReader { OrganizationId = tenant.OrganizationId!.Value, GateId = req.GateId, Name = req.Name.Trim(), Direction = req.Direction, ApiKeyHash = GateReaderAuth.HashKey(key) };
+            db.GateReaders.Add(reader);
+            await db.SaveChangesAsync(ct);
+            return Results.Created($"/gate/readers/{reader.Id}", new GateReaderKeyDto(await ReaderDtoAsync(db, reader, ct), key));
+        }).Produces<GateReaderKeyDto>(201).RequireAuthorization(manage);
+
+        g.MapPut("/gate/readers/{id:guid}", async (Guid id, UpdateReader req, AppDbContext db, CancellationToken ct) =>
+        {
+            if (await db.GateReaders.SingleOrDefaultAsync(r => r.Id == id, ct) is not { } reader) return Results.NotFound();
+            if (req.Direction is { } d) { if (!GateRules.Directions.Contains(d)) return Results.BadRequest(new { error = "invalid_direction" }); reader.Direction = d; }
+            if (!string.IsNullOrWhiteSpace(req.Name)) reader.Name = req.Name.Trim();
+            if (req.IsActive is { } active) reader.IsActive = active;
+            await db.SaveChangesAsync(ct);
+            return Results.Ok(await ReaderDtoAsync(db, reader, ct));
+        }).Produces<GateReaderDto>(200).RequireAuthorization(manage);
+
+        g.MapPost("/gate/readers/{id:guid}/rotate-key", async (Guid id, AppDbContext db, CancellationToken ct) =>
+        {
+            if (await db.GateReaders.SingleOrDefaultAsync(r => r.Id == id, ct) is not { } reader) return Results.NotFound();
+            var key = GateReaderAuth.NewKey();
+            reader.ApiKeyHash = GateReaderAuth.HashKey(key);
+            await db.SaveChangesAsync(ct);
+            return Results.Ok(new GateReaderKeyDto(await ReaderDtoAsync(db, reader, ct), key));
+        }).Produces<GateReaderKeyDto>(200).RequireAuthorization(manage);
+
+        // Cars held at the barrier, waiting for a guard to allow or deny (GT-05) -------------------------------
+        g.MapGet("/gate/waiting", async (AppDbContext db, CancellationToken ct) =>
+        {
+            var rows = await db.GateApprovals.AsNoTracking().Where(a => a.Status == "pending").OrderBy(a => a.CreatedAt).Take(50).ToListAsync(ct);
+            var gates = await db.Gates.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.Name, ct);
+            return Results.Ok(rows.Select(a => new GateApprovalDto(a.Id, a.GateId, a.GateId is { } gid ? gates.GetValueOrDefault(gid) : null, a.Direction, a.Tag, a.VehiclePlate, a.Status, a.CreatedAt)).ToList());
+        }).Produces<List<GateApprovalDto>>(200).RequireAuthorization(log);
+
+        g.MapPost("/gate/waiting/{id:guid}/decide", async (Guid id, Decide req, ClaimsPrincipal user, AppDbContext db, CancellationToken ct) =>
+        {
+            if (await db.GateApprovals.SingleOrDefaultAsync(a => a.Id == id, ct) is not { } appr) return Results.NotFound();
+            if (appr.Status != "pending") return Results.Conflict(new { error = "already_decided", status = appr.Status });
+            var ev = new GateEvent
+            {
+                OrganizationId = appr.OrganizationId, GateId = appr.GateId, Direction = appr.Direction, SubjectType = "visitor",
+                VehiclePlate = appr.VehiclePlate, PlateKey = appr.VehiclePlate is { } p ? RegistryRules.PlateKey(p) : null,
+                Decision = req.Approve ? "allowed" : "denied", Source = "rfid", ReaderId = appr.ReaderId,
+                Note = string.IsNullOrWhiteSpace(req.Note) ? (appr.Tag is { } tag ? $"RFID {tag}" : null) : req.Note.Trim(), RecordedBy = Me(user),
+            };
+            db.GateEvents.Add(ev);
+            appr.Status = req.Approve ? "approved" : "denied";
+            appr.DecidedBy = Me(user);
+            appr.DecidedAt = DateTimeOffset.UtcNow;
+            appr.EventId = ev.Id;
+            await db.SaveChangesAsync(ct);
+            var gateName = appr.GateId is { } g2 ? await db.Gates.Where(x => x.Id == g2).Select(x => x.Name).SingleOrDefaultAsync(ct) : null;
+            return Results.Ok(new GateApprovalDto(appr.Id, appr.GateId, gateName, appr.Direction, appr.Tag, appr.VehiclePlate, appr.Status, appr.CreatedAt));
+        }).Produces<GateApprovalDto>(200).RequireAuthorization(log);
+
+        // The reader itself (GT-05): scan a tag, and poll for barrier opens. Authenticated by the reader's own key,
+        // so anonymous to the user scheme; the society is resolved from the key before any tenant-scoped query runs.
+        app.MapPost("/gate/scan", ScanAsync).Produces<ScanResult>(200).AllowAnonymous().WithTags("Gate");
+        app.MapGet("/gate/commands", CommandsAsync).Produces<List<OpenCommand>>(200).AllowAnonymous().WithTags("Gate");
+    }
+
+    /// <summary>A reader read a tag: open for a registered resident car, otherwise hold it for a guard.</summary>
+    private static async Task<IResult> ScanAsync(ScanRequest req, HttpContext http, GateReaderAuth readers, ITenantContext tenant, AppDbContext db, IEventBus bus, CancellationToken ct)
+    {
+        if (await readers.ResolveAsync(ReaderKey(http), ct) is not { } reader) return Results.Json(new { error = "invalid_reader_key" }, statusCode: StatusCodes.Status401Unauthorized);
+        ((TenantContext)tenant).Set(reader.OrganizationId, null);
+        if (!await FeatureFlags.IsEnabledAsync(db, Features.Gate, ct)) return Results.Json(new { error = "feature_disabled", feature = Features.Gate }, statusCode: StatusCodes.Status403Forbidden);
+        _ = readers.TouchAsync(reader.ReaderId, ct);
+
+        var tag = GateRules.NormalizeTag(req.Tag);
+        // Match the sticker case-insensitively on its stored form, hitting the unique lower(sticker_code) index.
+        var lookup = (req.Tag ?? "").Trim().ToLowerInvariant();
+        if (lookup.Length > 0 &&
+            await db.Vehicles.AsNoTracking().FirstOrDefaultAsync(v => v.Status == "active" && v.StickerCode != null && v.StickerCode.ToLower() == lookup, ct) is { } vehicle)
+        {
+            // Registered resident car → open automatically, logging the crossing once (a UHF reader reads repeatedly).
+            var since = DateTimeOffset.UtcNow.AddSeconds(-20);
+            if (!await db.GateEvents.AnyAsync(e => e.VehicleId == vehicle.Id && e.Direction == reader.Direction && e.RecordedAt >= since, ct))
+            {
+                db.GateEvents.Add(new GateEvent
+                {
+                    OrganizationId = reader.OrganizationId, GateId = reader.GateId, Direction = reader.Direction, SubjectType = "vehicle",
+                    VehicleId = vehicle.Id, HouseId = vehicle.HouseId, VehiclePlate = vehicle.Plate, PlateKey = vehicle.PlateKey,
+                    Decision = "allowed", Source = "rfid", ReaderId = reader.ReaderId,
+                });
+                await db.SaveChangesAsync(ct);
+            }
+            return Results.Ok(new ScanResult("open", "allowed", vehicle.Plate, null));
+        }
+
+        // An unknown tag (or a presence with no tag): keep the barrier shut and ask the on-duty guards.
+        var guards = await db.Memberships.AsNoTracking()
+            .Where(m => m.Role == Role.Guard && m.IsActive && (m.GateId == null || m.GateId == reader.GateId))
+            .Select(m => m.UserId).Distinct().ToListAsync(ct);
+        var approval = new GateApproval { OrganizationId = reader.OrganizationId, GateId = reader.GateId, ReaderId = reader.ReaderId, Direction = reader.Direction, Tag = tag.Length > 0 ? tag : null };
+        db.GateApprovals.Add(approval);
+        bus.Publish(new GateCarWaiting(reader.OrganizationId, approval.Id, reader.GateId, reader.Direction, approval.VehiclePlate, guards));
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(new ScanResult("hold", "pending", null, approval.Id));
+    }
+
+    /// <summary>The reader polls this for opens: approved holds at its lane that it has not raised the barrier for yet.</summary>
+    private static async Task<IResult> CommandsAsync(HttpContext http, GateReaderAuth readers, ITenantContext tenant, AppDbContext db, CancellationToken ct)
+    {
+        if (await readers.ResolveAsync(ReaderKey(http), ct) is not { } reader) return Results.Json(new { error = "invalid_reader_key" }, statusCode: StatusCodes.Status401Unauthorized);
+        ((TenantContext)tenant).Set(reader.OrganizationId, null);
+        if (!await FeatureFlags.IsEnabledAsync(db, Features.Gate, ct)) return Results.Json(new { error = "feature_disabled", feature = Features.Gate }, statusCode: StatusCodes.Status403Forbidden);
+        _ = readers.TouchAsync(reader.ReaderId, ct);
+
+        var since = DateTimeOffset.UtcNow.AddSeconds(-30); // a stale decision is not re-opened; the car has gone
+        var pending = await db.GateApprovals
+            .Where(a => a.ReaderId == reader.ReaderId && a.Status == "approved" && a.ConsumedAt == null && a.DecidedAt >= since)
+            .OrderBy(a => a.DecidedAt).ToListAsync(ct);
+        var now = DateTimeOffset.UtcNow;
+        foreach (var a in pending) a.ConsumedAt = now;
+        if (pending.Count > 0) await db.SaveChangesAsync(ct);
+        return Results.Ok(pending.Select(a => new OpenCommand(a.Id, a.Direction)).ToList());
+    }
+
+    private static string? ReaderKey(HttpContext http) =>
+        http.Request.Headers.TryGetValue("X-Gate-Key", out var k) && k.Count > 0 ? k.ToString()
+        : http.Request.Headers.Authorization.ToString() is { Length: > 7 } a && a.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) ? a[7..]
+        : null;
+
+    private static async Task<GateReaderDto> ReaderDtoAsync(AppDbContext db, GateReader reader, CancellationToken ct)
+    {
+        var gateName = await db.Gates.AsNoTracking().Where(x => x.Id == reader.GateId).Select(x => x.Name).SingleOrDefaultAsync(ct);
+        return new GateReaderDto(reader.Id, reader.GateId, gateName, reader.Name, reader.Direction, reader.IsActive, reader.LastSeenAt);
     }
 
     private static Guid Me(ClaimsPrincipal user) => Guid.Parse(user.FindFirstValue("sub")!);
@@ -406,7 +563,7 @@ public static class GateEndpoints
         return rows.Select(e => new EventDto(
             e.Id, e.GateId, e.Direction, e.SubjectType, e.HouseId, e.HouseId is { } h && labels.TryGetValue(h, out var l) ? l : null,
             e.VehicleId, e.HelpId, e.PassId, e.SubjectName, e.Phone, e.VehiclePlate,
-            e.PhotoKey is null ? null : storage.CreateDownloadUrl(e.PhotoKey), e.Decision, e.Note, e.RecordedBy, e.RecordedAt)).ToList();
+            e.PhotoKey is null ? null : storage.CreateDownloadUrl(e.PhotoKey), e.Decision, e.Note, e.Source, e.RecordedBy, e.RecordedAt)).ToList();
     }
 
     private static async Task<List<PassDto>> PassDtosAsync(AppDbContext db, List<GatePass> rows, CancellationToken ct)

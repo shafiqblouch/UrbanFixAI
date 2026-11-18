@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { api, ok, type S } from "../api";
 import { errorText, useAction, useLoad, useRefetchOnFocus } from "../hooks";
@@ -23,7 +23,10 @@ export function GatePassesScreen() {
   const houses = useLoad<House[]>(() => ok(api.GET("/my/houses", {})), []);
   const act = useAction();
   const [message, setMessage] = useState<string>();
-  const reloadAll = () => { requests.reload(); passes.reload(); };
+  // Must be stable: useRefetchOnFocus feeds this to useFocusEffect, so a fresh function each render would
+  // re-fire the focus effect every render and spin into an endless refetch loop (which also wedged the create button).
+  // requests.reload / passes.reload are already stable (memoised in useLoad), so this stays stable too.
+  const reloadAll = useCallback(() => { requests.reload(); passes.reload(); }, [requests.reload, passes.reload]);
   useRefetchOnFocus(reloadAll);
 
   const decide = (id: string, approve: boolean) => void act.run(async () => {
@@ -94,11 +97,19 @@ function NewPass({ houses, loading, onCreated }: { houses: House[]; loading: boo
   const canSave = name.trim().length > 0 && !!house && !act.busy;
 
   const submit = () => void act.run(async () => {
-    const created = await ok(api.POST("/my/gate-passes", {
-      body: { visitorName: name.trim(), phone: null, vehiclePlate: plate.trim() || null, houseId: house!, kind, purpose: null, validFrom: null, validTo: null, maxUses: null },
-    }));
-    setName(""); setPlate("");
-    onCreated(created.code);
+    // Fail fast instead of spinning forever if the server never answers (e.g. a stalled POST through the proxy).
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20_000);
+    try {
+      const created = await ok(api.POST("/my/gate-passes", {
+        body: { visitorName: name.trim(), phone: null, vehiclePlate: plate.trim() || null, houseId: house!, kind, purpose: null, validFrom: null, validTo: null, maxUses: null },
+        signal: controller.signal,
+      }));
+      setName(""); setPlate("");
+      onCreated(created.code);
+    } finally {
+      clearTimeout(timer);
+    }
   });
 
   if (loading) return <Loading />;
