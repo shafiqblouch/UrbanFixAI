@@ -144,8 +144,14 @@ directory). Matching is case-insensitive on the stored value; programme the EPC 
 
 **Issuing a sticker (portal).** In **Directory → a vehicle** a manager taps **Generate** to get a unique,
 no-look-alike code (`POST /vehicles/{id}/sticker`, e.g. `UF7Q4K2`) saved on the car, then **Print sticker** for a
-label (plate + a Code 39 barcode + the code). Programme the UHF tag's EPC to that exact code and stick it on the
-car. (A pre-encoded tag instead: just type its EPC into the **Sticker code** field.)
+label (plate + a **QR code** of the code + the code in text). Programme the UHF tag's EPC to that exact code and
+stick it on the car. (A pre-encoded tag instead: just type its EPC into the **Sticker code** field.)
+
+**Phone scanning (guard app).** A phone cannot read the UHF chip (that is the fixed reader's job, over radio), but
+the guard app can read the **printed QR** with the camera: **Scan sticker** on the gate tab opens the camera, reads
+the code, and drops it into the lookup (`/gate/lookup` matches on `sticker_code`), so the car comes up and the guard
+records the crossing. This is the way to use a sticker before the UHF reader is installed, and a manual backup after.
+It also reads the older Code 39 and Code 128 barcodes. (`expo-camera`; the camera permission is already declared.)
 
 **No presence sensor?** A car with no sticker never triggers the reader, so without a loop/IR detector the barrier
 just stays down and the guard opens it the old (manual) way. With a presence detector, the gateway sends

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Modal, View } from "react-native";
+import { CameraView, useCameraPermissions, type BarcodeScanningResult } from "expo-camera";
 import { api, ok, type S } from "../api";
 import { errorText, useAction, useLoad, usePolling, useRefetchOnFocus } from "../hooks";
 import { useI18n, useT } from "../i18n";
@@ -85,6 +86,8 @@ export function GateScreen() {
         placeholder={t("gate.searchPlaceholder")}
       />
 
+      <ScanStickerButton onScan={setQuery} />
+
       {results.loading && q.length >= 2 && <Loading />}
       {nothing && <Empty text={t("gate.noMatch")} />}
 
@@ -133,6 +136,59 @@ function BarrierWaiting() {
         </View>
       ))}
     </Card>
+  );
+}
+
+/** Scan a car's gate sticker with the phone camera (GT-05). Reads the QR/barcode on the printed label and drops the
+ *  code into the lookup, so the matching car appears and the guard records the crossing — a backup to the fixed UHF
+ *  reader, and the way to use a sticker before that hardware is installed. (The phone cannot read the UHF chip itself.) */
+function ScanStickerButton({ onScan }: { onScan: (code: string) => void }) {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  const [denied, setDenied] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  const lock = useRef(false);
+
+  const start = async () => {
+    setDenied(false);
+    const granted = permission?.granted || (await requestPermission()).granted;
+    if (!granted) { setDenied(true); return; }
+    lock.current = false;
+    setOpen(true);
+  };
+
+  const onBarcode = (r: BarcodeScanningResult) => {
+    if (lock.current) return; // the camera fires continuously; take the first read only
+    lock.current = true;
+    setOpen(false);
+    onScan((r.data ?? "").trim());
+  };
+
+  return (
+    <>
+      <Button title={t("gate.scan")} variant="secondary" onPress={() => void start()} />
+      {denied && <Banner tone="info" text={t("gate.scanDenied")} />}
+      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+        <View style={{ flex: 1, backgroundColor: "#000" }}>
+          {open && (
+            <CameraView
+              style={{ flex: 1 }}
+              facing="back"
+              barcodeScannerSettings={{ barcodeTypes: ["qr", "code39", "code128"] }}
+              onBarcodeScanned={onBarcode}
+            />
+          )}
+          <View style={{ position: "absolute", top: 56, left: space[4], right: space[4], alignItems: "center" }}>
+            <View style={{ backgroundColor: "rgba(0,0,0,0.6)", borderRadius: 12, paddingHorizontal: space[4], paddingVertical: space[3] }}>
+              <Txt color="#FFFFFF" style={{ textAlign: "center" }}>{t("gate.scanHint")}</Txt>
+            </View>
+          </View>
+          <View style={{ position: "absolute", bottom: 48, left: space[4], right: space[4] }}>
+            <Button title={t("gate.scanClose")} variant="danger" onPress={() => setOpen(false)} />
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 

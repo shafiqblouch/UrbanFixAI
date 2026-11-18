@@ -52,6 +52,12 @@
         }
       ],
       [
+        "expo-camera",
+        {
+          "cameraPermission": "UrbanFix uses the camera to scan a car's gate sticker at the barrier."
+        }
+      ],
+      [
         "expo-audio",
         {
           "microphonePermission": "UrbanFix records a voice note when you choose to describe a problem by voice."
